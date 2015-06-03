@@ -1,0 +1,21 @@
+extends ./layout
+
+block content
+	if(!user)
+		h2 Welcome! Please signin.
+	else 
+		h2 Welcome #{user.username}
+		if(!user.blogs)
+			p
+				| Click
+				| 
+				a(href="/auth/tumblr") here
+				| 
+				| to link your Tumblr
+		if(user.tokenSet)
+			- for(var i = 0; i < user.tokenSet.length; i++)
+				ul
+					a(href="/unlink/" + user.tokenSet[i]._id) unlink
+					- for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+						li #{user.tokenSet[i].blogs[k].url}
+			

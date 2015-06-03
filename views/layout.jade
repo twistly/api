@@ -1,0 +1,20 @@
+html
+    head
+        title= title ? title : 'TODO'
+        link(href="./css/simple-line-icons.css", rel="stylesheet", type="text/css")
+        link(href="./css/core.css", rel="stylesheet", type="text/css")
+    body
+        p
+            a(href="/") Home
+            | 
+            if (user)
+                a(href="/account") Account
+                | 
+                a(href="/signout") Signout
+            else
+                a(href="/signin") Signin
+                | 
+                a(href="/signup") Signup
+        if (message)
+            p=message.info
+        block content
