@@ -1,16 +1,14 @@
-var bcrypt = require('bcrypt'),
-    mongoose = require('mongoose'),
-    LocalStrategy = require('passport-local').Strategy,
-    TumblrStrategy = require('passport-tumblr').Strategy,
-    passport = require('passport'),
-    async = require('async'),
-    config = require('./config.js'),
-    Blog  = require('./models/Blog'),
-    User  = require('./models/User'),
-    Plan  = require('./models/Plan'),
-    TokenSet  = require('./models/TokenSet');
-
-module.exports = (function() {
+exports = module.exports = function(app, passport) {
+    var bcrypt = require('bcrypt'),
+        mongoose = require('mongoose'),
+        LocalStrategy = require('passport-local').Strategy,
+        TumblrStrategy = require('passport-tumblr').Strategy,
+        async = require('async'),
+        config = require('./config.js'),
+        Blog  = require('./models/Blog'),
+        User  = require('./models/User'),
+        Plan  = require('./models/Plan'),
+        TokenSet  = require('./models/TokenSet');
 
     passport.serializeUser(function(user, done) {
         done(null, user.id);
@@ -75,62 +73,10 @@ module.exports = (function() {
         callbackURL: "http://192.168.1.158:3000/auth/tumblr/callback"
     },
     function(token, tokenSecret, profile, done) {
-        var blogs = profile._json.response.user.blogs;
-        User.findOne({}, function(err, user){
-            if(err) console.log(err);
-            if(user){
-                Blog.findOne({url: blogs[0].name}).exec(function(err, blog){
-                    if(err) console.log(err);
-                    if(blog){
-                        TokenSet.findOne({blogs: blog.id}, function(err, tokenSet){
-                            if(err) console.log(err);
-                            if(tokenSet){
-                                tokenSet.token = token;
-                                tokenSet.tokenSecret = tokenSecret;
-                                tokenSet.save(function(err, tokenSet){
-                                    return done(null, user);
-                                });
-                            } else {
-                                res.send('Oops? That wasn\'t meant to happen at all!');
-                            }
-                        });
-                    } else {
-                        TokenSet.create({ token: token, tokenSecret: tokenSecret }, function (err, tokenSet) {
-                            if(err) console.log(err);
-                            async.eachSeries(blogs, function(blog, callback) {
-                                var newBlog = new Blog({
-                                    url: blog.name,
-                                    postCount: blog.posts,
-                                    isNsfw: blog.is_nsfw,
-                                    followerCount: blog.followers,
-                                    primary: blog.primary,
-                                    public: (blog.type == 'public')
-                                });
-                                newBlog.save(function(err, blog) {
-                                    if(err) console.log(err);
-                                    if(blog){
-                                        tokenSet.blogs = tokenSet.blogs.toObject().concat([blog._id]);
-                                        tokenSet.save(function(err, tokenSet){
-                                            callback();
-                                        });
-                                    } else {
-                                        console.log('NO BLOG???');
-                                    }
-                                });
-                            }, function () {
-                                user.tokenSet.push(tokenSet.id);
-                                user.save(function(err, user){
-                                    return done(null, user);
-                                });
-                            });
-                        });
-                    }
-                });
-            } else {
-                return done(null, false, { message: 'Can\'t find a user associated with that blog' });
-            }
+        done(null, false, {
+            tumblr: profile,
+            token: token,
+            tokenSecret: tokenSecret
         });
     }));
-
-    return passport;
-})();
+};

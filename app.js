@@ -7,7 +7,7 @@ var express = require('express'),
     logger = require('express-logger'),
     mongoose = require('mongoose'),
     fs = require('fs'),
-    passport = require('./passportConfig.js'),
+    passport = require('passport'),
     config = require('./config.js'),
     User = require('./models/User'),
     Blog = require('./models/Blog'),
@@ -48,6 +48,8 @@ app.use(function(req, res, next){
     res.locals.user = req.user;
     next();
 });
+
+require('./passportConfig.js')(app, passport);
 
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/blog'));

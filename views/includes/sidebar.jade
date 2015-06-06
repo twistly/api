@@ -2,7 +2,7 @@ aside
     #sidebar.nav-collapse
         ul.sidebar-menu#nav-accordion
             p.centered
-                a(href="#TODO")
+                a(href="/account")
                     img(src="/assets/img/ui-sam.jpg", width="60").img-circle
                     h5.centered #{user.name ? user.name : user.username}
                     li.mt
@@ -15,6 +15,17 @@ aside
                             span Blogs
                         ul.sub
                             li
-                                - for(var i = 0; i < user.tokenSet.length; i++)
-                                    - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
-                                        a(href="/blog/" + user.tokenSet[i].blogs[k].url) #{user.tokenSet[i].blogs[k].url}
+                                if(user.tokenSet.length)
+                                    - for(var i = 0; i < user.tokenSet.length; i++)
+                                        - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+                                            a(href="/blog/" + user.tokenSet[i].blogs[k].url) #{user.tokenSet[i].blogs[k].url}
+                                else
+                                    a(href="/auth/tumblr") Link an account
+                    li
+                        a(href="/account")
+                            i.fa.fa-calendar-o
+                            span Account
+                    li
+                        a(href="/")
+                            i.fa.fa-bar-chart
+                            span Followers

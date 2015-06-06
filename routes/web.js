@@ -26,10 +26,6 @@ module.exports = (function() {
         }
     });
 
-    app.get('/user', function(req, res){
-        res.send(req.user);
-    });
-
     app.get('/account', ensureAuthenticated, function(req, res){
         res.render('account');
     });
@@ -59,11 +55,82 @@ module.exports = (function() {
         });
     });
 
-    app.get('/auth/tumblr', passport.authenticate('tumblr'), function(req, res){
+    app.get('/auth/tumblr', ensureAuthenticated, passport.authenticate('tumblr', { callbackURL: '/auth/tumblr/callback'}), function(req, res){
+        res.send('??');
     });
 
-    app.get('/auth/tumblr/callback', passport.authenticate('tumblr', { failureRedirect: '/signin' }), function(req, res) {
-        res.redirect('/');
+    app.get('/auth/tumblr/callback', function(req, res) {
+        req._passport.instance.authenticate('tumblr', function(err, user, info) {
+            if(err) res.send(err);
+            var token = info.token;
+                tokenSecret = info.tokenSecret,
+                blogs = info.tumblr._json.response.user.blogs;
+            User.findOne({_id: req.user.id}, function(err, user){
+                if(err) console.log(err);
+                if(user){
+                    Blog.findOne({url: blogs[0].name}).exec(function(err, blog){
+                        if(err) console.log(err);
+                        if(blog){
+                            TokenSet.findOne({blogs: blog.id}, function(err, tokenSet){
+                                if(err) console.log(err);
+                                if(tokenSet){
+                                    tokenSet.token = token;
+                                    tokenSet.tokenSecret = tokenSecret;
+                                    User.findOne({_id: req.user.id, tokenSet: tokenSet.id}, function(err, tokenUser){
+                                        if(tokenUser){
+                                            tokenSet.save(function(err, tokenSet){
+                                                res.redirect('/');
+                                            });
+                                        } else {
+                                            user.tokenSet.push(tokenSet.id);
+                                            user.save(function(err, user){
+                                                tokenSet.save(function(err, tokenSet){
+                                                    res.redirect('/');
+                                                });
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    res.send('Oops? That wasn\'t meant to happen at all!');
+                                }
+                            });
+                        } else {
+                            TokenSet.create({ token: token, tokenSecret: tokenSecret }, function (err, tokenSet) {
+                                if(err) console.log(err);
+                                async.eachSeries(blogs, function(blog, callback) {
+                                    var newBlog = new Blog({
+                                        url: blog.name,
+                                        postCount: blog.posts,
+                                        isNsfw: blog.is_nsfw,
+                                        followerCount: blog.followers,
+                                        primary: blog.primary,
+                                        public: (blog.type == 'public')
+                                    });
+                                    newBlog.save(function(err, blog) {
+                                        if(err) console.log(err);
+                                        if(blog){
+                                            tokenSet.blogs = tokenSet.blogs.toObject().concat([blog._id]);
+                                            tokenSet.save(function(err, tokenSet){
+                                                callback();
+                                            });
+                                        } else {
+                                            console.log('NO BLOG???');
+                                        }
+                                    });
+                                }, function () {
+                                    user.tokenSet.push(tokenSet.id);
+                                    user.save(function(err, user){
+                                        res.redirect('/');
+                                    });
+                                });
+                            });
+                        }
+                    });
+                } else {
+                    res.redirect('/');
+                }
+            });
+        })(req, res);
     });
 
     return app;
