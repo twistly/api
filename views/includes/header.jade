@@ -1,0 +1,27 @@
+header.header.black-bg
+    .sidebar-toggle-box
+        .fa.fa-bars.tooltips(data-placement="right", data-original-title="Toggle Navigation")
+    a(href="/").logo
+        b XTEND
+    .nav.notify-row#top_menu
+        ul.nav.top-menu
+            li.dropdown
+                a(href="/", data-toggle="dropdown").dropdown-toggle
+                    i.fa.fa-tasks
+                    span.badge.bg-theme 4
+                ul.dropdown-menu.extended.tasks-bar
+                    .notify-arrow.notify-arrow-green
+                    li
+                        p.green You have 4 pending tasks
+            li#header_inbox_bar.dropdown
+                a(href="/", data-toggle="dropdown").dropdown-toggle
+                    i.fa.fa-envelope-o
+                    span.badge.bg-theme 5
+                ul.dropdown-menu.extended.tasks-bar
+                    .notify-arrow.notify-arrow-green
+                    li
+                        p.green You have 4 pending tasks
+    .top-menu
+        ul.nav.pull-right.top-menu
+            li
+                a(href="/signout").signout Signout

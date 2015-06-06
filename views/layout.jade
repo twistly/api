@@ -1,20 +1,34 @@
 html
     head
         title= title ? title : 'TODO'
-        link(href="./css/simple-line-icons.css", rel="stylesheet", type="text/css")
-        link(href="./css/core.css", rel="stylesheet", type="text/css")
+        
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, inital-scale=1.0")
+        meta(name="description", content="")
+        meta(name="author", content="")
+        meta(name="keyword", content="")
+        
+        link(href="/assets/css/bootstrap.css", rel="stylesheet")
+        link(href="/assets/font-awesome/css/font-awesome.css", rel="stylesheet")
+        
+        link(href="/assets/css/style.css", rel="stylesheet")
+        link(href="/assets/css/style-responsive.css", rel="stylesheet")
+        
+        script(src="/assets/js/chart-master/Chart.js")
     body
-        p
-            a(href="/") Home
-            | 
-            if (user)
-                a(href="/account") Account
-                | 
-                a(href="/signout") Signout
-            else
-                a(href="/signin") Signin
-                | 
-                a(href="/signup") Signup
-        if (message)
-            p=message.info
-        block content
+        section#container
+            include ./includes/header
+            include ./includes/sidebar
+            section#main-content
+                section.wrapper.site-min-height
+                    block content
+        
+        script(src="/assets/js/jquery.js")
+        script(src="/assets/js/bootstrap.min.js")
+        script(src="/assets/js/jquery-ui-1.9.2.custom.min.js")
+        script(src="/assets/js/jquery.ui.touch-punch.min.js")
+        script(src="/assets/js/jquery.dcjqaccordion.2.7.js")
+        script(src="/assets/js/jquery.scrollTo.min.js")
+        script(src="/assets/js/jquery.nicescroll.js")
+        
+        script(src="/assets/js/common-scripts.js")

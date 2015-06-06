@@ -10,7 +10,11 @@ var blogSchema = new Schema({
     isNsfw: Boolean,
     followerCount: Number,
     primary: Boolean,
-    public: Boolean
+    public: Boolean,
+    postsInQueue: {
+        type: Number,
+        default: 0
+    }
 });
 
 module.exports = mongoose.model('Blog', blogSchema);

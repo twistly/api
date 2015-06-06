@@ -1,22 +1,35 @@
 extends ./layout
 
 block content
-	if(!user)
-		h2 Welcome! Please signin.
-	else 
-		h2 Welcome #{user.username}
-		if(!user.blogs)
-			p
-				| Click
-				| 
-				a(href='/auth/tumblr') here
-				| 
-				| to link your Tumblr
-		if(user.tokenSet)
-			- for(var i = 0; i < user.tokenSet.length; i++)
-				ul
-					a(href='/unlink/' + user.tokenSet[i]._id) unlink this group
-					- for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
-						li
-							a(href='/blog/' + user.tokenSet[i].blogs[k].url) #{user.tokenSet[i].blogs[k].url}
+	if(user.tokenSet.length)
+		.row.mt
+			.col-lg-12
+				.row
+					- for(var i = 0; i < user.tokenSet.length; i++)
+						- for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+							.col-md-3.col-sm-4.mb
+								.darkblue-panel.pn.donut-chart
+									.darkblue-header
+										h5 #{user.tokenSet[i].blogs[k].url}
+									canvas(height=120, width=120, id=user.tokenSet[i].blogs[k].url + '_panel')
+									script.
+										var doughnutData = [
+											{
+												value: #{user.tokenSet[i].blogs[k].postsInQueue},
+												color:"#FF6B6B"
+											},
+											{
+												value : #{user.plan.maxPosts - user.tokenSet[i].blogs[k].postsInQueue},
+												color : "#fdfdfd"
+											}
+										];
+										var myDoughnut = new Chart(document.getElementById('#{user.tokenSet[i].blogs[k].url}' + '_panel').getContext("2d")).Doughnut(doughnutData);
+									h3 #{user.tokenSet[i].blogs[k].postsInQueue} posts in queue
+	else
+		h5
+			| Go
+			| 
+			a(href="/auth/tumblr") link
+			| 
+			| your blogs.
 			

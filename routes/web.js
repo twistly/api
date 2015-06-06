@@ -19,7 +19,11 @@ module.exports = (function() {
     }
 
     app.get('/', function(req, res){
-        res.render('index');
+        if(req.user){
+            res.render('index');
+        } else {
+            res.redirect('/signin');
+        }
     });
 
     app.get('/user', function(req, res){

@@ -1,14 +1,43 @@
-extends ./layout
+html
+	head
+		title= title ? title : 'TODO'
+		
+		meta(charset="utf-8")
+		meta(name="viewport", content="width=device-width, inital-scale=1.0")
+		meta(name="description", content="")
+		meta(name="author", content="")
+		meta(name="keyword", content="")
+		
+		link(href="/assets/css/bootstrap.css", rel="stylesheet")
+		link(href="/assets/font-awesome/css/font-awesome.css", rel="stylesheet")
+		
+		link(href="/assets/css/style.css", rel="stylesheet")
+		link(href="/assets/css/style-responsive.css", rel="stylesheet")
+	body
+		.signin-page
+			.container
+				form.form-signin(action="/signin", method="post")
+					h2.form-signin-heading Sign in now
+					.signin-wrap
+						input(type="text", placeholder="Username", name="username", autofocus).form-control
+						br
+						input(type="password", placeholder="Password", name="password").form-control
+						label.checkbox
+							span.pull-right
+								a(href="/signin#myModal") Forgot Password?
+						button.btn.btn-theme.btn-block(href="/signin", type="submit")
+							i.fa.fa-lock
+							| 
+							| SIGN IN
+						hr
+						.registration
+							| Don't have an account yet?
+							br
+							a(href="/signup") Create an account
+		script(src="/assets/js/jquery.js")
+		script(src="/assets/js/bootstrap.min.js")
+		
+		script(src="/assets/js/jquery.backstretch.min.js")
 
-block content
-	form(action="/signin", method="post")
-		div
-			label Username: 
-			input(type="text", name="username")
-		div
-			label Password: 
-			input(type="password", name="password")
-		div
-			input(type="submit", value="Submit")
-	p
-		small Hint - bob:secret
+		script.
+			$.backstretch("/assets/img/login-bg.jpg", {speed: 500});

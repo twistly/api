@@ -9,7 +9,12 @@ var userSchema = mongoose.Schema({
     tokenSet: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'TokenSet'
-    }]
+    }],
+    plan: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Plan',
+        default: "557285540cc0a43e00d2ba13"
+    }
 });
 
 // Bcrypt middleware

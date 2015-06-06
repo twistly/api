@@ -1,0 +1,20 @@
+aside
+    #sidebar.nav-collapse
+        ul.sidebar-menu#nav-accordion
+            p.centered
+                a(href="#TODO")
+                    img(src="/assets/img/ui-sam.jpg", width="60").img-circle
+                    h5.centered #{user.name ? user.name : user.username}
+                    li.mt
+                        a(href="/")
+                            i.fa.fa-dashboard
+                            span Dashboard
+                    li.sub-menu
+                        a(href="javascript:;")
+                            i.fa.fa-archive
+                            span Blogs
+                        ul.sub
+                            li
+                                - for(var i = 0; i < user.tokenSet.length; i++)
+                                    - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+                                        a(href="/blog/" + user.tokenSet[i].blogs[k].url) #{user.tokenSet[i].blogs[k].url}
