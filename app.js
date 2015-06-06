@@ -6,6 +6,7 @@ var express = require('express'),
     MongoStore = require('connect-mongo')(session),
     logger = require('express-logger'),
     mongoose = require('mongoose'),
+    fs = require('fs'),
     passport = require('./passportConfig.js'),
     config = require('./config.js'),
     User = require('./models/User'),
@@ -13,7 +14,12 @@ var express = require('express'),
     Post = require('./models/Post'),
     Queue = require('./models/Queue');
 
-mongoose.connect(config.db.uri);
+mongoose.connect(config.db.uri, function(err){
+    if(err){
+        console.log('Is mongodb running?');
+        process.exit();
+    }
+});
 
 var app = express();
 
@@ -38,8 +44,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(function(req, res, next){
+    res.locals.user = req.user;
+    next();
+});
+
 app.use('/', require('./routes/auth'));
+app.use('/', require('./routes/blog'));
 app.use('/', require('./routes/web'));
+
+fs.writeFile('./log.txt', '', function(){
+    console.log('Log file emptied.');
+});
 
 app.listen(config.env.port, function() {
     console.log('Express server listening on port %s', config.env.port);

@@ -9,13 +9,14 @@ block content
 			p
 				| Click
 				| 
-				a(href="/auth/tumblr") here
+				a(href='/auth/tumblr') here
 				| 
 				| to link your Tumblr
 		if(user.tokenSet)
 			- for(var i = 0; i < user.tokenSet.length; i++)
 				ul
-					a(href="/unlink/" + user.tokenSet[i]._id) unlink
+					a(href='/unlink/' + user.tokenSet[i]._id) unlink this group
 					- for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
-						li #{user.tokenSet[i].blogs[k].url}
+						li
+							a(href='/blog/' + user.tokenSet[i].blogs[k].url) #{user.tokenSet[i].blogs[k].url}
 			

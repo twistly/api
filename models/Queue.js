@@ -2,7 +2,10 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var queueSchema = new Schema({
-    blogId: Schema.Types.ObjectId,
+    blogId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Blog'
+    },
     lastRun: {
         type: Date,
         default: Date.now

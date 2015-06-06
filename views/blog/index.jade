@@ -1,0 +1,8 @@
+extends ../layout
+
+block content
+    pre #{blog}
+    br
+    a(href='/blog/' + blog.url + '/posts') Posts
+    | 
+    a(href='/blog/' + blog.url + '/queues') Queues

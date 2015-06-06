@@ -2,7 +2,10 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var postSchema = new mongoose.Schema({
-    blogId: Schema.Types.ObjectId,
+    blogId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Blog'
+    },
     postId: Number,
     reblogKey: String,
     caption: String,
