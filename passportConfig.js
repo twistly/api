@@ -35,7 +35,8 @@ exports = module.exports = function(app, passport) {
     });
 
     passport.use('local-signin', new LocalStrategy(function(username, password, done) {
-        User.findOne({ username: username }, function(err, user) {
+        var criteria = (username.indexOf('@') === -1) ? {username: username} : {email: username};
+        User.findOne(criteria, function(err, user) {
             if (err) { return done(err); }
             if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
             user.comparePassword(password, function(err, isMatch) {
