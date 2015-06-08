@@ -22,7 +22,7 @@ block scripts
             } else {
                 fakeData[day] = stat.followerCount;
                 if(new Date(stat.time.year, stat.time.month, stat.time.date).toDateString() ==  new Date().toDateString()){
-                    labes.push('Today');
+                    labels.push('Today');
                 } else {
                     labels.push(days[new Date(stat.time.year, stat.time.month, stat.time.date).getDay()]);
                 }
@@ -35,7 +35,7 @@ block scripts
         }
         
         var data = {
-            labels: labels,
+            labels: labels.reverse(),
             datasets: [{
                 label: "My First dataset",
                 fillColor: "rgba(220,220,220,0.2)",
@@ -44,7 +44,7 @@ block scripts
                 pointStrokeColor: "#fff",
                 pointHighlightFill: "#fff",
                 pointHighlightStroke: "rgba(220,220,220,1)",
-                data: data
+                data: data.reverse()
             }]
         };
         var myLineChart = new Chart(ctx).Line(data, {responsive: true});
