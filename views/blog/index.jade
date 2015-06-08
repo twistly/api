@@ -21,7 +21,11 @@ block scripts
                 fakeData[day] = fakeData[day] > stat.followerCount ? fakeData[day] : stat.followerCount;
             } else {
                 fakeData[day] = stat.followerCount;
-                labels.push(days[new Date(stat.time.year, stat.time.month, stat.time.date).getDay()]);
+                if(new Date(stat.time.year, stat.time.month, stat.time.date).toDateString() ==  new Date().toDateString()){
+                    labes.push('Today');
+                } else {
+                    labels.push(days[new Date(stat.time.year, stat.time.month, stat.time.date).getDay()]);
+                }
             }
         });
         var data = [];
