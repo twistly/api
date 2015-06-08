@@ -7,11 +7,6 @@ var express  = require('express'),
 module.exports = (function() {
     var app = express.Router();
 
-    function ensureAuthenticated(req, res, next) {
-        if (req.isAuthenticated()) { return next(); }
-        res.redirect('/signin')
-    }
-
     app.get('/signin', function(req, res){
         res.render('signin')
     });

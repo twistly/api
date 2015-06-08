@@ -8,29 +8,27 @@ var express  = require('express'),
     Blog  = require('../models/Blog'),
     Post  = require('../models/Post'),
     Queue  = require('../models/Queue'),
-    TokenSet  = require('../models/TokenSet');
+    TokenSet  = require('../models/TokenSet'),
+    Notification = require('../models/Notification'),
+    Stat = require('../models/Stat');
 
 module.exports = (function() {
     var app = express.Router();
 
-    function ensureAuthenticated(req, res, next) {
+    app.get('*', function(req, res, next){
         if (req.isAuthenticated()) { return next(); }
         res.redirect('/signin')
-    }
-
-    app.get('/', function(req, res){
-        if(req.user){
-            res.render('index');
-        } else {
-            res.redirect('/signin');
-        }
     });
 
-    app.get('/account', ensureAuthenticated, function(req, res){
+    app.get('/', function(req, res){
+        res.render('index');
+    });
+
+    app.get('/account', function(req, res){
         res.render('account');
     });
 
-    app.get('/unlink/:tokenSetId', ensureAuthenticated, function(req, res){
+    app.get('/unlink/:tokenSetId', function(req, res){
         User.findOne({_id: req.user.id, tokenSet: req.params.tokenSetId}).exec(function(err, user){
             if(err) console.log(err);
             if(user){
@@ -55,7 +53,7 @@ module.exports = (function() {
         });
     });
 
-    app.get('/auth/tumblr', ensureAuthenticated, passport.authenticate('tumblr', { callbackURL: '/auth/tumblr/callback'}), function(req, res){
+    app.get('/auth/tumblr', passport.authenticate('tumblr', { callbackURL: '/auth/tumblr/callback'}), function(req, res){
         res.send('??');
     });
 
@@ -109,6 +107,19 @@ module.exports = (function() {
                                     newBlog.save(function(err, blog) {
                                         if(err) console.log(err);
                                         if(blog){
+                                            var now = new Date();
+                                            var stat = new Stat({
+                                                blogId: blog._id,
+                                                followerCount: blog.followerCount,
+                                                postCount: blog.postCount,
+                                                time: {
+                                                    year: now.getFullYear(),
+                                                    month: now.getMonth(),
+                                                    date: now.getDate(),
+                                                    hour: now.getHours()
+                                                }
+                                            });
+                                            stat.save();
                                             tokenSet.blogs = tokenSet.blogs.toObject().concat([blog._id]);
                                             tokenSet.save(function(err, tokenSet){
                                                 callback();

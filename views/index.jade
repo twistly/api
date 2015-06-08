@@ -4,32 +4,35 @@ block content
 	if(user.tokenSet.length)
 		.row.mt
 			.col-lg-12
-				.row
-					- for(var i = 0; i < user.tokenSet.length; i++)
-						- for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
-							.col-md-3.col-sm-4.mb
-								.darkblue-panel.pn.donut-chart
-									.darkblue-header
-										h5 #{user.tokenSet[i].blogs[k].url}
-									canvas(height=120, width=120, id=user.tokenSet[i].blogs[k].url + '_panel')
-									script.
-										var doughnutData = [
-											{
-												value: #{user.tokenSet[i].blogs[k].postsInQueue},
-												color:"#FF6B6B"
-											},
-											{
-												value : #{user.plan.maxPosts - user.tokenSet[i].blogs[k].postsInQueue},
-												color : "#fdfdfd"
-											}
-										];
-										var myDoughnut = new Chart(document.getElementById('#{user.tokenSet[i].blogs[k].url}' + '_panel').getContext("2d")).Doughnut(doughnutData);
-									h3 #{user.tokenSet[i].blogs[k].postsInQueue} posts in queue
-	else
-		h5
-			| Go
-			| 
-			a(href="/auth/tumblr") link
-			| 
-			| your blogs.
-			
+				- for(var i = 0; i < user.tokenSet.length; i++)
+					.panel.panel-default
+						.panel-heading
+							h3.panel-title
+								a(href="/unlink/" + user.tokenSet[i].id) Unlink this set of blogs
+						.panel-body
+							- for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+								- var blog = user.tokenSet[i].blogs[k];
+								.col-md-3.col-sm-4.mb
+									.darkblue-panel.pn.donut-chart
+										.darkblue-header
+											h5
+												a(href="/blog/" + blog.url) #{blog.url}
+										canvas(height=120, width=120, id=blog.url + '_panel')
+										h3 #{blog.postsInQueue == 1 ? blog.postsInQueue + " post" : blog.postsInQueue + " posts"} in queue
+block scripts
+	if(user.tokenSet.length)
+		- for(var i = 0; i < user.tokenSet.length; i++)
+			- for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+				- var blog = user.tokenSet[i].blogs[k];
+				script.
+					var doughnutData = [
+						{
+							value: #{blog.postsInQueue},
+							color:"#FF6B6B"
+						},
+						{
+							value : #{user.plan.maxPosts - blog.postsInQueue},
+							color : "#fdfdfd"
+						}
+					];
+					var myNewChart = new Chart(document.getElementById('#{blog.url}' + '_panel').getContext("2d")).Doughnut(doughnutData);

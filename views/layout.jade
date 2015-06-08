@@ -1,6 +1,6 @@
 html
     head
-        title= title ? title : 'TODO'
+        title= title ? title : 'Xtend'
         
         meta(charset="utf-8")
         meta(name="viewport", content="width=device-width, inital-scale=1.0")
@@ -9,12 +9,12 @@ html
         meta(name="keyword", content="")
         
         link(href="/assets/css/bootstrap.css", rel="stylesheet")
-        link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css", rel="stylesheet")
+        link(href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css", rel="stylesheet")
+        link(href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css", rel="stylesheet")
         
         link(href="/assets/css/style.css", rel="stylesheet")
+        link(href="/assets/lineicons/style.css", rel="stylesheet")
         link(href="/assets/css/style-responsive.css", rel="stylesheet")
-        
-        script(src="/assets/js/chart-master/Chart.js")
     body
         section#container
             include ./includes/header
@@ -22,13 +22,15 @@ html
             section#main-content
                 section.wrapper.site-min-height
                     block content
-        
         script(src="/assets/js/jquery.js")
+        script(src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js")
         script(src="/assets/js/bootstrap.min.js")
         script(src="/assets/js/jquery-ui-1.9.2.custom.min.js")
         script(src="/assets/js/jquery.ui.touch-punch.min.js")
         script(src="/assets/js/jquery.dcjqaccordion.2.7.js")
         script(src="/assets/js/jquery.scrollTo.min.js")
         script(src="/assets/js/jquery.nicescroll.js")
+        script(src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js")
         
         script(src="/assets/js/common-scripts.js")
+        block scripts

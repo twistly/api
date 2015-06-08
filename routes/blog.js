@@ -4,26 +4,39 @@ var express  = require('express'),
     passport = require('passport'),
     async = require('async'),
     _ = require('underscore'),
+    moment = require('moment'),
     User  = require('../models/User'),
     Blog  = require('../models/Blog'),
     Post  = require('../models/Post'),
     Queue  = require('../models/Queue'),
-    TokenSet  = require('../models/TokenSet');
+    Stat  = require('../models/Stat'),
+    TokenSet  = require('../models/TokenSet'),
+    Notification  = require('../models/Notification');
 
 module.exports = (function() {
     var app = express.Router();
 
-    function ensureAuthenticated(req, res, next) {
+    app.get('*', function(req, res, next){
         if (req.isAuthenticated()) { return next(); }
         res.redirect('/signin')
-    }
+    });
 
     app.get('/blog/:blogUrl', function(req, res){
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) console.log(err);
             if(blog){
-                res.render('blog/index', {
-                    blog: blog
+                var now = new Date();
+                var time = {
+                    year: now.getFullYear(),
+                    month: now.getMonth(),
+                    date: now.getDate()
+                };
+                Stat.find({ 'time.year': time.year, 'time.month': time.month, blogId: blog.id }).sort('-_id').limit(7).exec(function(err, stats){
+                    if(err) console.log(err);
+                    res.render('blog/index', {
+                        blog: blog,
+                        stats: stats
+                    });
                 });
             } else {
                 res.send('This blog doesn\'t exist.');
@@ -70,6 +83,10 @@ module.exports = (function() {
                 res.send('This blog doesn\'t exist.');
             }
         });
+    });
+
+    app.get('/blog/:blogUrl/followers', function(req, res){
+
     });
 
     app.get('/blog/:blogUrl/queues/new', function(req, res){

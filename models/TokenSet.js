@@ -20,7 +20,11 @@ var tokenSetSchema = new Schema({
         type: Boolean,
         default: true
     },
-    errorMessage: String
+    errorMessage: String,
+    lastUpdatedStat: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 tokenSetSchema.pre('remove', function(next) {

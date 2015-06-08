@@ -1,5 +1,5 @@
 {
-  "name": "xxxqueue",
+  "name": "xtend",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -19,6 +19,7 @@
     "express-session": "^1.11.2",
     "jade": "^1.10.0",
     "method-override": "^2.3.3",
+    "moment": "^2.10.3",
     "mongoose": "^4.0.4",
     "mongoose-autopopulate": "^0.1.0",
     "mongoose-deep-populate": "^1.1.0",

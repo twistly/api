@@ -14,7 +14,11 @@ var blogSchema = new Schema({
     postsInQueue: {
         type: Number,
         default: 0
-    }
+    },
+    notifications: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Notification'
+    }]
 });
 
 module.exports = mongoose.model('Blog', blogSchema);

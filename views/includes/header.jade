@@ -5,22 +5,30 @@ header.header.black-bg
         b XTEND
     .nav.notify-row#top_menu
         ul.nav.top-menu
-            li.dropdown
-                a(href="/", data-toggle="dropdown").dropdown-toggle
-                    i.fa.fa-tasks
-                    span.badge.bg-theme 4
-                ul.dropdown-menu.extended.tasks-bar
-                    .notify-arrow.notify-arrow-green
-                    li
-                        p.green You have 4 pending tasks
             li#header_inbox_bar.dropdown
                 a(href="/", data-toggle="dropdown").dropdown-toggle
                     i.fa.fa-envelope-o
-                    span.badge.bg-theme 5
-                ul.dropdown-menu.extended.tasks-bar
+                    - var notificationCount = 0;
+                    - for(var i = 0; i < user.tokenSet.length; i++)
+                        - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+                            - var blog = user.tokenSet[i].blogs[k];
+                            - for(var j = 0; j < blog.notifications.length; j++)
+                                - notificationCount++
+                    span.badge.bg-theme #{notificationCount}
+                ul.dropdown-menu.extended.inbox
                     .notify-arrow.notify-arrow-green
                     li
-                        p.green You have 4 pending tasks
+                        p.green You have #{notificationCount} pending notifications
+                    - for(var i = 0; i < user.tokenSet.length; i++)
+                        - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+                            - var blog = user.tokenSet[i].blogs[k];
+                            - for(var j = 0; j < blog.notifications.length; j++)
+                                - var notification = blog.notifications[j];
+                                li
+                                    a(href="#")
+                                        .task-info !{notification.content}
+                    li.external
+                        a(href="#") See all notifications
     .top-menu
         ul.nav.pull-right.top-menu
             li

@@ -1,8 +1,46 @@
 extends ../layout
 
 block content
-    pre #{blog}
-    br
-    a(href='/blog/' + blog.url + '/posts') Posts
-    | 
-    a(href='/blog/' + blog.url + '/queues') Queues
+    .row.mt
+        .col-lg-12
+            .panel.panel-default
+                .panel-body
+                    div
+                        canvas#followersDaily.col-lg-12
+block scripts
+    script.
+        var ctx = $("#followersDaily").get(0).getContext("2d");
+        
+        var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        var stats = !{JSON.stringify(stats)};
+        var fakeData = [];
+        var labels = [];
+        stats.forEach(function(stat){
+            var day = new Date(stat.time.year, stat.time.month, stat.time.date).getDay();
+            if (fakeData[day]) {
+                fakeData[day] = fakeData[day] > stat.followerCount ? fakeData[day] : stat.followerCount;
+            } else {
+                fakeData[day] = stat.followerCount;
+                labels.push(days[new Date(stat.time.year, stat.time.month, stat.time.date).getDay()]);
+            }
+        });
+        var data = [];
+        var count = 0;
+        for (var i in fakeData) {
+            data[count++] = fakeData[i];
+        }
+        
+        var data = {
+            labels: labels,
+            datasets: [{
+                label: "My First dataset",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: data
+            }]
+        };
+        var myLineChart = new Chart(ctx).Line(data, {responsive: true});

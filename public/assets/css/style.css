@@ -1038,7 +1038,7 @@ PANELS CONFIGURATIONS
 .darkblue-panel h1 {
 	color: #f2f2f2;
 }
-.darkblue-panel h5 {
+.darkblue-panel h5, .darkblue-panel a {
 	font-weight: 200;
 	margin-top: 10px;
 	color: white;
@@ -1062,7 +1062,7 @@ PANELS CONFIGURATIONS
 	padding: 3px;
 	margin-bottom: 15px;
 }
-.green-panel h5 {
+.green-panel h5, .green-panel a {
 	color: white;
 	font-weight: 200;
 	margin-top: 10px;

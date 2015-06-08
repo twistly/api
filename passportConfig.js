@@ -8,7 +8,8 @@ exports = module.exports = function(app, passport) {
         Blog  = require('./models/Blog'),
         User  = require('./models/User'),
         Plan  = require('./models/Plan'),
-        TokenSet  = require('./models/TokenSet');
+        TokenSet  = require('./models/TokenSet'),
+        Notification  = require('./models/Notification');
 
     passport.serializeUser(function(user, done) {
         done(null, user.id);
@@ -16,9 +17,16 @@ exports = module.exports = function(app, passport) {
 
     passport.deserializeUser(function(id, done) {
         User.findById(id).populate('tokenSet').populate('plan').exec(function (err, user) {
-            async.forEach(user.tokenSet, function (tokenSet, callback) {
-                tokenSet.populate({ path: 'blogs', limit: 100 }, function (err, result) {
-                    callback();
+            async.each(user.tokenSet, function (tokenSet, callback) {
+                tokenSet.populate({path:'blogs'}, function (err, result) {
+                    async.each(tokenSet.blogs, function (blog, callback) {
+                        blog.populate({path: 'notifications'}, function(err, result){
+                            if(err) console.log(err);
+                            callback();
+                        });
+                    }, function (err) {
+                        callback();
+                    });
                 });
             }, function (err) {
                 done(err, user);

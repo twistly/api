@@ -12,7 +12,9 @@ var express = require('express'),
     User = require('./models/User'),
     Blog = require('./models/Blog'),
     Post = require('./models/Post'),
-    Queue = require('./models/Queue');
+    Queue = require('./models/Queue'),
+    TokenSet = require('./models/TokenSet'),
+    Notification = require('./models/Notification');
 
 mongoose.connect(config.db.uri, function(err){
     if(err){
