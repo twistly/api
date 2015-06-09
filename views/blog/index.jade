@@ -83,6 +83,7 @@ block scripts
                     }
                 }
             });
+            labels = labels.reverse();
             labels[labels.length-1] = 'NOW';
             var data = [];
             var count = 0;
@@ -91,7 +92,7 @@ block scripts
             }
             
             var data = {
-                labels: labels.reverse(),
+                labels: labels,
                 datasets: [{
                     label: "My First dataset",
                     fillColor: "rgba(220,220,220,0.2)",
