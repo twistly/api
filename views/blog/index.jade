@@ -104,7 +104,7 @@ block scripts
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: data
+                    data: data.slice(0, 24)
                 }]
             };
             var hourlyLineChart = new Chart(hourlyChart).Line(data, {responsive: true});
