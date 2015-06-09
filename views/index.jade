@@ -1,9 +1,9 @@
 extends ./layout
 
 block content
-	if(user.tokenSet.length)
-		.row.mt
-			.col-lg-12
+	.row.mt
+		.col-lg-12
+			if(user.tokenSet.length)
 				- for(var i = 0; i < user.tokenSet.length; i++)
 					.panel.panel-default
 						.panel-heading
@@ -19,6 +19,15 @@ block content
 												a(href="/blog/" + blog.url) #{blog.url}
 										canvas(height=120, width=120, id=blog.url + '_panel')
 										h3 #{blog.postsInQueue == 1 ? blog.postsInQueue + " post" : blog.postsInQueue + " posts"} in queue
+			else
+				.panel.panel-default
+					.panel-body
+						h5
+							| Please
+							| 
+							a(href="/auth/tumblr") link
+							| 
+							| your blog
 block scripts
 	if(user.tokenSet.length)
 		- for(var i = 0; i < user.tokenSet.length; i++)

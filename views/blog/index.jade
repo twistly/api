@@ -59,7 +59,7 @@ block scripts
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: data.reverse()
+                    data: data
                 }]
             };
             var dailyLineChart = new Chart(dailyChart).Line(data, {responsive: true});
@@ -70,6 +70,9 @@ block scripts
             var labels = [];
             stats.forEach(function(stat){
                 var hour = new Date(stat.date).getHours();
+                if(hour == 0){
+                    hour = 24;
+                }
                 if (fakeData[hour]) {
                     fakeData[hour] = fakeData[hour] > stat.followerCount ? fakeData[hour] : stat.followerCount;
                 } else {

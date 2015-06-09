@@ -28,6 +28,10 @@ module.exports = (function() {
         res.render('account');
     });
 
+    app.get('/user', function(req, res){
+        res.send(req.user);
+    });
+
     app.get('/unlink/:tokenSetId', function(req, res){
         User.findOne({_id: req.user.id, tokenSet: req.params.tokenSetId}).exec(function(err, user){
             if(err) console.log(err);
