@@ -5,46 +5,49 @@ block content
         .col-lg-12
             .panel.panel-default
                 .panel-body
-                    div
-                        canvas#followersDaily.col-lg-12
+                    if(stats.length)
+                        div
+                            canvas#followersDaily.col-lg-12
+                    h2 We haven't started collecting stats for this blog yet, please check back in about an hour.
 block scripts
-    script.
-        var ctx = $("#followersDaily").get(0).getContext("2d");
-        
-        var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-        var stats = !{JSON.stringify(stats)};
-        var fakeData = [];
-        var labels = [];
-        stats.forEach(function(stat){
-            var day = new Date(stat.date).getDay();
-            if (fakeData[day]) {
-                fakeData[day] = fakeData[day] > stat.followerCount ? fakeData[day] : stat.followerCount;
-            } else {
-                fakeData[day] = stat.followerCount;
-                if(new Date(stat.date).toDateString() ==  new Date().toDateString()){
-                    labels.push('Today');
+    if(stats.length)
+        script.
+            var ctx = $("#followersDaily").get(0).getContext("2d");
+            
+            var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            var stats = !{JSON.stringify(stats)};
+            var fakeData = [];
+            var labels = [];
+            stats.forEach(function(stat){
+                var day = new Date(stat.date).getDay();
+                if (fakeData[day]) {
+                    fakeData[day] = fakeData[day] > stat.followerCount ? fakeData[day] : stat.followerCount;
                 } else {
-                    labels.push(days[new Date(stat.date).getDay()]);
+                    fakeData[day] = stat.followerCount;
+                    if(new Date(stat.date).toDateString() ==  new Date().toDateString()){
+                        labels.push('Today');
+                    } else {
+                        labels.push(days[new Date(stat.date).getDay()]);
+                    }
                 }
+            });
+            var data = [];
+            var count = 0;
+            for (var i in fakeData) {
+                data[count++] = fakeData[i];
             }
-        });
-        var data = [];
-        var count = 0;
-        for (var i in fakeData) {
-            data[count++] = fakeData[i];
-        }
-        
-        var data = {
-            labels: labels.reverse(),
-            datasets: [{
-                label: "My First dataset",
-                fillColor: "rgba(220,220,220,0.2)",
-                strokeColor: "rgba(220,220,220,1)",
-                pointColor: "rgba(220,220,220,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(220,220,220,1)",
-                data: data.reverse()
-            }]
-        };
-        var myLineChart = new Chart(ctx).Line(data, {responsive: true});
+            
+            var data = {
+                labels: labels.reverse(),
+                datasets: [{
+                    label: "My First dataset",
+                    fillColor: "rgba(220,220,220,0.2)",
+                    strokeColor: "rgba(220,220,220,1)",
+                    pointColor: "rgba(220,220,220,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(220,220,220,1)",
+                    data: data.reverse()
+                }]
+            };
+            var myLineChart = new Chart(ctx).Line(data, {responsive: true});
