@@ -31,7 +31,7 @@ module.exports = (function() {
                     month: now.getMonth(),
                     date: now.getDate()
                 };
-                Stat.find({ 'time.year': time.year, 'time.month': time.month, blogId: blog.id }).sort('-_id').limit(7).exec(function(err, stats){
+                Stat.find({ 'time.year': time.year, 'time.month': time.month, blogId: blog.id }).sort('-_id').limit(100).exec(function(err, stats){
                     if(err) console.log(err);
                     res.render('blog/index', {
                         blog: blog,
