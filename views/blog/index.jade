@@ -3,20 +3,31 @@ extends ../layout
 block content
     .row.mt
         .col-lg-12
-            .panel.panel-default
-                .panel-body
-                    if(stats.length)
-                        div
-                            canvas#followersDaily.col-lg-12
-                    else
+            if(stats.length)
+                .col-lg-6
+                    .panel.panel-default
+                        .panel-body
+                            
+                                div
+                                    canvas#followersDaily.col-lg-6
+                .col-lg-6
+                    .panel.panel-default
+                        .panel-body
+                            if(stats.length)
+                                div
+                                    canvas#followersHourly.col-lg-6
+            else
+                .panel.panel-default
+                    .panel-body
                         h5 We haven't started collecting stats for this blog yet, please check back in about an hour.
 block scripts
     if(stats.length)
         script.
-            var ctx = $("#followersDaily").get(0).getContext("2d");
+            var stats = !{JSON.stringify(stats)};
+        script.
+            var dailyChart = $("#followersDaily").get(0).getContext("2d");
             
             var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-            var stats = !{JSON.stringify(stats)};
             var fakeData = [];
             var labels = [];
             stats.forEach(function(stat){
@@ -51,4 +62,38 @@ block scripts
                     data: data.reverse()
                 }]
             };
-            var myLineChart = new Chart(ctx).Line(data, {responsive: true});
+            var dailyLineChart = new Chart(dailyChart).Line(data, {responsive: true});
+        script.
+            var hourlyChart = $("#followersHourly").get(0).getContext("2d");
+            
+            var fakeData = [];
+            var labels = [];
+            stats.forEach(function(stat){
+                var hour = new Date(stat.date).getHours();
+                if (fakeData[hour]) {
+                    fakeData[hour] = fakeData[hour] > stat.followerCount ? fakeData[hour] : stat.followerCount;
+                } else {
+                    fakeData[hour] = stat.followerCount;
+                    labels.push(hour);
+                }
+            });
+            var data = [];
+            var count = 0;
+            for (var i in fakeData) {
+                data[count++] = fakeData[i];
+            }
+            
+            var data = {
+                labels: labels.reverse(),
+                datasets: [{
+                    label: "My First dataset",
+                    fillColor: "rgba(220,220,220,0.2)",
+                    strokeColor: "rgba(220,220,220,1)",
+                    pointColor: "rgba(220,220,220,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(220,220,220,1)",
+                    data: data.reverse()
+                }]
+            };
+            var hourlyLineChart = new Chart(hourlyChart).Line(data, {responsive: true});
