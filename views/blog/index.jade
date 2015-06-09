@@ -8,7 +8,8 @@ block content
                     if(stats.length)
                         div
                             canvas#followersDaily.col-lg-12
-                    h5 We haven't started collecting stats for this blog yet, please check back in about an hour.
+                    else
+                        h5 We haven't started collecting stats for this blog yet, please check back in about an hour.
 block scripts
     if(stats.length)
         script.
