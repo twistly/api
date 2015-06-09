@@ -74,9 +74,16 @@ block scripts
                     fakeData[hour] = fakeData[hour] > stat.followerCount ? fakeData[hour] : stat.followerCount;
                 } else {
                     fakeData[hour] = stat.followerCount;
-                    labels.push(hour);
+                    if (hour > 12) {
+                        labels.push(hour-12 + ' PM');
+                    } else if(hour == 12) {
+                        labels.push(hour + ' PM');
+                    } else {
+                        labels.push(hour + ' AM');
+                    }
                 }
             });
+            labels[labels.length-1] = 'NOW';
             var data = [];
             var count = 0;
             for (var i in fakeData) {
@@ -93,7 +100,7 @@ block scripts
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: data.reverse()
+                    data: data
                 }]
             };
             var hourlyLineChart = new Chart(hourlyChart).Line(data, {responsive: true});
