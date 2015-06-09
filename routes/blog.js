@@ -33,31 +33,9 @@ module.exports = (function() {
                 };
                 Stat.find({ 'time.year': time.year, 'time.month': time.month, blogId: blog.id }).sort('-_id').limit(7).exec(function(err, stats){
                     if(err) console.log(err);
-                    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-                    var fakeData = [];
-                    var labels = [];
-                    stats.forEach(function(stat){
-                        var day = new Date(stat.time.year, stat.time.month, stat.time.date).getDay();
-                        if (fakeData[day]) {
-                            fakeData[day] = fakeData[day] > stat.followerCount ? fakeData[day] : stat.followerCount;
-                        } else {
-                            fakeData[day] = stat.followerCount;
-                            if(new Date(stat.time.year, stat.time.month, stat.time.date).toDateString() ==  new Date().toDateString()){
-                                labels.push('Today');
-                            } else {
-                                labels.push(days[new Date(stat.time.year, stat.time.month, stat.time.date).getDay()]);
-                            }
-                        }
-                    });
-                    var stats = [];
-                    var count = 0;
-                    for (var i in fakeData) {
-                        stats[count++] = fakeData[i];
-                    }
                     res.render('blog/index', {
                         blog: blog,
-                        labels: labels.reverse(),
-                        stats: stats.reverse()
+                        stats: stats
                     });
                 });
             } else {
