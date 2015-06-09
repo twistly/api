@@ -24,6 +24,15 @@ block scripts
     if(stats.length)
         script.
             var stats = !{JSON.stringify(stats)};
+            Array.prototype.clean = function(deleteValue) {
+                for (var i = 0; i < this.length; i++) {
+                    if (this[i] == deleteValue) {         
+                        this.splice(i, 1);
+                        i--;
+                    }
+                }
+                return this;
+            };
         script.
             var dailyChart = $("#followersDaily").get(0).getContext("2d");
             
@@ -46,7 +55,9 @@ block scripts
             var data = [];
             var count = 0;
             for (var i in fakeData) {
-                data[count++] = fakeData[i];
+                if (fakeData.hasOwnProperty(i)) {
+                    data[count++] = fakeData[i];
+                }
             }
             
             var data = {
@@ -59,7 +70,7 @@ block scripts
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: data
+                    data: data.reverse()
                 }]
             };
             var dailyLineChart = new Chart(dailyChart).Line(data, {responsive: true});
@@ -91,8 +102,13 @@ block scripts
             var data = [];
             var count = 0;
             for (var i in fakeData) {
-                data[count++] = fakeData[i];
+                if (fakeData.hasOwnProperty(i)) {
+                    data[count++] = fakeData[i];
+                }
             }
+            
+            fakeData = fakeData.clean();
+            fakeData = fakeData.slice((labels.length - labels.indexOf('12 PM') - 1), fakeData.length).concat(fakeData.slice(0, (labels.length - labels.indexOf('12 PM') - 1)));
             
             var data = {
                 labels: labels,
@@ -104,7 +120,7 @@ block scripts
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: data.slice(0, 24)
+                    data: fakeData
                 }]
             };
             var hourlyLineChart = new Chart(hourlyChart).Line(data, {responsive: true});
