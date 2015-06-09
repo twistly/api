@@ -25,13 +25,7 @@ module.exports = (function() {
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) console.log(err);
             if(blog){
-                var now = new Date();
-                var time = {
-                    year: now.getFullYear(),
-                    month: now.getMonth(),
-                    date: now.getDate()
-                };
-                Stat.find({ 'time.year': time.year, 'time.month': time.month, blogId: blog.id }).sort('-_id').limit(100).exec(function(err, stats){
+                Stat.find({ blogId: blog.id }).sort('-_id').limit(168).exec(function(err, stats){
                     if(err) console.log(err);
                     res.render('blog/index', {
                         blog: blog,

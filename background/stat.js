@@ -28,38 +28,16 @@ setInterval(function(){
                         Blog.findOne({ url: tumblrBlog.name }, function(err, blog){
                             if(err) console.log(err);
                             var now = new Date();
-                            Stat.findOne({
-                                time: {
-                                    year: now.getFullYear(),
-                                    month: now.getMonth(),
-                                    date: now.getDate(),
-                                    hour: now.getHours()
-                                }, blogId: blog.id
-                            }).exec(function(err, stat){
-                                if(err) console.log(err);
-                                if(stat) {
-                                    stat.followerCount = tumblrBlog.followers;
-                                    stat.postCount = tumblrBlog.posts;
-                                    stat.save();
-                                } else {
-                                    var stat = new Stat({
-                                        blogId: blog.id,
-                                        followerCount: tumblrBlog.followers,
-                                        postCount: tumblrBlog.posts,
-                                        time: {
-                                            year: now.getFullYear(),
-                                            month: now.getMonth(),
-                                            date: now.getDate(),
-                                            hour: now.getHours()
-                                        }
-                                    });
-                                    stat.save();
-                                    blog.followerCount = tumblrBlog.followers;
-                                    blog.postCount = tumblrBlog.posts;
-                                    blog.save();
-                                    console.log('Done - ' + tumblrBlog.name + ' - ' + tumblrBlog.followers);
-                                }
+                            var stat = new Stat({
+                                blogId: blog.id,
+                                followerCount: tumblrBlog.followers,
+                                postCount: tumblrBlog.posts
                             });
+                            stat.save();
+                            blog.followerCount = tumblrBlog.followers;
+                            blog.postCount = tumblrBlog.posts;
+                            blog.save();
+                            console.log('Done - ' + tumblrBlog.name + ' - ' + tumblrBlog.followers);
                         });
                     });
                 });

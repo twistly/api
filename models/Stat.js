@@ -8,11 +8,9 @@ var statSchema = new mongoose.Schema({
     },
     followerCount: Number,
     postCount: Number,
-    time: {
-        year: Number,
-        month: Number,
-        date: Number,
-        hour: Number
+    date: {
+        type: Date,
+        default: Date.now
     }
 });
 

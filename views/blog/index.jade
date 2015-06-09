@@ -16,15 +16,15 @@ block scripts
         var fakeData = [];
         var labels = [];
         stats.forEach(function(stat){
-            var day = new Date(stat.time.year, stat.time.month, stat.time.date).getDay();
+            var day = new Date(stat.date).getDay();
             if (fakeData[day]) {
                 fakeData[day] = fakeData[day] > stat.followerCount ? fakeData[day] : stat.followerCount;
             } else {
                 fakeData[day] = stat.followerCount;
-                if(new Date(stat.time.year, stat.time.month, stat.time.date).toDateString() ==  new Date().toDateString()){
+                if(new Date(stat.date).toDateString() ==  new Date().toDateString()){
                     labels.push('Today');
                 } else {
-                    labels.push(days[new Date(stat.time.year, stat.time.month, stat.time.date).getDay()]);
+                    labels.push(days[new Date(stat.date).getDay()]);
                 }
             }
         });
