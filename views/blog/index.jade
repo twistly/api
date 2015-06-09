@@ -70,7 +70,7 @@ block scripts
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: data.reverse()
+                    data: data
                 }]
             };
             var dailyLineChart = new Chart(dailyChart).Line(data, {responsive: true});
@@ -99,13 +99,6 @@ block scripts
             });
             labels = labels.reverse();
             labels[labels.length-1] = 'NOW';
-            var data = [];
-            var count = 0;
-            for (var i in fakeData) {
-                if (fakeData.hasOwnProperty(i)) {
-                    data[count++] = fakeData[i];
-                }
-            }
             
             fakeData = fakeData.clean();
             fakeData = fakeData.slice((labels.length - labels.indexOf('12 PM') - 1), fakeData.length).concat(fakeData.slice(0, (labels.length - labels.indexOf('12 PM') - 1)));
