@@ -53,6 +53,8 @@ app.use(function(req, res, next){
 
 require('./passportConfig.js')(app, passport);
 
+app.use('/', require('./routes/chromeExtension'));
+
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/blog'));
 app.use('/', require('./routes/web'));

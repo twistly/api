@@ -14,11 +14,15 @@ var userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Plan',
         default: "557285540cc0a43e00d2ba13"
+    },
+    apiKey: {
+        type: String,
+        default: ''
     }
 });
 
 // Bcrypt middleware
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function(next){
     var user = this;
 
     if(!user.isModified('password')) return next();
@@ -32,6 +36,14 @@ userSchema.pre('save', function(next) {
             next();
         });
     });
+});
+
+userSchema.pre('save', function(next){
+    if(user.apiKey.length){
+        var crypto = require('crypto');
+        user.apiKey = crypto.createHmac('sha1', crypto.randomBytes(16)).update(crypto.randomBytes(16)).digest('hex');
+    }
+    next();
 });
 
 // Password verification
