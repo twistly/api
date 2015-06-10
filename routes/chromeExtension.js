@@ -3,7 +3,10 @@ var express  = require('express'),
     mongoose = require('mongoose'),
     passport = require('passport'),
     async = require('async'),
-    User  = require('../models/User');
+    User  = require('../models/User'),
+    Blog  = require('../models/Blog'),
+    TokenSet  = require('../models/TokenSet'),
+    Post  = require('../models/Post');
 
 module.exports = (function() {
     var app = express.Router();
@@ -37,9 +40,30 @@ module.exports = (function() {
                     });
                 }, function (err) {
                     if(doesUserHaveBlog(user, blogUrl)){
-                        res.send({
-                            ok: 'okay',
-                            posts: posts
+                        Blog.findOne({url: blogUrl}, function(err, blog){
+                            if(err) console.log(err);
+                            if(blog){
+                                var newPosts = [];
+                                for (var id in posts) {
+                                    if (posts.hasOwnProperty(id)) {
+                                        var post = new Post({
+                                            blogId: blog.id,
+                                            postId: id,
+                                            reblogKey: posts[id].reblogKey
+                                        });
+                                        post.save();
+                                        newPosts.push(post.toObject());
+                                    }
+                                }
+                                res.send({
+                                    ok: 'okay',
+                                    posts: newPosts
+                                })
+                            } else {
+                                res.send({
+                                    error: 'We misplaced your blogs?'
+                                });
+                            }
                         });
                     } else {
                         res.send({

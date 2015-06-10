@@ -18,10 +18,8 @@ module.exports = (function() {
 
     app.get('*', function(req, res, next){
         if (req.isAuthenticated()) { return next(); }
-        res.redirect('/signin')
-    });
+        res.redirect('/signin');
 
-    app.get('/blog/:blogUrl', function(req, res){
         function isUserAllowed (blogUrl){
             for (var i = 0; i < req.user.tokenSet.length;i++){
                 for (var j = 0; j < req.user.tokenSet[i].blogs.length;j++){
@@ -30,23 +28,27 @@ module.exports = (function() {
             }
         }
         if(isUserAllowed(req.params.blogUrl)){
-            Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
-                if(err) console.log(err);
-                if(blog){
-                    Stat.find({ blogId: blog.id }).sort('-date').limit(168).exec(function(err, stats){
-                        if(err) console.log(err);
-                        res.render('blog/index', {
-                            blog: blog,
-                            stats: stats
-                        });
-                    });
-                } else {
-                    res.send('This blog doesn\'t exist.');
-                }
-            });
+            next();
         } else {
             res.send('You do not own this blog!');
         }
+    });
+
+    app.get('/blog/:blogUrl', function(req, res){
+        Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
+            if(err) console.log(err);
+            if(blog){
+                Stat.find({ blogId: blog.id }).sort('-date').limit(168).exec(function(err, stats){
+                    if(err) console.log(err);
+                    res.render('blog/index', {
+                        blog: blog,
+                        stats: stats
+                    });
+                });
+            } else {
+                res.send('This blog doesn\'t exist.');
+            }
+        });
     });
 
     app.get('/blog/:blogUrl/posts', function(req, res){
