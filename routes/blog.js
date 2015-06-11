@@ -11,7 +11,8 @@ var express  = require('express'),
     Queue  = require('../models/Queue'),
     Stat  = require('../models/Stat'),
     TokenSet  = require('../models/TokenSet'),
-    Notification  = require('../models/Notification');
+    Notification  = require('../models/Notification'),
+    PostSet = require('../models/PostSet');
 
 module.exports = (function() {
     var app = express.Router();
@@ -55,11 +56,11 @@ module.exports = (function() {
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) console.log(err);
             if(blog){
-                Post.find({blogId: blog.id}).limit(100).exec(function(err, posts){
+                PostSet.find({blogId: blog.id}).populate('posts').limit(100).exec(function(err, postSets){
                     if(err) console.log(err);
-                    if(posts.length){
+                    if(postSets.length){
                         res.render('blog/posts', {
-                            posts: posts
+                            postSets: postSets
                         });
                     } else {
                         res.send('This blog doesn\'t have any posts.');
@@ -67,6 +68,23 @@ module.exports = (function() {
                 });
             } else {
                 res.send('This blog doesn\'t exist.');
+            }
+        });
+    });
+
+    app.get('/blog/:blogUrl/posts/del', function(req, res){
+        Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
+            if(err) console.log(err);
+            if(blog){
+                PostSet.findOne({blogId: blog.id}).populate('posts').limit(100).exec(function(err, postSet){
+                    if(err) console.log(err);
+                    if(postSet){
+                        postSet.posts[0].remove();
+                        res.sendStatus(200);
+                    } else {
+                        res.send('cant find any posts');
+                    }
+                });
             }
         });
     });

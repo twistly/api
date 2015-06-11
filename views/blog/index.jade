@@ -87,9 +87,7 @@ block scripts
                 if(hour == 0){
                     hour = 24;
                 }
-                if (fakeData[hour]) {
-                    fakeData[hour] = fakeData[hour] > stat.followerCount ? fakeData[hour] : stat.followerCount;
-                } else {
+                if (!fakeData[hour]) {
                     fakeData[hour] = stat.followerCount;
                     if (hour > 12) {
                         labels.push(hour-12 + ' PM');
@@ -129,9 +127,7 @@ block scripts
                 if(hour == 0){
                     hour = 24;
                 }
-                if (fakeData[hour]) {
-                    fakeData[hour] = fakeData[hour] > stat.followerCount ? fakeData[hour] : stat.followerCount;
-                } else {
+                if (!fakeData[hour]) {
                     fakeData[hour] = stat.followerCount;
                     if (hour > 12) {
                         labels.push(hour-12 + ' PM');
@@ -148,16 +144,29 @@ block scripts
             fakeData = fakeData.clean();
             fakeData = fakeData.slice((labels.length - labels.indexOf('12 PM') - 1), fakeData.length).concat(fakeData.slice(0, (labels.length - labels.indexOf('12 PM') - 1)));
             
+            var firstDiff = 0;
+            stats.forEach(function(stat){
+                var statDate = new Date(stat.date),
+                    todaysDate = new Date();
+                if(statDate.getDate() == (todaysDate.getDate()-1)){
+                    if(statDate.getHours() == (labels[0].replace(' PM', '')+12-1)){
+                        if(!firstDiff){
+                            firstDiff = stat.followerCount;
+                            console.log(statDate)
+                        }
+                    }
+                }
+            });
+            
             var diff = [];
             fakeData.forEach(function(data){
                 var i = fakeData.indexOf(data);
                 if(i == 0){
-                    diff.push(data);
+                    diff.push(data - firstDiff);
                 } else {
                     diff.push(data - fakeData[i-1]);
                 }
             });
-            diff[0] = 0;
             
             var data = {
                 labels: labels,
