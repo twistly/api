@@ -18,7 +18,7 @@ header.header.black-bg
                 ul.dropdown-menu.extended.inbox
                     .notify-arrow.notify-arrow-green
                     li
-                        p.green You have #{notificationCount} pending notifications
+                        p.green You have #{notificationCount} pending #{notificationCount == 1 ? "notification" : "notifications"}
                     - for(var i = 0; i < user.tokenSet.length; i++)
                         - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
                             - var blog = user.tokenSet[i].blogs[k];

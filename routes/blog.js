@@ -17,7 +17,7 @@ var express  = require('express'),
 module.exports = (function() {
     var app = express.Router();
 
-    app.get('*', function(req, res, next){
+    app.get('/blog/:blogUrl/*', function(req, res, next){
         if (req.isAuthenticated()) { return next(); }
         res.redirect('/signin');
 

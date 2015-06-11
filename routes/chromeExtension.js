@@ -6,6 +6,8 @@ var express  = require('express'),
     User  = require('../models/User'),
     Blog  = require('../models/Blog'),
     TokenSet  = require('../models/TokenSet'),
+    Notification  = require('../models/Notification'),
+    PostSet  = require('../models/PostSet'),
     Post  = require('../models/Post');
 
 module.exports = (function() {
@@ -14,7 +16,8 @@ module.exports = (function() {
     app.post('/api/posts', function(req, res){
         var blogUrl = req.body.blogUrl,
             posts = req.body.posts,
-            apiKey = req.body.apiKey;
+            apiKey = req.body.apiKey,
+            queuedFrom = req.body.queuedFrom;
 
         function doesUserHaveBlog (user, blogUrl){
             for (var i = 0; i < user.tokenSet.length;i++){
@@ -55,10 +58,27 @@ module.exports = (function() {
                                         newPosts.push(post.toObject());
                                     }
                                 }
-                                res.send({
-                                    ok: 'okay',
-                                    posts: newPosts
-                                })
+                                var notification = new Notification({
+                                    blogUrl: queuedFrom,
+                                    content: blog.url + ' queued ' + newPosts.length + ' from ' + queuedFrom,
+                                    read: false
+                                });
+                                notification.save();
+                                var postSet = new PostSet({
+                                    posts: newPosts,
+                                    blogId: blog.id,
+                                    clearCaption: false,
+                                    postCount: {
+                                        start: newPosts.length,
+                                        now: newPosts.length
+                                    }
+                                });
+                                postSet.save(function(err, postSet){
+                                    res.send({
+                                        ok: 'okay',
+                                        postSet: postSet
+                                    });
+                                });
                             } else {
                                 res.send({
                                     error: 'We misplaced your blogs?'
