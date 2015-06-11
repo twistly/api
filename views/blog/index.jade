@@ -145,41 +145,44 @@ block scripts
             fakeData = fakeData.slice((labels.length - labels.indexOf('12 PM') - 1), fakeData.length).concat(fakeData.slice(0, (labels.length - labels.indexOf('12 PM') - 1)));
             
             var firstDiff = 0;
+            var finished = _.after(stats.length, done);
             stats.forEach(function(stat){
                 var statDate = new Date(stat.date),
                     todaysDate = new Date();
                 if(statDate.getDate() == (todaysDate.getDate()-1)){
-                    if(statDate.getHours() == (labels[0].replace(' PM', '')+12-1)){
+                    labels[0].indexOf('AM') > 0 ? num = -1 : num = 11;
+                    if(statDate.getHours() == (parseInt(labels[0].replace(' PM', ''))+num)){
                         if(!firstDiff){
                             firstDiff = stat.followerCount;
-                            console.log(statDate)
                         }
                     }
                 }
+                finished();
             });
             
             var diff = [];
-            fakeData.forEach(function(data){
-                var i = fakeData.indexOf(data);
-                if(i == 0){
-                    diff.push(data - firstDiff);
-                } else {
-                    diff.push(data - fakeData[i-1]);
-                }
-            });
-            
-            var data = {
-                labels: labels,
-                datasets: [{
-                    label: "My First dataset",
-                    fillColor: "rgba(220,220,220,0.2)",
-                    strokeColor: "rgba(220,220,220,1)",
-                    pointColor: "rgba(220,220,220,1)",
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: diff
-                }]
+            function done(){
+                fakeData.forEach(function(data){
+                    var i = fakeData.indexOf(data);
+                    if(i == 0){
+                        diff.push(data - firstDiff);
+                    } else {
+                        diff.push(data - fakeData[i-1]);
+                    }
+                });
+                var data = {
+                    labels: labels,
+                    datasets: [{
+                        label: "My First dataset",
+                        fillColor: "rgba(220,220,220,0.2)",
+                        strokeColor: "rgba(220,220,220,1)",
+                        pointColor: "rgba(220,220,220,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(220,220,220,1)",
+                        data: diff
+                    }]
+                };
+                var hourlyBarChart = $("#followersHourlyBarChart").get(0).getContext("2d");
+                var hourlyBarChart = new Chart(hourlyBarChart).Bar(data, {responsive: true});
             };
-            var hourlyBarChart = $("#followersHourlyBarChart").get(0).getContext("2d");
-            var hourlyBarChart = new Chart(hourlyBarChart).Bar(data, {responsive: true});
