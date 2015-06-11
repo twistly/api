@@ -39,7 +39,8 @@ userSchema.pre('save', function(next){
 });
 
 userSchema.pre('save', function(next){
-    if(user.apiKey.length){
+    var user = this;
+    if(!user.apiKey.length){
         var crypto = require('crypto');
         user.apiKey = crypto.createHmac('sha1', crypto.randomBytes(16)).update(crypto.randomBytes(16)).digest('hex');
     }

@@ -79,7 +79,7 @@ exports = module.exports = function(app, passport) {
     passport.use('tumblr', new TumblrStrategy({
         consumerKey: config.tumblr.token,
         consumerSecret: config.tumblr.tokenSecret,
-        callbackURL: "http://192.168.1.158:3000/auth/tumblr/callback"
+        callbackURL: "/auth/tumblr/callback"
     },
     function(token, tokenSecret, profile, done) {
         done(null, false, {

@@ -100,37 +100,41 @@ module.exports = (function() {
                             TokenSet.create({ token: token, tokenSecret: tokenSecret }, function (err, tokenSet) {
                                 if(err) console.log(err);
                                 async.eachSeries(blogs, function(blog, callback) {
-                                    var newBlog = new Blog({
-                                        url: blog.name,
-                                        postCount: blog.posts,
-                                        isNsfw: blog.is_nsfw,
-                                        followerCount: blog.followers,
-                                        primary: blog.primary,
-                                        public: (blog.type == 'public')
-                                    });
-                                    newBlog.save(function(err, blog) {
+                                    Notification.find({blogUrl: blog.name}, function(err, notifications){
                                         if(err) console.log(err);
-                                        if(blog){
-                                            var now = new Date();
-                                            var stat = new Stat({
-                                                blogId: blog._id,
-                                                followerCount: blog.followerCount,
-                                                postCount: blog.postCount,
-                                                time: {
-                                                    year: now.getFullYear(),
-                                                    month: now.getMonth(),
-                                                    date: now.getDate(),
-                                                    hour: now.getHours()
-                                                }
-                                            });
-                                            stat.save();
-                                            tokenSet.blogs = tokenSet.blogs.toObject().concat([blog._id]);
-                                            tokenSet.save(function(err, tokenSet){
-                                                callback();
-                                            });
-                                        } else {
-                                            console.log('NO BLOG???');
-                                        }
+                                        var newBlog = new Blog({
+                                            url: blog.name,
+                                            postCount: blog.posts,
+                                            isNsfw: blog.is_nsfw,
+                                            followerCount: blog.followers,
+                                            primary: blog.primary,
+                                            public: (blog.type == 'public'),
+                                            notifications: notifications
+                                        });
+                                        newBlog.save(function(err, blog) {
+                                            if(err) console.log(err);
+                                            if(blog){
+                                                var now = new Date();
+                                                var stat = new Stat({
+                                                    blogId: blog._id,
+                                                    followerCount: blog.followerCount,
+                                                    postCount: blog.postCount,
+                                                    time: {
+                                                        year: now.getFullYear(),
+                                                        month: now.getMonth(),
+                                                        date: now.getDate(),
+                                                        hour: now.getHours()
+                                                    }
+                                                });
+                                                stat.save();
+                                                tokenSet.blogs = tokenSet.blogs.toObject().concat([blog._id]);
+                                                tokenSet.save(function(err, tokenSet){
+                                                    callback();
+                                                });
+                                            } else {
+                                                console.log('NO BLOG???');
+                                            }
+                                        });
                                     });
                                 }, function () {
                                     user.tokenSet.push(tokenSet.id);
