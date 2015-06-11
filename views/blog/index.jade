@@ -21,6 +21,12 @@ block content
                         .panel-body
                             if(stats.length)
                                 div
+                                    canvas#followersDailyBarChart.col-lg-6
+                .col-lg-6
+                    .panel.panel-default
+                        .panel-body
+                            if(stats.length)
+                                div
                                     canvas#followersHourlyBarChart.col-lg-6
             else
                 .panel.panel-default
@@ -119,6 +125,50 @@ block scripts
             };
             var hourlyLineChart = $("#followersHourlyLineChart").get(0).getContext("2d");
             var hourlyLineChart = new Chart(hourlyLineChart).Line(data, {responsive: true});
+        script.
+            var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            var fakeData = [];
+            var labels = [];
+            stats.forEach(function(stat){
+                var day = new Date(stat.date).getDay();
+                if (fakeData[day]) {
+                    fakeData[day] = fakeData[day] > stat.followerCount ? fakeData[day] : stat.followerCount;
+                } else {
+                    fakeData[day] = stat.followerCount;
+                    if(new Date(stat.date).toDateString() ==  new Date().toDateString()){
+                        labels.push('Today');
+                    } else {
+                        labels.push(days[new Date(stat.date).getDay()]);
+                    }
+                }
+            });
+            labels = labels.reverse();
+            fakeData = fakeData.clean();
+            var diff = [];
+            var firstDiff = 0;
+            fakeData.forEach(function(data){
+                var i = fakeData.indexOf(data);
+                if(i == 0){
+                    diff.push(data - firstDiff);
+                } else {
+                    diff.push(data - fakeData[i-1]);
+                }
+            });
+            var data = {
+                labels: labels,
+                datasets: [{
+                    label: "My First dataset",
+                    fillColor: "rgba(220,220,220,0.2)",
+                    strokeColor: "rgba(220,220,220,1)",
+                    pointColor: "rgba(220,220,220,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(220,220,220,1)",
+                    data: diff
+                }]
+            };
+            var dailyBarChart = $("#followersDailyBarChart").get(0).getContext("2d");
+            var dailyBarChart = new Chart(dailyBarChart).Bar(data, {responsive: true});
         script.
             var fakeData = [];
             var labels = [];
