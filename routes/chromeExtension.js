@@ -63,20 +63,29 @@ module.exports = (function() {
                                     content: blog.url + ' queued ' + newPosts.length + ' from ' + queuedFrom,
                                     read: false
                                 });
-                                notification.save();
-                                var postSet = new PostSet({
-                                    posts: newPosts,
-                                    blogId: blog.id,
-                                    clearCaption: false,
-                                    postCount: {
-                                        start: newPosts.length,
-                                        now: newPosts.length
-                                    }
-                                });
-                                postSet.save(function(err, postSet){
-                                    res.send({
-                                        ok: 'okay',
-                                        postSet: postSet
+                                notification.save(function(err, notification){
+                                    Blog.findOne({url: queueFrom}, function(err, queuedFromBlog){
+                                        if(err) console.log(err);
+                                        if(queuedFromBlog) {
+                                            queueFromBlog.notifications.push(notification.id);
+                                        }
+                                        blog.notifications.push(notification.id);
+                                        blog.save();
+                                        var postSet = new PostSet({
+                                            posts: newPosts,
+                                            blogId: blog.id,
+                                            clearCaption: false,
+                                            postCount: {
+                                                start: newPosts.length,
+                                                now: newPosts.length
+                                            }
+                                        });
+                                        postSet.save(function(err, postSet){
+                                            res.send({
+                                                ok: 'okay',
+                                                postSet: postSet
+                                            });
+                                        });
                                     });
                                 });
                             } else {

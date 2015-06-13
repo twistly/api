@@ -50,11 +50,9 @@ block scripts
             var fakeData = [];
             var labels = [];
             stats.forEach(function(stat){
-                var day = new Date(stat.date).getDay();
-                if (fakeData[day]) {
-                    fakeData[day] = fakeData[day] > stat.followerCount ? fakeData[day] : stat.followerCount;
-                } else {
-                    fakeData[day] = stat.followerCount;
+                var date = new Date(stat.date).getDate();
+                if (!fakeData[date]) {
+                    fakeData[date] = stat.followerCount;
                     if(new Date(stat.date).toDateString() ==  new Date().toDateString()){
                         labels.push('Today');
                     } else {
@@ -62,13 +60,7 @@ block scripts
                     }
                 }
             });
-            var data = [];
-            var count = 0;
-            for (var i in fakeData) {
-                if (fakeData.hasOwnProperty(i)) {
-                    data[count++] = fakeData[i];
-                }
-            }
+            fakeData.clean();
             
             var data = {
                 labels: labels.reverse(),
@@ -80,35 +72,28 @@ block scripts
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: data
+                    data: fakeData
                 }]
             };
             var dailyLineChart = $("#followersDailyLineChart").get(0).getContext("2d");
             var dailyLineChart = new Chart(dailyLineChart).Line(data, {responsive: true});
         script.
             var fakeData = [];
-            var labels = [];
+            var labels = ["1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"];
+            var count = 0;
             stats.forEach(function(stat){
                 var hour = new Date(stat.date).getHours();
-                if(hour == 0){
-                    hour = 24;
-                }
-                if (!fakeData[hour]) {
+                if(!fakeData[hour]){
                     fakeData[hour] = stat.followerCount;
-                    if (hour > 12) {
-                        labels.push(hour-12 + ' PM');
-                    } else if(hour == 12) {
-                        labels.push(hour + ' PM');
-                    } else {
-                        labels.push(hour + ' AM');
-                    }
+                    count++;
                 }
+                if(count == 24) return;
             });
-            labels = labels.reverse();
-            labels[labels.length-1] = 'NOW';
             
+            labels = labels.slice(new Date().getHours(), labels.length).concat(labels.slice(0, new Date().getHours()));
+            labels[23] = 'NOW';
             fakeData = fakeData.clean();
-            fakeData = fakeData.slice((labels.length - labels.indexOf('12 PM') - 1), fakeData.length).concat(fakeData.slice(0, (labels.length - labels.indexOf('12 PM') - 1)));
+            fakeData = fakeData.slice(new Date().getHours()+1, fakeData.length).concat(fakeData.slice(0, new Date().getHours()+1));
             
             var data = {
                 labels: labels,
@@ -130,11 +115,9 @@ block scripts
             var fakeData = [];
             var labels = [];
             stats.forEach(function(stat){
-                var day = new Date(stat.date).getDay();
-                if (fakeData[day]) {
-                    fakeData[day] = fakeData[day] > stat.followerCount ? fakeData[day] : stat.followerCount;
-                } else {
-                    fakeData[day] = stat.followerCount;
+                var date = new Date(stat.date).getDate();
+                if (!fakeData[date]) {
+                    fakeData[date] = stat.followerCount;
                     if(new Date(stat.date).toDateString() ==  new Date().toDateString()){
                         labels.push('Today');
                     } else {
@@ -142,8 +125,7 @@ block scripts
                     }
                 }
             });
-            labels = labels.reverse();
-            fakeData = fakeData.clean();
+            fakeData.clean();
             var diff = [];
             var firstDiff = 0;
             fakeData.forEach(function(data){
@@ -151,11 +133,16 @@ block scripts
                 if(i == 0){
                     diff.push(data - firstDiff);
                 } else {
-                    diff.push(data - fakeData[i-1]);
+                    var tempDiff = data - fakeData[i-1];
+                    if(tempDiff > 0) {
+                        diff.push(data - fakeData[i-1]);
+                    } else {
+                        diff.push(0);
+                    }
                 }
             });
             var data = {
-                labels: labels,
+                labels: labels.reverse(),
                 datasets: [{
                     label: "My First dataset",
                     fillColor: "rgba(220,220,220,0.2)",
@@ -171,29 +158,22 @@ block scripts
             var dailyBarChart = new Chart(dailyBarChart).Bar(data, {responsive: true});
         script.
             var fakeData = [];
-            var labels = [];
+            var labels = ["1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"];
+            var count = 0;
             stats.forEach(function(stat){
                 var hour = new Date(stat.date).getHours();
-                if(hour == 0){
-                    hour = 24;
-                }
-                if (!fakeData[hour]) {
+                if(!fakeData[hour]){
                     fakeData[hour] = stat.followerCount;
-                    if (hour > 12) {
-                        labels.push(hour-12 + ' PM');
-                    } else if(hour == 12) {
-                        labels.push(hour + ' PM');
-                    } else {
-                        labels.push(hour + ' AM');
-                    }
+                    count++;
                 }
+                if(count == 24) return;
             });
-            labels = labels.reverse();
-            labels[labels.length-1] = 'NOW';
             
+            labels = labels.slice(new Date().getHours(), labels.length).concat(labels.slice(0, new Date().getHours()));
+            labels[23] = 'NOW';
             fakeData = fakeData.clean();
-            fakeData = fakeData.slice((labels.length - labels.indexOf('12 PM') - 1), fakeData.length).concat(fakeData.slice(0, (labels.length - labels.indexOf('12 PM') - 1)));
-            
+            fakeData = fakeData.slice(new Date().getHours()+1, fakeData.length).concat(fakeData.slice(0, new Date().getHours()+1));
+                
             var firstDiff = 0;
             var finished = _.after(stats.length, done);
             stats.forEach(function(stat){
@@ -217,7 +197,13 @@ block scripts
                     if(i == 0){
                         diff.push(data - firstDiff);
                     } else {
-                        diff.push(data - fakeData[i-1]);
+                        var tempDiff = data - fakeData[i-1];
+                        console.log(tempDiff);
+                        if(tempDiff > 0) {
+                            diff.push(data - fakeData[i-1]);
+                        } else {
+                            diff.push(0);
+                        }
                     }
                 });
                 var data = {

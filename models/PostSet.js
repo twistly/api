@@ -12,6 +12,7 @@ var postSetSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Blog'
     },
+    queuedFrom: String,
     caption: String,
     clearCaption: Boolean,
     postCount: {
