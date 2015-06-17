@@ -29,19 +29,20 @@ block content
 							| 
 							| your blog
 block scripts
-	if(user.tokenSet.length)
-		- for(var i = 0; i < user.tokenSet.length; i++)
-			- for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
-				- var blog = user.tokenSet[i].blogs[k];
-				script.
-					var doughnutData = [
-						{
-							value: #{blog.postsInQueue},
-							color:"#FF6B6B"
-						},
-						{
-							value : #{user.plan.maxPosts - blog.postsInQueue},
-							color : "#fdfdfd"
-						}
-					];
-					var myNewChart = new Chart(document.getElementById('#{blog.url}' + '_panel').getContext("2d")).Doughnut(doughnutData);
+	if(false)
+		if(user.tokenSet.length)
+			- for(var i = 0; i < user.tokenSet.length; i++)
+				- for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+					- var blog = user.tokenSet[i].blogs[k];
+					script.
+						var doughnutData = [
+							{
+								value: #{blog.postsInQueue},
+								color:"#FF6B6B"
+							},
+							{
+								value : #{user.plan.maxPosts - blog.postsInQueue},
+								color : "#fdfdfd"
+							}
+						];
+						var myNewChart = new Chart(document.getElementById('#{blog.url}' + '_panel').getContext("2d")).Doughnut(doughnutData);

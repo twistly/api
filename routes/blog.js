@@ -17,10 +17,12 @@ var express  = require('express'),
 module.exports = (function() {
     var app = express.Router();
 
-    app.get('/blog/:blogUrl/*', function(req, res, next){
+    app.get('*', function(req, res, next){
         if (req.isAuthenticated()) { return next(); }
         res.redirect('/signin');
+    });
 
+    app.get('/blog/:blogUrl/*', function(req, res, next){
         function isUserAllowed (blogUrl){
             for (var i = 0; i < req.user.tokenSet.length;i++){
                 for (var j = 0; j < req.user.tokenSet[i].blogs.length;j++){
@@ -35,7 +37,7 @@ module.exports = (function() {
         }
     });
 
-    app.get('/blog/:blogUrl', function(req, res){
+    app.get('/blog/:blogUrl/stats', function(req, res){
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) console.log(err);
             if(blog){
@@ -72,23 +74,6 @@ module.exports = (function() {
         });
     });
 
-    app.get('/blog/:blogUrl/posts/del', function(req, res){
-        Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
-            if(err) console.log(err);
-            if(blog){
-                PostSet.findOne({blogId: blog.id}).populate('posts').limit(100).exec(function(err, postSet){
-                    if(err) console.log(err);
-                    if(postSet){
-                        postSet.posts[0].remove();
-                        res.sendStatus(200);
-                    } else {
-                        res.send('cant find any posts');
-                    }
-                });
-            }
-        });
-    });
-
     app.get('/blog/:blogUrl/queues', function(req, res){
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) console.log(err);
@@ -108,10 +93,6 @@ module.exports = (function() {
                 res.send('This blog doesn\'t exist.');
             }
         });
-    });
-
-    app.get('/blog/:blogUrl/followers', function(req, res){
-
     });
 
     app.get('/blog/:blogUrl/queues/new', function(req, res){
