@@ -16,8 +16,9 @@ module.exports = (function() {
     var app = express.Router();
 
     app.get('*', function(req, res, next){
-        if (req.isAuthenticated()) { return next(); }
-        res.redirect('/signin')
+        if (!req.isAuthenticated()) res.redirect('/signin');
+        res.locals.title = 'Xtend';
+        return next();
     });
 
     app.get('/', function(req, res){

@@ -16,7 +16,7 @@ block content
 									.darkblue-panel.pn.donut-chart
 										.darkblue-header
 											h5
-												a(href="/blog/" + blog.url) #{blog.url}
+												a(href="/blog/" + blog.url + '/stats') #{blog.url}
 										canvas(height=120, width=120, id=blog.url + '_panel')
 										h3 #{blog.postsInQueue == 1 ? blog.postsInQueue + " post" : blog.postsInQueue + " posts"} in queue
 			else
