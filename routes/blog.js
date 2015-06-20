@@ -41,7 +41,7 @@ module.exports = (function() {
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) console.log(err);
             if(blog){
-                Stat.find({ blogId: blog.id } , '-_id -__v -blogId').sort('-date').limit(168).exec(function(err, stats){
+                Stat.find({ blogId: blog.id } , '-_id -__v -blogId').sort('-date').limit(336).exec(function(err, stats){
                     if(err) console.log(err);
                     res.render('blog/index', {
                         blog: blog,
