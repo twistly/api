@@ -36,6 +36,7 @@ block scripts
     if(stats.length)
         script.
             var stats = !{JSON.stringify(stats)};
+            var firstStat = !{JSON.stringify(firstStat)};
             Array.prototype.clean = function(deleteValue) {
                 for (var i = 0; i < this.length; i++) {
                     if (this[i] == deleteValue) {         
@@ -45,6 +46,18 @@ block scripts
                 }
                 return this;
             };
+            //- This is for the weekly gains and stuff
+            //- Move this later to the server as we can do better averages over months, etc.
+            var current = stats[stats.length-1],
+                currentFollowers = current.followerCount,
+                daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime())/(24*60*60*1000))),
+                gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow),
+                lang = navigator.language || navigator.userLanguage,
+                lastUpdated = Math.floor((new Date().getTime() - new Date(stats[0].date).getTime())/ 60000);
+            console.log('1 Week: ' + Number(currentFollowers + (gainsPerDay * 7)).toLocaleString(lang));
+            console.log('1 Month: ' + Number(currentFollowers + (gainsPerDay * 30)).toLocaleString(lang));
+            console.log('1 Year: ' + Number(currentFollowers + (gainsPerDay * 365)).toLocaleString(lang));
+            console.log('Last updated: ' + (lastUpdated < 2 ? 'just now' : lastUpdated + ' minutes ago'));
         script.
             var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
             var fakeData = [];
@@ -130,15 +143,13 @@ block scripts
             var firstDiff = 0;
             fakeData.forEach(function(data){
                 var i = fakeData.indexOf(data);
-                if(i == 0){
+                var tempDiff = data - fakeData[i-1];
+                if(isNaN(tempDiff)){
+                    diff.push(0);
+                } else if(i == 0){
                     diff.push(data - firstDiff);
                 } else {
-                    var tempDiff = data - fakeData[i-1];
-                    if(tempDiff > 0) {
-                        diff.push(data - fakeData[i-1]);
-                    } else {
-                        diff.push(0);
-                    }
+                    diff.push(data - fakeData[i-1]);
                 }
             });
             labels = labels.reverse();

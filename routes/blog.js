@@ -43,9 +43,13 @@ module.exports = (function() {
             if(blog){
                 Stat.find({ blogId: blog.id } , '-_id -__v -blogId').sort('-date').limit(384).exec(function(err, stats){
                     if(err) console.log(err);
-                    res.render('blog/index', {
-                        blog: blog,
-                        stats: stats
+                    Stat.findOne({ blogId: blog.id } , '-_id -__v -blogId').sort('date').exec(function(err, firstStat){
+                        if(err) console.log(err);
+                        res.render('blog/index', {
+                            blog: blog,
+                            stats: stats,
+                            firstStat: firstStat
+                        });
                     });
                 });
             } else {
