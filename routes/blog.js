@@ -45,10 +45,25 @@ module.exports = (function() {
                     if(err) console.log(err);
                     Stat.findOne({ blogId: blog.id } , '-_id -__v -blogId').sort('date').exec(function(err, firstStat){
                         if(err) console.log(err);
+                        //- This is for the weekly gains and stuff
+                        var current = stats[stats.length-1],
+                            currentFollowers = current.followerCount,
+                            daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime())/(24*60*60*1000))),
+                            gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow),
+                            lastUpdated = Math.floor((new Date().getTime() - new Date(stats[0].date).getTime())/ 60000);
                         res.render('blog/index', {
-                            blog: blog,
+                            currentBlog: blog,
                             stats: stats,
-                            firstStat: firstStat
+                            statTable: {
+                                forecast: {
+                                    week: currentFollowers + (gainsPerDay * 7),
+                                    month: currentFollowers + (gainsPerDay * 30),
+                                    year: currentFollowers + (gainsPerDay * 365)
+                                },
+                                lastUpdated: lastUpdated < 2 ? 'just now' : lastUpdated + ' minutes ago',
+                                currentFollowers: currentFollowers,
+                                html: []
+                            }
                         });
                     });
                 });

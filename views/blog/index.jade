@@ -4,30 +4,31 @@ block content
     .row.mt
         .col-lg-12
             if(stats.length)
-                .col-lg-6
-                    .panel.panel-default
+                .col-lg-5.col-md-6.center-block(style="float: none; color: white;")#statTable
+                    .panel.darkblue-panel(style="text-align: left;")
                         .panel-body
-                            
-                                div
-                                    canvas#followersDailyLineChart.col-lg-6
+                            .col-lg-6.col-md-6.col-sm-6.col-xs-6
+                            .col-lg-6.col-md-6.col-sm-6.col-xs-6
                 .col-lg-6
-                    .panel.panel-default
+                    .panel.darkblue-panel
                         .panel-body
-                            if(stats.length)
-                                div
-                                    canvas#followersHourlyLineChart.col-lg-6
+                            div
+                                canvas#followersDailyLineChart.col-lg-6
                 .col-lg-6
-                    .panel.panel-default
+                    .panel.darkblue-panel
                         .panel-body
-                            if(stats.length)
-                                div
-                                    canvas#followersDailyBarChart.col-lg-6
+                            div
+                                canvas#followersHourlyLineChart.col-lg-6
                 .col-lg-6
-                    .panel.panel-default
+                    .panel.darkblue-panel
                         .panel-body
-                            if(stats.length)
-                                div
-                                    canvas#followersHourlyBarChart.col-lg-6
+                            div
+                                canvas#followersDailyBarChart.col-lg-6
+                .col-lg-6
+                    .panel.darkblue-panel
+                        .panel-body
+                            div
+                                canvas#followersHourlyBarChart.col-lg-6
             else
                 .panel.panel-default
                     .panel-body
@@ -36,7 +37,6 @@ block scripts
     if(stats.length)
         script.
             var stats = !{JSON.stringify(stats)};
-            var firstStat = !{JSON.stringify(firstStat)};
             Array.prototype.clean = function(deleteValue) {
                 for (var i = 0; i < this.length; i++) {
                     if (this[i] == deleteValue) {         
@@ -46,18 +46,6 @@ block scripts
                 }
                 return this;
             };
-            //- This is for the weekly gains and stuff
-            //- Move this later to the server as we can do better averages over months, etc.
-            var current = stats[stats.length-1],
-                currentFollowers = current.followerCount,
-                daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime())/(24*60*60*1000))),
-                gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow),
-                lang = navigator.language || navigator.userLanguage,
-                lastUpdated = Math.floor((new Date().getTime() - new Date(stats[0].date).getTime())/ 60000);
-            console.log('1 Week: ' + Number(currentFollowers + (gainsPerDay * 7)).toLocaleString(lang));
-            console.log('1 Month: ' + Number(currentFollowers + (gainsPerDay * 30)).toLocaleString(lang));
-            console.log('1 Year: ' + Number(currentFollowers + (gainsPerDay * 365)).toLocaleString(lang));
-            console.log('Last updated: ' + (lastUpdated < 2 ? 'just now' : lastUpdated + ' minutes ago'));
         script.
             var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
             var fakeData = [];
@@ -89,7 +77,7 @@ block scripts
                 }]
             };
             var dailyLineChart = $("#followersDailyLineChart").get(0).getContext("2d");
-            var dailyLineChart = new Chart(dailyLineChart).Line(data, {responsive: true});
+            var dailyLineChart = new Chart(dailyLineChart).Line(data, {responsive: true, scaleFontColor: "#ffffff" });
         script.
             var fakeData = [];
             var labels = ["1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"];
@@ -122,7 +110,7 @@ block scripts
                 }]
             };
             var hourlyLineChart = $("#followersHourlyLineChart").get(0).getContext("2d");
-            var hourlyLineChart = new Chart(hourlyLineChart).Line(data, {responsive: true});
+            var hourlyLineChart = new Chart(hourlyLineChart).Line(data, {responsive: true, scaleFontColor: "#ffffff" });
         script.
             var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
             var fakeData = [];
@@ -167,7 +155,16 @@ block scripts
                 }]
             };
             var dailyBarChart = $("#followersDailyBarChart").get(0).getContext("2d");
-            var dailyBarChart = new Chart(dailyBarChart).Bar(data, {responsive: true});
+            var dailyBarChart = new Chart(dailyBarChart).Bar(data, {responsive: true, scaleFontColor: "#ffffff" });
+            //- 
+            //- This is for the top stats section
+            //- 
+            var statTable = !{JSON.stringify(statTable)};
+            var lang = navigator.language || navigator.userLanguage;
+            statTable.html[0] = '1 week forecast: ' + Number(statTable.forecast.week).toLocaleString(lang) + '<br>1 month forecast: ' + Number(statTable.forecast.month).toLocaleString(lang) + '<br>1 year forecast: '  + Number(statTable.forecast.year).toLocaleString(lang);
+            statTable.html[1] = 'Total followers: ' + Number(statTable.currentFollowers).toLocaleString(lang) + '<br>Gained today: ' + Number(diff[diff.length-1]).toLocaleString(lang) + '<br>Last updated: ' + statTable.lastUpdated;
+            $('#statTable').find('.panel-body div').eq(0).html(statTable.html[0]);
+            $('#statTable').find('.panel-body div').eq(1).html(statTable.html[1]);
         script.
             var fakeData = [];
             var labels = ["1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM", "11 PM", "12 AM"];
@@ -231,5 +228,5 @@ block scripts
                     }]
                 };
                 var hourlyBarChart = $("#followersHourlyBarChart").get(0).getContext("2d");
-                var hourlyBarChart = new Chart(hourlyBarChart).Bar(data, {responsive: true});
+                var hourlyBarChart = new Chart(hourlyBarChart).Bar(data, {responsive: true,scaleFontColor: "#ffffff" });
             };
