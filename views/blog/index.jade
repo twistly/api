@@ -61,9 +61,9 @@ block scripts
                 }
             });
             fakeData.clean();
-            
+            labels = labels.reverse();
             var data = {
-                labels: labels.reverse(),
+                labels: labels.slice(Math.max(labels.length - 7, 1)),
                 datasets: [{
                     label: "My First dataset",
                     fillColor: "rgba(220,220,220,0.2)",
@@ -72,7 +72,7 @@ block scripts
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: fakeData
+                    data: fakeData.slice(Math.max(fakeData.length - 7, 1))
                 }]
             };
             var dailyLineChart = $("#followersDailyLineChart").get(0).getContext("2d");
@@ -141,8 +141,9 @@ block scripts
                     }
                 }
             });
+            labels = labels.reverse();
             var data = {
-                labels: labels.reverse(),
+                labels: labels.slice(Math.max(labels.length - 7, 1)),
                 datasets: [{
                     label: "My First dataset",
                     fillColor: "rgba(220,220,220,0.2)",
@@ -151,7 +152,7 @@ block scripts
                     pointStrokeColor: "#fff",
                     pointHighlightFill: "#fff",
                     pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: diff
+                    data: diff.slice(Math.max(diff.length - 7, 1))
                 }]
             };
             var dailyBarChart = $("#followersDailyBarChart").get(0).getContext("2d");
