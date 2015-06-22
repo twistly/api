@@ -18,7 +18,8 @@ var userSchema = mongoose.Schema({
     apiKey: {
         type: String,
         default: ''
-    }
+    },
+    inviteToken: String
 });
 
 // Bcrypt middleware

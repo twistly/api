@@ -72,7 +72,8 @@ exports = module.exports = function(app, passport) {
                                     var user = new User({
                                         username: username,
                                         email: req.body.email,
-                                        password: password
+                                        password: password,
+                                        inviteToken: invite.token
                                     });
                                     user.save(function(err, user) {
                                         if (err) throw err;
