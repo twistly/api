@@ -29,7 +29,8 @@ block content
 							| 
 							| your blog
 block scripts
-	if(false)
+	//- Change to false for debugging and/or whatever
+	if(true)
 		if(user.tokenSet.length)
 			- for(var i = 0; i < user.tokenSet.length; i++)
 				- for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
