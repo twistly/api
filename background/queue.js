@@ -27,39 +27,42 @@ setInterval(function(){
                     Post.findOne({blogId: queue.blogId}, function(err, post){
                         if (err) console.log(err);
                         if (post){
-                            Blog.findOne({_id: queue.blogId}, function(err, blog){
+                            TokenSet.findOne({blogs: queue.blogId}, function(err, tokenSet){
                                 if (err) console.log(err);
-                                if (blog && blog.enabled) {
-                                    if (blog.token == '' || blog.tokenSecret == '' ) {
-                                        blog.enabled = false;
-                                        blog.errorMessage = 'Please reauthenticate with Tumblr.';
-                                        blog.save();
+                                if (tokenSet && tokenSet.enabled) {
+                                    if (tokenSet.token == '' || tokenSet.tokenSecret == '' ) {
+                                        tokenSet.enabled = false;
+                                        tokenSet.errorMessage = 'Please reauthenticate with Tumblr.';
+                                        tokenSet.save();
                                     } else {
                                         var client = tumblr.createClient({
                                             consumer_key: config.tumblr.token,
                                             consumer_secret: config.tumblr.tokenSecret,
-                                            token: blog.token,
-                                            token_secret: blog.tokenSecret
+                                            token: tokenSet.token,
+                                            token_secret: tokenSet.tokenSecret
                                         });
                                         var caption = post.clearCaption ? '' : post.caption;
-                                        client.reblog(blog.url, {id: post.postId, reblog_key: post.reblogKey, caption: caption}, function(err, reblog){
-                                            if (err) {
-                                                console.log(err);
-                                                blog.enabled = false;
-                                                blog.errorMessage = err;
-                                                blog.save();
-                                            } else {
-                                                console.log((new Date()) + ' ' + blog.url + ' reblogged');
-                                                if (post.clearCaption) {
-                                                    client.edit(blog.url, { id: reblog.id, caption: post.caption }, function (err, edit) {
-                                                        if (err) console.log(err);
-                                                        console.log((new Date()) + ' ' + blog.url + ' changed caption');
-                                                    });
+                                        Blog.findOne({_id: queue.blogId}, function(err, blog){
+                                            if(err) console.log(err);
+                                            client.reblog(blog.url, {id: post.postId, reblog_key: post.reblogKey, caption: caption}, function(err, reblog){
+                                                if (err) {
+                                                    console.log(err);
+                                                    tokenSet.enabled = false;
+                                                    tokenSet.errorMessage = err;
+                                                    tokenSet.save();
+                                                } else {
+                                                    console.log((new Date()) + ' ' + blog.url + ' reblogged');
+                                                    if (post.clearCaption) {
+                                                        client.edit(blog.url, { id: reblog.id, caption: post.caption }, function (err, edit) {
+                                                            if (err) console.log(err);
+                                                            console.log((new Date()) + ' ' + blog.url + ' changed caption');
+                                                        });
+                                                    }
+                                                    blog.postsInQueue--;
+                                                    blog.save();
+                                                    post.remove();
                                                 }
-                                                blog.postsInQueue--;
-                                                blog.save();
-                                                post.remove();
-                                            }
+                                            });
                                         });
                                     }
                                 }
