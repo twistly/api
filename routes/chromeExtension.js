@@ -64,10 +64,10 @@ module.exports = (function() {
                                     read: false
                                 });
                                 notification.save(function(err, notification){
-                                    Blog.findOne({url: queueFrom}, function(err, queuedFromBlog){
+                                    Blog.findOne({url: queuedFrom}, function(err, queuedFromBlog){
                                         if(err) console.log(err);
                                         if(queuedFromBlog) {
-                                            queueFromBlog.notifications.push(notification.id);
+                                            queuedFromBlog.notifications.push(notification.id);
                                         }
                                         blog.notifications.push(notification.id);
                                         blog.save();
