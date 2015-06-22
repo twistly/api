@@ -9,6 +9,7 @@ exports = module.exports = function(app, passport) {
         User  = require('./models/User'),
         Plan  = require('./models/Plan'),
         TokenSet  = require('./models/TokenSet'),
+        Invite  = require('./models/Invite'),
         Notification  = require('./models/Notification');
 
     passport.serializeUser(function(user, done) {
@@ -62,14 +63,28 @@ exports = module.exports = function(app, passport) {
                 if (user) {
                     return done(null, false, { message: 'That username is already taken.' });
                 } else {
-                    var user = new User({
-                        username: username,
-                        email: req.body.email,
-                        password: password
-                    });
-                    user.save(function(err, user) {
-                        if (err) throw err;
-                        return done(null, user);
+                    Invite.findOne({token: req.body.invite}, function(err, invite){
+                        if(err) throw err;
+                        if(invite){
+                            if(!invite.used){
+                                invite.used = true;
+                                invite.save(function(err, invite){
+                                    var user = new User({
+                                        username: username,
+                                        email: req.body.email,
+                                        password: password
+                                    });
+                                    user.save(function(err, user) {
+                                        if (err) throw err;
+                                        return done(null, user);
+                                    });
+                                });
+                            } else {
+                                return done(null, false, { message: 'That invite has been used.' });
+                            }
+                        } else {
+                            return done(null, false, { message: 'That invite token doesn\'t exist.' });
+                        }
                     });
                 }
             });
