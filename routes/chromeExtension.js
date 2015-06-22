@@ -69,6 +69,7 @@ module.exports = (function() {
                                         if(queuedFromBlog) {
                                             queuedFromBlog.notifications.push(notification.id);
                                         }
+                                        blog.postsInQueue = blog.postsInQueue+newPosts.length;
                                         blog.notifications.push(notification.id);
                                         blog.save();
                                         var postSet = new PostSet({
