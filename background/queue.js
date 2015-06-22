@@ -45,7 +45,6 @@ setInterval(function(){
                                         // var caption = post.clearCaption ? '' : post.caption;
                                         Blog.findOne({_id: queue.blogId}, function(err, blog){
                                             if(err) console.log(err);
-                                            console.log(client.reblog);
                                             // Add caption: caption back into reblog and edit
                                             client.reblog(blog.url, {id: post.postId, reblog_key: post.reblogKey}, function (err, data) {
                                                 if (err) {
