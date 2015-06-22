@@ -3,14 +3,20 @@ var mongoose = require('mongoose'),
     PostSet = require('./PostSet');
 
 var postSchema = new mongoose.Schema({
-    postId: Number,
+    postId: String,
     blogId: {
         type: Schema.Types.ObjectId,
         ref: 'Blog'
     },
     reblogKey: String,
-    caption: String,
-    clearCaption: Boolean
+    caption: {
+        type: String,
+        default: ''
+    },
+    clearCaption: {
+        type: Boolean,
+        default: false
+    }
 });
 
 postSchema.pre('remove', function(next) {

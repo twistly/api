@@ -42,10 +42,12 @@ setInterval(function(){
                                             token: tokenSet.token,
                                             token_secret: tokenSet.tokenSecret
                                         });
-                                        var caption = post.clearCaption ? '' : post.caption;
+                                        // var caption = post.clearCaption ? '' : post.caption;
                                         Blog.findOne({_id: queue.blogId}, function(err, blog){
                                             if(err) console.log(err);
-                                            client.reblog(blog.url, {id: post.postId, reblog_key: post.reblogKey, caption: caption}, function(err, reblog){
+                                            console.log(client.reblog);
+                                            // Add caption: caption back into reblog and edit
+                                            client.reblog(blog.url, {id: post.postId, reblog_key: post.reblogKey}, function (err, data) {
                                                 if (err) {
                                                     console.log(err);
                                                     tokenSet.enabled = false;
@@ -53,12 +55,12 @@ setInterval(function(){
                                                     tokenSet.save();
                                                 } else {
                                                     console.log((new Date()) + ' ' + blog.url + ' reblogged');
-                                                    if (post.clearCaption) {
-                                                        client.edit(blog.url, { id: reblog.id, caption: post.caption }, function (err, edit) {
-                                                            if (err) console.log(err);
-                                                            console.log((new Date()) + ' ' + blog.url + ' changed caption');
-                                                        });
-                                                    }
+                                                    // if (post.clearCaption) {
+                                                    //     client.edit(blog.url, { id: data.id, caption: post.caption }, function (err, edit) {
+                                                    //         if (err) console.log(err);
+                                                    //         console.log((new Date()) + ' ' + blog.url + ' changed caption');
+                                                    //     });
+                                                    // }
                                                     blog.postsInQueue--;
                                                     blog.save();
                                                     post.remove();
