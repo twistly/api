@@ -114,6 +114,20 @@ module.exports = (function() {
         });
     });
 
+    app.post('/blog/:blogUrl/queues', function(req, res){
+        Blog.findOne({url: req.params.blogUrl}, function(err, blog){
+            var queue = new Queue({
+                blogId: blog.id,
+                interval: req.body.interval,
+                startHour: 0,
+                endHour: 23,
+                backfill: false
+            });
+            queue.save();
+            res.send('Boobies');
+        });
+    });
+
     app.get('/blog/:blogUrl/queues/new', function(req, res){
         res.render('blog/queues/new');
     });
