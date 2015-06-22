@@ -56,6 +56,8 @@ setInterval(function(){
                                                         console.log((new Date()) + ' ' + blog.url + ' changed caption');
                                                     });
                                                 }
+                                                blog.postsInQueue--;
+                                                blog.save();
                                                 post.remove();
                                             }
                                         });
