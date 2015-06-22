@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     Queue = require('../models/Queue'),
     Post = require('../models/Post'),
     Blog = require('../models/Blog'),
+    TokenSet = require('../models/TokenSet'),
     config = require('../config.js');
 
 mongoose.connect('mongodb://localhost/xtend');
