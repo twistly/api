@@ -4,6 +4,10 @@ var mongoose = require('mongoose'),
 
 var postSchema = new mongoose.Schema({
     postId: Number,
+    blogId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Blog'
+    },
     reblogKey: String,
     caption: String,
     clearCaption: Boolean
