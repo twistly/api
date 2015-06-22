@@ -1,11 +1,11 @@
 var mongoose = require('mongoose'),
     tumblr = require('tumblr.js'),
-    Queue = require('./models/Queue'),
-    Post = require('./models/Post'),
-    Blog = require('./models/Blog'),
-    config = require('./config.js');
+    Queue = require('../models/Queue'),
+    Post = require('../models/Post'),
+    Blog = require('../models/Blog'),
+    config = require('../config.js');
 
-mongoose.connect('mongodb://localhost/queuetest');
+mongoose.connect('mongodb://localhost/xtend');
 
 setInterval(function(){
     Queue.find(function(err, queues) {
