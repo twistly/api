@@ -124,7 +124,7 @@ module.exports = (function() {
                 backfill: false
             });
             queue.save();
-            res.send('Boobies');
+            res.redirect('/blog/' + req.params.blogUrl + '/queues');
         });
     });
 
