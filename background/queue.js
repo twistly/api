@@ -55,7 +55,7 @@ setInterval(function(){
                                                         tokenSet.errorMessage = err;
                                                         tokenSet.save();
                                                     } else {
-                                                        if(err.code != 'ETIMEDOUT'){
+                                                        if(err){
                                                             console.log('Tumblr timeout?' + err);
                                                         } else {
                                                             console.log((new Date()) + ' ' + blog.url + ' reblogged');
