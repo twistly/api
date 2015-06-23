@@ -2,6 +2,38 @@ extends ../../layout
 
 block content
     .form-panel
-        form(action="", method="post")
-            input(type="number", name="interval", min="1", max="250")
-            input(type="submit", name="submit")
+        h4.mb
+            i.fa.fa-angle-right
+            | 
+            | Add new queue
+        form(action="", method="post").form-horizontal.style-form
+            .form-group
+                label.col-sm-2.control-label Amount of posts per queue
+                .col-sm-10
+                    input(type="number", name="interval", min="1", max="250").form-control
+            button(type="submit").btn.btn-theme Create
+    .form-panel
+        h4.mb
+            i.fa.fa-angle-right
+            | 
+            | Current Queues
+        - for(i in queues)
+            - var queue = queues[i];
+            form.form-horizontal.style-form(action="", method="post")
+                .form-group
+                    label.col-sm-2.control-label Start time
+                    .col-sm-10
+                        p.form-control-static #{queue.startHour}
+                .form-group
+                    label.col-sm-2.control-label End time
+                    .col-sm-10
+                        p.form-control-static #{queue.endHour}
+                .form-group
+                    label.col-sm-2.control-label Amount of posts
+                    .col-sm-10
+                        p.form-control-static #{queue.interval}
+                .form-group
+                    label.col-sm-2.control-label Last run time
+                    .col-sm-10
+                        p.form-control-static #{queue.lastRun}
+                button(type="submit").btn.btn-theme Delete
