@@ -128,13 +128,5 @@ module.exports = (function() {
         });
     });
 
-    app.get('/blog/:blogUrl/queues/new', function(req, res){
-        res.render('blog/queues/new');
-    });
-
-    app.post('/blog/:blogUrl/queues/new', function(req, res){
-        res.redirect('/blog/' + req.params.blogUrl + '/queues');
-    });
-
     return app;
 })();

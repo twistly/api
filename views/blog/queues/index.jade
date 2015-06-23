@@ -1,5 +1,12 @@
 extends ../../layout
 
+block scripts
+    script(src="/assets/js/jquery.timeago.js")
+    script.
+        $(document).ready(function() {
+            $("[datetime]").timeago();
+        });
+
 block content
     .form-panel
         h4.mb
@@ -35,5 +42,6 @@ block content
                 .form-group
                     label.col-sm-2.control-label Last run time
                     .col-sm-10
-                        p.form-control-static #{queue.lastRun}
+                        p.form-control-static
+                            time(datetime=(new Date(queue.lastRun).toISOString())) #{new Date(queue.lastRun).toISOString()}
                 button(type="submit").btn.btn-theme Delete
