@@ -9,6 +9,10 @@ aside
                         a(href="/")
                             i.fa.fa-dashboard
                             span Dashboard
+                    li
+                        a(href="/account")
+                            i.fa.fa-calendar-o
+                            span Account
                     li.sub-menu
                         a(href="javascript:;")
                             i.fa.fa-bar-chart
@@ -33,19 +37,3 @@ aside
                                             a(href="/blog/" + user.tokenSet[i].blogs[k].url + "/queues") #{user.tokenSet[i].blogs[k].url}
                                 else
                                     a(href="/auth/tumblr") Link an account
-                    li.sub-menu
-                        a(href="javascript:;")
-                            i.fa.fa-archive
-                            span Posts
-                        ul.sub
-                            li
-                                if(user.tokenSet.length)
-                                    - for(var i = 0; i < user.tokenSet.length; i++)
-                                        - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
-                                            a(href="/blog/" + user.tokenSet[i].blogs[k].url + "/posts") #{user.tokenSet[i].blogs[k].url}
-                                else
-                                    a(href="/auth/tumblr") Link an account
-                    li
-                        a(href="/account")
-                            i.fa.fa-calendar-o
-                            span Account
