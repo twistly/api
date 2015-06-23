@@ -49,22 +49,26 @@ setInterval(function(){
                                                 console.log('Posting to ' + blog.url);
                                                 // Add caption: caption back into reblog and edit
                                                 client.reblog(blog.url, {id: post.postId, reblog_key: post.reblogKey}, function (err, data) {
-                                                    if (err) {
+                                                    if (err.code != 'ETIMEDOUT') {
                                                         console.log(err);
                                                         tokenSet.enabled = false;
                                                         tokenSet.errorMessage = err;
                                                         tokenSet.save();
                                                     } else {
-                                                        console.log((new Date()) + ' ' + blog.url + ' reblogged');
-                                                        // if (post.clearCaption) {
-                                                        //     client.edit(blog.url, { id: data.id, caption: post.caption }, function (err, edit) {
-                                                        //         if (err) console.log(err);
-                                                        //         console.log((new Date()) + ' ' + blog.url + ' changed caption');
-                                                        //     });
-                                                        // }
-                                                        blog.postsInQueue--;
-                                                        blog.save();
-                                                        post.remove();
+                                                        if(err.code != 'ETIMEDOUT'){
+                                                            console.log('Tumblr timeout?' + err);
+                                                        } else {
+                                                            console.log((new Date()) + ' ' + blog.url + ' reblogged');
+                                                            // if (post.clearCaption) {
+                                                            //     client.edit(blog.url, { id: data.id, caption: post.caption }, function (err, edit) {
+                                                            //         if (err) console.log(err);
+                                                            //         console.log((new Date()) + ' ' + blog.url + ' changed caption');
+                                                            //     });
+                                                            // }
+                                                            blog.postsInQueue--;
+                                                            blog.save();
+                                                            post.remove();
+                                                        }
                                                     }
                                                 });
                                             } else {

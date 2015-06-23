@@ -5,7 +5,8 @@ var planSchema = new mongoose.Schema({
     costPerMonth: Number,
     currency: String,
     maxPosts: Number,
-    blogsPerAccount: Number
+    blogsPerAccount: Number,
+    name: String
 });
 
 module.exports = mongoose.model('Plan', planSchema);
