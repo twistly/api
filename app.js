@@ -51,6 +51,7 @@ app.use(function(req, res, next){
     next();
 });
 
+app.use('/api/', require('./routes/api'));
 app.use('/', require('./routes/chromeExtension'));
 
 require('./passportConfig.js')(app, passport);

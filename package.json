@@ -24,6 +24,7 @@
     "mongoose": "^4.0.4",
     "mongoose-autopopulate": "^0.1.0",
     "mongoose-deep-populate": "^1.1.0",
+    "numeral": "^1.5.3",
     "passport": "^0.2.2",
     "passport-local": "^1.0.0",
     "passport-tumblr": "^0.1.2",
