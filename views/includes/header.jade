@@ -22,7 +22,8 @@ header.header.black-bg
                     - for(var i = 0; i < user.tokenSet.length; i++)
                         - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
                             - var blog = user.tokenSet[i].blogs[k];
-                            - for(var j = 0; j < blog.notifications.length; j++)
+                            - var j = blog.notifications.length;
+                            - while(j--)
                                 - var notification = blog.notifications[j];
                                 li
                                     a(href="#")

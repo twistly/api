@@ -19,7 +19,7 @@ module.exports = (function() {
 
     app.get('*', function(req, res, next){
         if (req.isAuthenticated()) { return next(); }
-        res.redirect('/signin');
+        res.render('comingSoon');
     });
 
     app.get('/blog/:blogUrl/*', function(req, res, next){
