@@ -46,49 +46,55 @@ module.exports = (function() {
                         Blog.findOne({url: blogUrl}, function(err, blog){
                             if(err) console.log(err);
                             if(blog){
-                                var newPosts = [];
-                                for (var id in posts) {
-                                    if (posts.hasOwnProperty(id)) {
-                                        var post = new Post({
-                                            blogId: blog.id,
-                                            postId: id,
-                                            reblogKey: posts[id].reblogKey
-                                        });
-                                        post.save();
-                                        newPosts.push(post.toObject());
-                                    }
-                                }
-                                var notification = new Notification({
-                                    blogUrl: queuedFrom,
-                                    content: blog.url + ' queued ' + newPosts.length + ' from ' + queuedFrom,
-                                    read: false
-                                });
-                                notification.save(function(err, notification){
-                                    Blog.findOne({url: queuedFrom}, function(err, queuedFromBlog){
-                                        if(err) console.log(err);
-                                        if(queuedFromBlog) {
-                                            queuedFromBlog.notifications.push(notification.id);
+                                if(blog.postsInQueue >= user.plan.maxPosts || blog.postsInQueue + posts.length >= user.plan.maxPosts){
+                                    res.send({
+                                        error: 'You can only have ' + user.plan.maxPosts + ' posts in your queue, you currently have ' + blog.postsInQueue
+                                    });
+                                } else {
+                                    var newPosts = [];
+                                    for (var id in posts) {
+                                        if (posts.hasOwnProperty(id)) {
+                                            var post = new Post({
+                                                blogId: blog.id,
+                                                postId: id,
+                                                reblogKey: posts[id].reblogKey
+                                            });
+                                            post.save();
+                                            newPosts.push(post.toObject());
                                         }
-                                        blog.postsInQueue = blog.postsInQueue+newPosts.length;
-                                        blog.notifications.push(notification.id);
-                                        blog.save();
-                                        var postSet = new PostSet({
-                                            posts: newPosts,
-                                            blogId: blog.id,
-                                            clearCaption: false,
-                                            postCount: {
-                                                start: newPosts.length,
-                                                now: newPosts.length
+                                    }
+                                    var notification = new Notification({
+                                        blogUrl: queuedFrom,
+                                        content: blog.url + ' queued ' + newPosts.length + ' from ' + queuedFrom,
+                                        read: false
+                                    });
+                                    notification.save(function(err, notification){
+                                        Blog.findOne({url: queuedFrom}, function(err, queuedFromBlog){
+                                            if(err) console.log(err);
+                                            if(queuedFromBlog) {
+                                                queuedFromBlog.notifications.push(notification.id);
                                             }
-                                        });
-                                        postSet.save(function(err, postSet){
-                                            res.send({
-                                                ok: 'okay',
-                                                postSet: postSet
+                                            blog.postsInQueue = blog.postsInQueue+newPosts.length;
+                                            blog.notifications.push(notification.id);
+                                            blog.save();
+                                            var postSet = new PostSet({
+                                                posts: newPosts,
+                                                blogId: blog.id,
+                                                clearCaption: false,
+                                                postCount: {
+                                                    start: newPosts.length,
+                                                    now: newPosts.length
+                                                }
+                                            });
+                                            postSet.save(function(err, postSet){
+                                                res.send({
+                                                    ok: 'okay',
+                                                    postSet: postSet
+                                                });
                                             });
                                         });
                                     });
-                                });
+                                }
                             } else {
                                 res.send({
                                     error: 'We misplaced your blogs?'

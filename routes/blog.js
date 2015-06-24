@@ -97,16 +97,27 @@ module.exports = (function() {
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) console.log(err);
             if(blog){
-                Queue.find({blogId: blog._id}).exec(function(err, queues){
-                    if(err) console.log(err);
-                    if(queues){
-                        res.render('blog/queues/index', {
-                            blog:blog,
-                            queues: queues
+                async.parallel([
+                    function(callback){
+                        Queue.find({blogId: blog._id}).exec(function(err, queues){
+                            if(err) callback(err);
+                            callback(null, queues);
                         });
-                    } else {
-                        res.send('This blog doesn\'t have any queues.');
+                    },
+                    function(callback){
+                        PostSet.find({blogId: blog.id}).sort('-_id').exec(function(err, postSets){
+                            if(err) callback(err);
+                            callback(null, postSets)
+                        });
                     }
+                ],
+                function(err, results){
+                    if(err) console.log(err);
+                    res.render('blog/queues/index', {
+                        blog:blog,
+                        queues: results[0],
+                        postSets: results[1]
+                    });
                 });
             } else {
                 res.send('This blog doesn\'t exist.');
