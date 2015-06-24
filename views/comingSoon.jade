@@ -9,24 +9,35 @@ html
                 font-family: sans-serif;
                 text-transform: uppercase;
             }
-
+            
             #holder {
-                position: relative;   top: 50%;   transform: translateY(-50%);
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
                 text-align: center;
             }
-
+            
             a {
                 color: #428bca;
                 text-decoration: none;
             }
-
+            
             a:hover {
                 text-decoration: underline;
             }
-
+            
             h1 {
-                margin: 10px;
+                margin: 0;
                 font-size: 70px;
+            }
+            
+            #footer {
+                position: fixed;
+                bottom: 5;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 14px;
             }
     body
         #holder
@@ -36,3 +47,5 @@ html
             | |
             | 
             a(href="/signup") Signup
+        #footer
+            | #{postsQueued} posts queued | #{users} queueing

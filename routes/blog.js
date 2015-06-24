@@ -19,7 +19,28 @@ module.exports = (function() {
 
     app.get('*', function(req, res, next){
         if (req.isAuthenticated()) { return next(); }
-        res.render('comingSoon');
+
+        async.parallel([
+            function(callback){
+                Post.count({}, function(err, postCount){
+                    if(err) callback(err);
+                    callback(null, postCount);
+                });
+            },
+            function(callback){
+                User.count({}, function(err, userCount){
+                    if(err) callback(err);
+                    callback(null, userCount)
+                });
+            }
+        ],
+        function(err, results){
+            if(err) console.log(err);
+            res.render('comingSoon', {
+                postsQueued: results[0],
+                users: results[1]
+            });
+        });
     });
 
     app.get('/blog/:blogUrl/*', function(req, res, next){
