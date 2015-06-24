@@ -57,8 +57,8 @@ app.use('/', require('./routes/chromeExtension'));
 require('./passportConfig.js')(app, passport);
 
 app.use('/', require('./routes/auth'));
-app.use('/', require('./routes/blog'));
 app.use('/', require('./routes/web'));
+app.use('/', require('./routes/blog'));
 
 app.use(function(req, res, next){
     res.status(404).send('Either we lost this page or you clicked an incorrect link!');

@@ -16,13 +16,36 @@ module.exports = (function() {
     var app = express.Router();
 
     app.get('*', function(req, res, next){
-        if (!req.isAuthenticated()) res.redirect('/signin');
         res.locals.title = 'Xtend';
         return next();
     });
 
     app.get('/', function(req, res){
-        res.render('index');
+        if (!req.isAuthenticated()){
+            async.parallel([
+                function(callback){
+                    Post.count({}, function(err, postCount){
+                        if(err) callback(err);
+                        callback(null, postCount);
+                    });
+                },
+                function(callback){
+                    User.count({}, function(err, userCount){
+                        if(err) callback(err);
+                        callback(null, userCount)
+                    });
+                }
+            ],
+            function(err, results){
+                if(err) console.log(err);
+                res.render('comingSoon', {
+                    postsQueued: results[0],
+                    users: results[1]
+                });
+            });
+        } else {
+            res.render('index');
+        }
     });
 
     app.get('/account', function(req, res){
