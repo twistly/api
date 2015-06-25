@@ -1,36 +1,44 @@
 header.header.black-bg
-    .sidebar-toggle-box
-        .fa.fa-bars.tooltips(data-placement="right", data-original-title="Toggle Navigation")
+    if(user)
+        .sidebar-toggle-box
+            .fa.fa-bars.tooltips(data-placement="right", data-original-title="Toggle Navigation")
     a(href="/").logo
         b XTEND
     .nav.notify-row#top_menu
         ul.nav.top-menu
-            li#header_inbox_bar.dropdown
-                a(href="/", data-toggle="dropdown").dropdown-toggle
-                    i.fa.fa-envelope-o
-                    - var notificationCount = 0;
-                    - for(var i = 0; i < user.tokenSet.length; i++)
-                        - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
-                            - var blog = user.tokenSet[i].blogs[k];
-                            - for(var j = 0; j < blog.notifications.length; j++)
-                                - notificationCount++
-                    span.badge.bg-theme #{notificationCount}
-                ul.dropdown-menu.extended.inbox
-                    .notify-arrow.notify-arrow-green
-                    li
-                        p.green You have #{notificationCount} pending #{notificationCount == 1 ? "notification" : "notifications"}
-                    - for(var i = 0; i < user.tokenSet.length; i++)
-                        - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
-                            - var blog = user.tokenSet[i].blogs[k];
-                            - var j = blog.notifications.length;
-                            - while(j--)
-                                - var notification = blog.notifications[j];
-                                li
-                                    a(href="#")
-                                        .task-info !{notification.content}
-                    li.external
-                        a(href="#") See all notifications
+            if(user)
+                li#header_inbox_bar.dropdown
+                    a(href="/", data-toggle="dropdown").dropdown-toggle
+                        i.fa.fa-envelope-o
+                        - var notificationCount = 0;
+                        - for(var i = 0; i < user.tokenSet.length; i++)
+                            - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+                                - var blog = user.tokenSet[i].blogs[k];
+                                - for(var j = 0; j < blog.notifications.length; j++)
+                                    - notificationCount++
+                        span.badge.bg-theme #{notificationCount}
+                    ul.dropdown-menu.extended.inbox
+                        .notify-arrow.notify-arrow-green
+                        li
+                            p.green You have #{notificationCount} pending #{notificationCount == 1 ? "notification" : "notifications"}
+                        - for(var i = 0; i < user.tokenSet.length; i++)
+                            - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
+                                - var blog = user.tokenSet[i].blogs[k];
+                                - var j = blog.notifications.length;
+                                - while(j--)
+                                    - var notification = blog.notifications[j];
+                                    li
+                                        a(href="#")
+                                            .task-info !{notification.content}
+                        li.external
+                            a(href="#") See all notifications
     .top-menu
         ul.nav.pull-right.top-menu
-            li
-                a(href="/signout").signout Signout
+            if(user)
+                li
+                    a(href="/signout").signout Signout
+            else
+                li
+                    a(href="/signin").signout Signin
+                li
+                    a(href="/signup").signout Signup

@@ -17,6 +17,42 @@ var express  = require('express'),
 module.exports = (function() {
     var app = express.Router();
 
+    app.get('/blog/:blogUrl/stats/public', function(req, res){
+        Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
+            if(err) console.log(err);
+            if(blog){
+                Stat.find({ blogId: blog.id } , '-_id -__v -blogId').sort('-date').limit(384).exec(function(err, stats){
+                    if(err) console.log(err);
+                    Stat.findOne({ blogId: blog.id } , '-_id -__v -blogId').sort('date').exec(function(err, firstStat){
+                        if(err) console.log(err);
+                        //- This is for the weekly gains and stuff
+                        var current = stats[stats.length-1],
+                            currentFollowers = current.followerCount,
+                            daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime())/(24*60*60*1000))),
+                            gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow),
+                            lastUpdated = Math.floor((new Date().getTime() - new Date(stats[0].date).getTime())/ 60000);
+                        res.render('blog/public', {
+                            currentBlog: blog,
+                            stats: stats,
+                            statTable: {
+                                forecast: {
+                                    week: currentFollowers + (gainsPerDay * 7),
+                                    month: currentFollowers + (gainsPerDay * 30),
+                                    year: currentFollowers + (gainsPerDay * 365)
+                                },
+                                lastUpdated: lastUpdated < 2 ? 'just now' : lastUpdated + ' minutes ago',
+                                currentFollowers: currentFollowers,
+                                html: []
+                            }
+                        });
+                    });
+                });
+            } else {
+                res.send('This blog doesn\'t exist.');
+            }
+        });
+    });
+
     app.get('*', function(req, res, next){
         if (req.isAuthenticated()) { return next(); }
         res.redirect('/');

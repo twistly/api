@@ -17,10 +17,16 @@ html
         link(href="/assets/lineicons/style.css", rel="stylesheet")
         link(href="/assets/css/style-responsive.css", rel="stylesheet")
         block styles
-        style.
-            .task-info {
-                white-space: normal;
-            }
+        if(user)
+            style.
+                .task-info {
+                    white-space: normal;
+                }
+        else
+            style.
+                #main-content {
+                    margin: 0;
+                }
     body
         section#container
             include ./includes/header
