@@ -81,7 +81,7 @@ setInterval(function(){
                                 }
                             });
                         } else {
-                            console.log('They have no posts');
+                            // console.log('They have no posts');
                         }
                     });
                 }
