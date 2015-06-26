@@ -20,6 +20,12 @@ module.exports = (function() {
         res.send('Welcome to the Xtend API.');
     });
 
+    app.get('/check', function(req, res){
+        res.send({
+            ok: 'okay'
+        });
+    });
+
     app.get('/blog/counter/followers/:blogUrl', function(req, res){
         var linkClass = req.query.class || '';
         var linkString = req.query.name ? req.query.name : 'followers';
