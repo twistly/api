@@ -163,15 +163,23 @@ module.exports = (function() {
 
     app.post('/blog/:blogUrl/queues', function(req, res){
         Blog.findOne({url: req.params.blogUrl}, function(err, blog){
-            var queue = new Queue({
-                blogId: blog.id,
-                interval: req.body.interval,
-                startHour: 0,
-                endHour: 23,
-                backfill: false
-            });
-            queue.save();
-            res.redirect('/blog/' + req.params.blogUrl + '/queues');
+            if(req.body.interval && req.body.interval > 0 && req.body.interval =< 250) {
+                var queue = new Queue({
+                    blogId: blog.id,
+                    interval: req.body.interval,
+                    startHour: 0,
+                    endHour: 23,
+                    backfill: false
+                });
+                queue.save();
+                res.redirect('/blog/' + req.params.blogUrl + '/queues');
+            } else {
+                if(req.body.interval > 250){
+                    res.send('We can\'t post more than 250 times per 24 hours');
+                } else {
+                    res.send('You need to set an amount per 24 hours.');
+                }
+            }
         });
     });
 
