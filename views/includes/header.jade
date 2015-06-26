@@ -13,8 +13,7 @@ header.header.black-bg
                         - var notificationCount = 0;
                         - for(var i = 0; i < user.tokenSet.length; i++)
                             - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
-                                - var blog = user.tokenSet[i].blogs[k];
-                                - for(var j = 0; j < blog.notifications.length; j++)
+                                - for(var j = 0; j < user.tokenSet[i].blogs[k].notifications.length; j++)
                                     - notificationCount++
                         span.badge.bg-theme #{notificationCount}
                     ul.dropdown-menu.extended.inbox
@@ -23,10 +22,9 @@ header.header.black-bg
                             p.green You have #{notificationCount} pending #{notificationCount == 1 ? "notification" : "notifications"}
                         - for(var i = 0; i < user.tokenSet.length; i++)
                             - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
-                                - var blog = user.tokenSet[i].blogs[k];
-                                - var j = blog.notifications.length;
+                                - var j = user.tokenSet[i].blogs[k].notifications.length;
                                 - while(j--)
-                                    - var notification = blog.notifications[j];
+                                    - var notification = user.tokenSet[i].blogs[k].notifications[j];
                                     li
                                         a(href="#")
                                             .task-info !{notification.content}

@@ -129,6 +129,17 @@ module.exports = (function() {
         });
     });
 
+    app.get('/blog/:blogUrl/counters', function(req, res){
+        Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
+            if(err) console.log(err);
+            if(blog){
+                res.render('blog/counters');
+            } else {
+                res.send('This blog doesn\'t exist.');
+            }
+        });
+    });
+
     app.get('/blog/:blogUrl/queues', function(req, res){
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) console.log(err);
@@ -150,7 +161,7 @@ module.exports = (function() {
                 function(err, results){
                     if(err) console.log(err);
                     res.render('blog/queues/index', {
-                        blog:blog,
+                        blog: blog,
                         queues: results[0],
                         postSets: results[1]
                     });
@@ -163,23 +174,30 @@ module.exports = (function() {
 
     app.post('/blog/:blogUrl/queues', function(req, res){
         Blog.findOne({url: req.params.blogUrl}, function(err, blog){
-            if(req.body.interval && req.body.interval > 0 && req.body.interval =< 250) {
+            if(req.body.interval) {
+                var interval = ((req.body.interval > 0) && (req.body.interval <= 250)) ? req.body.interval : 250;
+                var startHour = ((req.body.startHour > 0) && (req.body.startHour <= 24)) ? req.body.startHour : 0;
+                var endHour = ((req.body.endHour > 0) && (req.body.endHour <= 24)) ? req.body.endHour : 24;
                 var queue = new Queue({
                     blogId: blog.id,
-                    interval: req.body.interval,
-                    startHour: 0,
-                    endHour: 23,
+                    interval: interval,
+                    startHour: startHour,
+                    endHour: endHour,
                     backfill: false
                 });
                 queue.save();
                 res.redirect('/blog/' + req.params.blogUrl + '/queues');
             } else {
-                if(req.body.interval > 250){
-                    res.send('We can\'t post more than 250 times per 24 hours');
-                } else {
-                    res.send('You need to set an amount per 24 hours.');
-                }
+                res.send('You need to set an amount per 24 hours.');
             }
+        });
+    });
+
+    app.post('/blog/:blogUrl/queues/:queueId/delete', function(req, res){
+        Queue.findOne({_id: req.params.queueId}, function(err, queue){
+            if(err) console.log(err);
+            queue.remove();
+            res.redirect('/blog/' + req.params.blogUrl + '/queues');
         });
     });
 

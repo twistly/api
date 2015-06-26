@@ -26,6 +26,14 @@ block content
                 label.col-sm-2.control-label Amount of posts per queue
                 .col-sm-10
                     input(type="number", name="interval", min="1", max="250").form-control
+            .form-group
+                label.col-sm-2.control-label Start Hour (0 - 24)
+                .col-sm-10
+                    input(type="number", name="startHour", min="0", max="24").form-control
+            .form-group
+                label.col-sm-2.control-label End Hour (0 - 24)
+                .col-sm-10
+                    input(type="number", name="endHour", min="0", max="24").form-control
             button(type="submit").btn.btn-theme Create
     .form-panel
         h4.mb
@@ -34,7 +42,7 @@ block content
             | Current Queues
         - for(i in queues)
             - var queue = queues[i];
-            form.form-horizontal.style-form(action="", method="post")
+            form.form-horizontal.style-form(action="/blog/" + blog.url + "/queues/new", method="post")
                 .form-group
                     label.col-sm-2.control-label Start time
                     .col-sm-10
@@ -52,6 +60,7 @@ block content
                     .col-sm-10
                         p.form-control-static
                             time(datetime=(new Date(queue.lastRun).toISOString())) #{new Date(queue.lastRun).toISOString()}
+            form(action="/blog/" + blog.url + "/queues/" + queue.id + "/delete", method="post")
                 button(type="submit").btn.btn-theme Delete
     - for(i in postSets)
         - var postSet = postSets[i];
