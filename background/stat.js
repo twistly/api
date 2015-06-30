@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
     TokenSet = require('../models/TokenSet'),
     config = require('../config.js');
 
-mongoose.connect('mongodb://localhost/xtend');
+mongoose.connect(config.db.uri);
 
 setInterval(function(){
     TokenSet.find({}).populate('blogs').exec(function(err, tokenSets) {

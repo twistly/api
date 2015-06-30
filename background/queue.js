@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
     TokenSet = require('../models/TokenSet'),
     config = require('../config.js');
 
-mongoose.connect('mongodb://localhost/xtend');
+mongoose.connect(config.db.uri);
 
 setInterval(function(){
     Queue.find(function(err, queues) {
