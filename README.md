@@ -20,3 +20,6 @@ config.db.uri = process.env.DB_URI || 'mongodb://localhost:27017/xtend';
 module.exports = config;
 
 ````
+
+
+This is in no way affiliated with Tumblr, Inc., its partners, or its investors.
