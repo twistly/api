@@ -23,9 +23,16 @@ setInterval(function(){
                     token_secret: tokenSet.tokenSecret
                 });
                 client.userInfo(function (err, data) {
-                    if(err) console.log(err);
-                    console.dir(data);
-                    if(data){
+                    if(err) {
+                        if(err.message == 'API error: 401 Not Authorized') {
+                            console.log('URL changed or user removed our access to token.');
+                            tokenSet.enabled = false;
+                            tokenSet.errorMessage = 'Please reauthenticate with Tumblr.';
+                            tokenSet.save();
+                        } else {
+                            console.log(err);
+                        }
+                    } else if(data){
                         data.user.blogs.forEach(function (tumblrBlog) {
                             Blog.findOne({ url: tumblrBlog.name }, function(err, blog){
                                 if(err) console.log(err);
@@ -46,9 +53,6 @@ setInterval(function(){
                                 }
                             });
                         });
-                    } else {
-                        console.log('DATA DUMP FROM NO DATA.USER!');
-                        console.log(data);
                     }
                 });
             }
