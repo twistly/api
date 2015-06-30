@@ -50,8 +50,13 @@ setInterval(function(){
                                                 // Add caption: caption back into reblog and edit
                                                 client.reblog(blog.url, {id: post.postId, reblog_key: post.reblogKey}, function (err, data) {
                                                     if (err) {
-                                                        if(err.code != 'ETIMEDOUT'){
-                                                            console.log(err);
+                                                        if(err.message == 'API error: 400 Bad Request') {
+                                                            console.log('Post was probably deleted, removing from db.');
+                                                            post.remove();
+                                                            queue.lastRun = lastRun;
+                                                            queue.save();
+                                                        } else if(err.code != 'ETIMEDOUT'){
+                                                            console.dir(err);
                                                             tokenSet.enabled = false;
                                                             tokenSet.errorMessage = err;
                                                             tokenSet.save();

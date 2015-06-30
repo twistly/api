@@ -24,26 +24,32 @@ setInterval(function(){
                 });
                 client.userInfo(function (err, data) {
                     if(err) console.log(err);
-                    data.user.blogs.forEach(function (tumblrBlog) {
-                        Blog.findOne({ url: tumblrBlog.name }, function(err, blog){
-                            if(err) console.log(err);
-                            if(blog){
-                                var now = new Date();
-                                var stat = new Stat({
-                                    blogId: blog.id,
-                                    followerCount: tumblrBlog.followers,
-                                    postCount: tumblrBlog.posts
-                                });
-                                stat.save();
-                                blog.followerCount = tumblrBlog.followers;
-                                blog.postCount = tumblrBlog.posts;
-                                blog.save();
-                                console.log('Done - ' + tumblrBlog.name + ' - ' + tumblrBlog.followers);
-                            } else {
-                                console.log('blog not found? URL: ' + tumblrBlog.name);
-                            }
+                    console.dir(data);
+                    if(data){
+                        data.user.blogs.forEach(function (tumblrBlog) {
+                            Blog.findOne({ url: tumblrBlog.name }, function(err, blog){
+                                if(err) console.log(err);
+                                if(blog){
+                                    var now = new Date();
+                                    var stat = new Stat({
+                                        blogId: blog.id,
+                                        followerCount: tumblrBlog.followers,
+                                        postCount: tumblrBlog.posts
+                                    });
+                                    stat.save();
+                                    blog.followerCount = tumblrBlog.followers;
+                                    blog.postCount = tumblrBlog.posts;
+                                    blog.save();
+                                    console.log('Done - ' + tumblrBlog.name + ' - ' + tumblrBlog.followers);
+                                } else {
+                                    console.log('blog not found? URL: ' + tumblrBlog.name);
+                                }
+                            });
                         });
-                    });
+                    } else {
+                        console.log('DATA DUMP FROM NO DATA.USER!');
+                        console.log(data);
+                    }
                 });
             }
         });
