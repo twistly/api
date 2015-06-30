@@ -27,17 +27,21 @@ setInterval(function(){
                     data.user.blogs.forEach(function (tumblrBlog) {
                         Blog.findOne({ url: tumblrBlog.name }, function(err, blog){
                             if(err) console.log(err);
-                            var now = new Date();
-                            var stat = new Stat({
-                                blogId: blog.id,
-                                followerCount: tumblrBlog.followers,
-                                postCount: tumblrBlog.posts
-                            });
-                            stat.save();
-                            blog.followerCount = tumblrBlog.followers;
-                            blog.postCount = tumblrBlog.posts;
-                            blog.save();
-                            console.log('Done - ' + tumblrBlog.name + ' - ' + tumblrBlog.followers);
+                            if(blog){
+                                var now = new Date();
+                                var stat = new Stat({
+                                    blogId: blog.id,
+                                    followerCount: tumblrBlog.followers,
+                                    postCount: tumblrBlog.posts
+                                });
+                                stat.save();
+                                blog.followerCount = tumblrBlog.followers;
+                                blog.postCount = tumblrBlog.posts;
+                                blog.save();
+                                console.log('Done - ' + tumblrBlog.name + ' - ' + tumblrBlog.followers);
+                            } else {
+                                console.log('blog not found? URL: ' + tumblrBlog.name);
+                            }
                         });
                     });
                 });
