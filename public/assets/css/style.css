@@ -2239,3 +2239,14 @@ label {
 .site-min-height {
     min-height: 900px;
 }
+
+/*theme credit*/
+span.credit {
+    color: white;
+    font-size: 10px;
+    text-align: center;
+    display: block;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
