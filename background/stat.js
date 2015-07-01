@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
     Blog = require('../models/Blog'),
     Stat = require('../models/Stat'),
     TokenSet = require('../models/TokenSet'),
-    config = require('../config.js');
+    config = require('../config/config.js');
 
 mongoose.connect(config.db.uri);
 

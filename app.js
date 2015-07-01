@@ -8,7 +8,7 @@ var express = require('express'),
     mongoose = require('mongoose'),
     fs = require('fs'),
     passport = require('passport'),
-    config = require('./config.js'),
+    config = require('./config/config.js'),
     User = require('./models/User'),
     Blog = require('./models/Blog'),
     Post = require('./models/Post'),
@@ -36,7 +36,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(methodOverride());
 app.use(session({
-    secret: 'keyboard cat',
+    secret: config.db.session.secret,
     name: 'session',
     store: new MongoStore({mongooseConnection: mongoose.connection}),
     proxy: true,
@@ -54,20 +54,35 @@ app.use(function(req, res, next){
 app.use('/api/', require('./routes/api'));
 app.use('/', require('./routes/chromeExtension'));
 
-require('./passportConfig.js')(app, passport);
+require('./config/passport.js')(app, passport);
 
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/web'));
 app.use('/', require('./routes/blog'));
 
-app.use(function(req, res, next){
-    res.status(404).send('Either we lost this page or you clicked an incorrect link!');
+// Handle 404
+app.use(function(req, res) {
+    res.status(400);
+    res.render('http/404', {
+        title: '404: File Not Found'}
+    );
 });
 
-fs.writeFile('./log.txt', '', function(){
-    console.log('Log file emptied.');
+// Handle 500
+app.use(function(error, req, res, next) {
+    res.status(500);
+    res.render('http/500', {
+        title:'500: Internal Server Error',
+        error: error
+    });
 });
+
+if(config.emptyLog){
+    fs.writeFile('./log.txt', '', function(){
+        console.log('Log file emptied.');
+    });
+}
 
 app.listen(config.env.port, function() {
-    console.log('Express server listening on port %s', config.env.port);
+    console.log('Xtend is running on port %s', config.env.port);
 });

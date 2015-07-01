@@ -5,12 +5,12 @@ exports = module.exports = function(app, passport) {
         TumblrStrategy = require('passport-tumblr').Strategy,
         async = require('async'),
         config = require('./config.js'),
-        Blog  = require('./models/Blog'),
-        User  = require('./models/User'),
-        Plan  = require('./models/Plan'),
-        TokenSet  = require('./models/TokenSet'),
-        Invite  = require('./models/Invite'),
-        Notification  = require('./models/Notification');
+        Blog  = require('../models/Blog'),
+        User  = require('../models/User'),
+        Plan  = require('../models/Plan'),
+        TokenSet  = require('../models/TokenSet'),
+        Invite  = require('../models/Invite'),
+        Notification  = require('../models/Notification');
 
     passport.serializeUser(function(user, done) {
         done(null, user.id);

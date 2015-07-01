@@ -5,6 +5,7 @@ var express  = require('express'),
     async = require('async'),
     _ = require('underscore'),
     moment = require('moment'),
+    config = require('../config/config.js'),
     User  = require('../models/User'),
     Blog  = require('../models/Blog'),
     Post  = require('../models/Post'),
@@ -133,7 +134,17 @@ module.exports = (function() {
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) console.log(err);
             if(blog){
-                res.render('blog/counters');
+                var followersCounterScript = '<script src="' + config.env.baseUrl + '/api/blog/counter/followers/' + blog.url + '?class=btn&name=followers&fromTop=26px&fromRight=2px" type="text/javascript"></script>';
+                var onlineCounterScript = '<script src="' + config.env.baseUrl + '/api/blog/counter/online/' + blog.url + '?class=btn&name=followers&fromTop=48px&fromRight=2px" type="text/javascript"></script>';
+                var viewsCounterScript = '<script src="' + config.env.baseUrl + '/api/blog/counter/views/' + blog.url + '?class=btn&name=followers&fromTop=70px&fromRight=2px" type="text/javascript"></script>';
+                res.render('blog/counters', {
+                    blog: blog,
+                    counters: {
+                        followers: followersCounterScript,
+                        online: onlineCounterScript,
+                        views: viewsCounterScript
+                    }
+                });
             } else {
                 res.send('This blog doesn\'t exist.');
             }

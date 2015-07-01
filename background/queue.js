@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     Post = require('../models/Post'),
     Blog = require('../models/Blog'),
     TokenSet = require('../models/TokenSet'),
-    config = require('../config.js');
+    config = require('../config/config.js');
 
 mongoose.connect(config.db.uri);
 
@@ -82,7 +82,14 @@ setInterval(function(){
                                         });
                                     }
                                 } else {
-                                    console.log('Counldn\'t find a token set for that blog');
+                                    Blog.findOne({_id: queue.blogId}, function(err, blog){
+                                        if(err) console.log(err);
+                                        if(blog){
+                                            console.log('Counldn\'t find a token set for ' + blog.name);
+                                        } else {
+                                            console.log('Didn\'t find that blog?' + queue.blogId);
+                                        }
+                                    });
                                 }
                             });
                         } else {
