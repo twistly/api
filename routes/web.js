@@ -4,11 +4,12 @@ var express  = require('express'),
     passport = require('passport'),
     async = require('async'),
     _ = require('underscore'),
-    User  = require('../models/User'),
-    Blog  = require('../models/Blog'),
-    Post  = require('../models/Post'),
-    Queue  = require('../models/Queue'),
-    TokenSet  = require('../models/TokenSet'),
+    User = require('../models/User'),
+    Blog = require('../models/Blog'),
+    Post = require('../models/Post'),
+    Queue = require('../models/Queue'),
+    TokenSet = require('../models/TokenSet'),
+    Invite = require('../models/Invite'),
     Notification = require('../models/Notification'),
     Stat = require('../models/Stat');
 
@@ -47,7 +48,7 @@ module.exports = (function() {
             res.render('index');
         }
     });
-    
+
     app.get('*', function(req, res, next){
         if (req.isAuthenticated()) { return next(); }
         res.redirect('/');
@@ -179,6 +180,52 @@ module.exports = (function() {
                 }
             });
         })(req, res);
+    });
+
+    app.get('/genToken', function(req, res, next){
+        if(req.user.isAdmin){
+            // http://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript
+            function genToken(string, length) {
+                var chars = string || "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz0123456789",
+                    stringLength = length || 16,
+                    randomString = '',
+                    charCount = 0,
+                    numCount = 0;
+
+                for (var i = 0; i < stringLength; i++) {
+                    // If random bit is 0, there are less than 3 digits already saved, and there are not already 5 characters saved, generate a numeric value.
+                    if((Math.floor(Math.random() * 2) == 0) && numCount < 3 || charCount >= 5) {
+                        var rnum = Math.floor(Math.random() * 10);
+                        randomString += rnum;
+                        numCount += 1;
+                    } else {
+                        // If any of the above criteria fail, go ahead and generate an alpha character from the chars string
+                        var rnum = Math.floor(Math.random() * chars.length);
+                        randomString += chars.substring(rnum,rnum+1);
+                        charCount += 1;
+                    }
+                }
+                return randomString;
+            }
+            Invite.create({token: genToken(), used: false}, function(err, invite){
+                res.send(invite);
+            });
+        } else {
+            next();
+        }
+    });
+
+    app.get('/unusedTokens', function(req, res, next){
+        if(req.user.isAdmin){
+            Invite.find({used: false}).select('token').exec(function(err, invites){
+                res.send({
+                    count: invites.length,
+                    invites: invites
+                });
+            });
+        } else {
+            next();
+        }
     });
 
     return app;

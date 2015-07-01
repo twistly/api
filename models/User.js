@@ -20,7 +20,11 @@ var userSchema = mongoose.Schema({
         type: String,
         default: ''
     },
-    inviteToken: String
+    inviteToken: String,
+    isAdmin: {
+        type: Boolean,
+        default: false
+    }
 });
 
 // Bcrypt middleware
