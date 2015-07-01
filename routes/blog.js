@@ -27,7 +27,7 @@ module.exports = (function() {
                     Stat.findOne({ blogId: blog.id } , '-_id -__v -blogId').sort('date').exec(function(err, firstStat){
                         if(err) console.log(err);
                         //- This is for the weekly gains and stuff
-                        var current = stats[stats.length-1],
+                        var current = stats[0],
                             currentFollowers = current.followerCount,
                             daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime())/(24*60*60*1000))),
                             gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow),
@@ -83,7 +83,7 @@ module.exports = (function() {
                     Stat.findOne({ blogId: blog.id } , '-_id -__v -blogId').sort('date').exec(function(err, firstStat){
                         if(err) console.log(err);
                         //- This is for the weekly gains and stuff
-                        var current = stats[stats.length-1],
+                        var current = stats[0],
                             currentFollowers = current.followerCount,
                             daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime())/(24*60*60*1000))),
                             gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow),
