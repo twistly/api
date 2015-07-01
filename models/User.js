@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
     bcrypt = require('bcrypt'),
+    config = require('../config/config.js'),
     SALT_WORK_FACTOR = 10;
 
 var userSchema = mongoose.Schema({
@@ -13,7 +14,7 @@ var userSchema = mongoose.Schema({
     plan: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Plan',
-        default: "557285540cc0a43e00d2ba13"
+        default: config.db.defaultPlanId
     },
     apiKey: {
         type: String,
