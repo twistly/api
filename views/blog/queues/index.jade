@@ -62,15 +62,3 @@ block content
                             time(datetime=(new Date(queue.lastRun).toISOString())) #{new Date(queue.lastRun).toISOString()}
             form(action="/blog/" + blog.url + "/queues/" + queue.id + "/delete", method="post")
                 button(type="submit").btn.btn-theme Delete
-    - for(i in postSets)
-        - var postSet = postSets[i];
-            .form-panel
-                form.form-horizontal.style-form(action="", method="post")
-                    .form-group
-                        label.col-sm-2.control-label Posts at start
-                        .col-sm-10
-                            p.form-control-static #{postSet.postCount.start}
-                    .form-group
-                        label.col-sm-2.control-label Posts left in postSet
-                        .col-sm-10
-                            p.form-control-static #{postSet.posts.length}

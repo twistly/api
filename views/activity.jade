@@ -1,0 +1,33 @@
+extends ./layout
+
+block scripts
+    script(src="/assets/js/jquery.timeago.js")
+    script.
+        $(document).ready(function() {
+            $("[datetime]").timeago();
+        });
+
+block styles
+    style.
+        .form-horizontal.style-form .form-group:last-of-type {
+            border: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+block content
+    .row.mt
+        .col-lg-12
+            - for(i in postSets)
+                - var postSet = postSets[i];
+                    .panel.panel-default
+                        .panel-body
+                            | #{postSet.blogId.url} reblogged #{postSet.postCount.start} from #{postSet.queuedFrom || 'Unknown'}
+                            | 
+                            time(datetime=postSet._id.getTimestamp()) #{postSet._id.getTimestamp()}
+                            | 
+                            | -
+                            | 
+                            | There's #{postSet.posts.length}
+                            | 
+                            | posts left to post.

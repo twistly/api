@@ -7,6 +7,7 @@ var express  = require('express'),
     User = require('../models/User'),
     Blog = require('../models/Blog'),
     Post = require('../models/Post'),
+    PostSet = require('../models/PostSet'),
     Queue = require('../models/Queue'),
     TokenSet = require('../models/TokenSet'),
     Invite = require('../models/Invite'),
@@ -60,6 +61,23 @@ module.exports = (function() {
 
     app.get('/user', function(req, res){
         res.send(req.user);
+    });
+
+    app.get('/activity', function(req, res){
+        var blogs = [];
+        async.each(req.user.tokenSet, function (tokenSet, callback) {
+            async.each(tokenSet.blogs, function (blog, callback) {
+                blogs.push({
+                    blogId: blog.id
+                });
+            });
+        });
+        PostSet.find({ $or: blogs}).limit(50).sort('-_id').populate('blogId posts').exec(function(err, postSets){
+            if(err) res.send(err);
+            res.render('activity', {
+                postSets: postSets
+            });
+        });
     });
 
     app.get('/unlink/:tokenSetId', function(req, res){
