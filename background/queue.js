@@ -55,7 +55,13 @@ setInterval(function(){
                                                             post.remove();
                                                             queue.lastRun = lastRun;
                                                             queue.save();
+                                                        } else if(err.message == 'API error: 403 Forbidden'){
+                                                            console.log('Post seems to be from a user that\'s blocked them? Removing from db.');
+                                                            post.remove();
+                                                            queue.lastRun = lastRun;
+                                                            queue.save();
                                                         } else if(err.code != 'ETIMEDOUT'){
+                                                            console.dir(post);
                                                             console.dir(err);
                                                             tokenSet.enabled = false;
                                                             tokenSet.errorMessage = err;
