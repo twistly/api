@@ -24,6 +24,7 @@ header.header.black-bg
                             - for(var k = 0; k < user.tokenSet[i].blogs.length; k++)
                                 - var j = user.tokenSet[i].blogs[k].notifications.length;
                                 - while(j--)
+                                    - if(user.tokenSet[i].blogs[k].notifications.length - 5 == j) break;
                                     - var notification = user.tokenSet[i].blogs[k].notifications[j];
                                     li
                                         a(href="#")
