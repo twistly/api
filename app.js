@@ -51,11 +51,10 @@ app.use(function(req, res, next){
     next();
 });
 
-app.use('/api/', require('./routes/api'));
-app.use('/', require('./routes/chromeExtension'));
-
 require('./config/passport.js')(app, passport);
 
+app.use('/api/', require('./routes/api'));
+app.use('/', require('./routes/chromeExtension'));
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/web'));
 app.use('/', require('./routes/blog'));
