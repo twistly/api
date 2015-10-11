@@ -34,7 +34,7 @@ module.exports = (function() {
                 function(callback){
                     User.count({}, function(err, userCount){
                         if(err) callback(err);
-                        callback(null, userCount)
+                        callback(null, userCount);
                     });
                 }
             ],
@@ -100,7 +100,7 @@ module.exports = (function() {
                     }
                 });
             } else {
-                res.send('You don\'t have that token, what do you think you\'re trying to do?')
+                res.send('You don\'t have that token, what do you think you\'re trying to do?');
             }
         });
     });
@@ -202,30 +202,30 @@ module.exports = (function() {
 
     app.get('/genToken', function(req, res, next){
         if(req.user.isAdmin){
-            // http://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript
-            function genToken(string, length) {
+            Invite.create({token: (function(){
+                // http://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript
                 var chars = string || "ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz0123456789",
                     stringLength = length || 16,
                     randomString = '',
                     charCount = 0,
-                    numCount = 0;
+                    numCount = 0,
+                    rnum = 0;
 
                 for (var i = 0; i < stringLength; i++) {
                     // If random bit is 0, there are less than 3 digits already saved, and there are not already 5 characters saved, generate a numeric value.
-                    if((Math.floor(Math.random() * 2) == 0) && numCount < 3 || charCount >= 5) {
-                        var rnum = Math.floor(Math.random() * 10);
+                    if((Math.floor(Math.random() * 2) === 0) && numCount < 3 || charCount >= 5) {
+                        rnum = Math.floor(Math.random() * 10);
                         randomString += rnum;
                         numCount += 1;
                     } else {
                         // If any of the above criteria fail, go ahead and generate an alpha character from the chars string
-                        var rnum = Math.floor(Math.random() * chars.length);
+                        rnum = Math.floor(Math.random() * chars.length);
                         randomString += chars.substring(rnum,rnum+1);
                         charCount += 1;
                     }
                 }
                 return randomString;
-            }
-            Invite.create({token: genToken(), used: false}, function(err, invite){
+            })(), used: false}, function(err, invite){
                 res.send(invite);
             });
         } else {

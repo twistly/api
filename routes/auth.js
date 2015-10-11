@@ -8,7 +8,7 @@ module.exports = (function() {
     var app = express.Router();
 
     app.get('/signin', function(req, res){
-        res.render('signin')
+        res.render('signin');
     });
 
     app.get('/signup', function(req, res){

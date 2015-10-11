@@ -31,7 +31,7 @@ setInterval(function(){
                             TokenSet.findOne({blogs: queue.blogId}, function(err, tokenSet){
                                 if (err) console.log(err);
                                 if (tokenSet && tokenSet.enabled) {
-                                    if (tokenSet.token == '' || tokenSet.tokenSecret == '' ) {
+                                    if (tokenSet.token === '' || tokenSet.tokenSecret === '' ) {
                                         tokenSet.enabled = false;
                                         tokenSet.errorMessage = 'Please reauthenticate with Tumblr.';
                                         tokenSet.save();

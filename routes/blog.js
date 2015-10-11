@@ -165,7 +165,7 @@ module.exports = (function() {
                     function(callback){
                         PostSet.find({blogId: blog.id}).sort('-_id').exec(function(err, postSets){
                             if(err) callback(err);
-                            callback(null, postSets)
+                            callback(null, postSets);
                         });
                     }
                 ],
