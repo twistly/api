@@ -1,0 +1,36 @@
+html
+    head
+        title= title ? title : 'Xtend'
+        
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
+        
+        link(href="/css/vender.min.css", rel="stylesheet")
+        link(href="/assets/css/style.css", rel="stylesheet")
+        link(href="/assets/css/style-responsive.css", rel="stylesheet")
+        link(href="/css/core.min.css", rel="stylesheet")
+        block styles
+        if(user)
+            style.
+                .task-info {
+                    white-space: normal;
+                }
+        else
+            style.
+                #main-content {
+                    margin: 0;
+                }
+    body
+        section#container
+            include ./includes/header
+            include ./includes/sidebar
+            section#main-content
+                section.wrapper.site-min-height
+                    block content
+        script(src="/js/vender.min.js")
+        script(src="/assets/js/jquery.dcjqaccordion.2.7.js")
+        script(src="/assets/js/jquery.scrollTo.min.js")
+        script(src="/assets/js/jquery.nicescroll.js")
+        //- script(src="/js/core.min.js")
+        script(src="/assets/js/common-scripts.js")
+        block scripts

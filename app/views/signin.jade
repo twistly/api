@@ -1,0 +1,35 @@
+html
+    head
+        title= title ? title : 'Xtend'
+
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, inital-scale=1.0")
+
+        link(href="/css/vender.min.css", rel="stylesheet")
+        link(href="/css/core.min.css", rel="stylesheet")
+    body
+        .signin-page
+            .container
+                form.form-signin(action="/signin", method="post")
+                    h2.form-signin-heading Sign in now
+                    .signin-wrap
+                        input(type="text", placeholder="Username", name="username", autofocus).form-control
+                        br
+                        input(type="password", placeholder="Password", name="password").form-control
+                        label.checkbox
+                            span.pull-right
+                                a(href="/signin#myModal") Forgot Password?
+                        button.btn.btn-theme.btn-block(href="/signin", type="submit")
+                            i.fa.fa-lock
+                            | 
+                            | SIGN IN
+                        hr
+                        .registration
+                            | Don't have an account yet?
+                            br
+                            a(href="/signup") Create an account
+        script(src="/js/vender.min.js")
+        script(src="/js/core.min.js")
+        script(src="/assets/js/jquery.backstretch.min.js")
+        script.
+            $.backstretch("/assets/img/login-bg.jpg", {speed: 500});

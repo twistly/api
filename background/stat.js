@@ -9,22 +9,21 @@ mongoose.connect(config.db.uri);
 
 setInterval(function(){
     TokenSet.find({}).populate('blogs').exec(function(err, tokenSets) {
-        if(err) console.log(err);
+        if(err) { console.log(err); }
         tokenSets.forEach(function(tokenSet){
             var timeNow = new Date().getTime();
             if (timeNow >= (tokenSet.lastUpdatedStat.getTime() + 1800000)) {
                 tokenSet.lastUpdatedStat = new Date(timeNow);
                 tokenSet.save();
-                var tumblr = require('tumblr.js');
                 var client = tumblr.createClient({
-                    consumer_key: config.tumblr.token,
-                    consumer_secret: config.tumblr.tokenSecret,
+                    consumer_key: config.tumblr.token, // jshint ignore:line
+                    consumer_secret: config.tumblr.tokenSecret, // jshint ignore:line
                     token: tokenSet.token,
-                    token_secret: tokenSet.tokenSecret
+                    token_secret: tokenSet.tokenSecret // jshint ignore:line
                 });
                 client.userInfo(function (err, data) {
                     if(err) {
-                        if(err.message == 'API error: 401 Not Authorized') {
+                        if(err.message === 'API error: 401 Not Authorized') {
                             console.log('URL changed or user removed our access to token.');
                             tokenSet.enabled = false;
                             tokenSet.errorMessage = 'Please reauthenticate with Tumblr.';
@@ -35,9 +34,8 @@ setInterval(function(){
                     } else if(data){
                         data.user.blogs.forEach(function (tumblrBlog) {
                             Blog.findOne({ url: tumblrBlog.name }, function(err, blog){
-                                if(err) console.log(err);
+                                if(err) { console.log(err); }
                                 if(blog){
-                                    var now = new Date();
                                     var stat = new Stat({
                                         blogId: blog.id,
                                         followerCount: tumblrBlog.followers,

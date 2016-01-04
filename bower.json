@@ -1,0 +1,29 @@
+{
+  "name": "xtend",
+  "description": "",
+  "main": "app.js",
+  "authors": [
+    "X O <xo@wvvw.me>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/OmgImAlexis/Xtend",
+  "moduleType": [],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "underscore": "~1.8.3",
+    "bootstrap": "~3.3.6",
+    "jquery-ui": "~1.11.4",
+    "jqueryui-touch-punch": "*",
+    "Chart.js": "~1.0.2",
+    "simple-line-icons": "~2.2.3",
+    "font-awesome": "~4.5.0"
+  }
+}

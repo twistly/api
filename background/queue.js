@@ -10,7 +10,7 @@ mongoose.connect(config.db.uri);
 
 setInterval(function(){
     Queue.find(function(err, queues) {
-        if (err) console.log(err);
+        if (err) { console.log(err); }
         queues.forEach(function(queue){
             var now = new Date();
             var timeNow = now.getTime();
@@ -26,10 +26,10 @@ setInterval(function(){
                     }
                     queue.save();
                     Post.findOne({blogId: queue.blogId}, function(err, post){
-                        if (err) console.log(err);
+                        if(err) { console.log(err); }
                         if (post){
                             TokenSet.findOne({blogs: queue.blogId}, function(err, tokenSet){
-                                if (err) console.log(err);
+                                if(err) { console.log(err); }
                                 if (tokenSet && tokenSet.enabled) {
                                     if (tokenSet.token === '' || tokenSet.tokenSecret === '' ) {
                                         tokenSet.enabled = false;
@@ -37,30 +37,33 @@ setInterval(function(){
                                         tokenSet.save();
                                     } else {
                                         var client = tumblr.createClient({
-                                            consumer_key: config.tumblr.token,
-                                            consumer_secret: config.tumblr.tokenSecret,
+                                            consumer_key: config.tumblr.token, // jshint ignore:line
+                                            consumer_secret: config.tumblr.tokenSecret, // jshint ignore:line
                                             token: tokenSet.token,
-                                            token_secret: tokenSet.tokenSecret
+                                            token_secret: tokenSet.tokenSecret // jshint ignore:line
                                         });
                                         // var caption = post.clearCaption ? '' : post.caption;
                                         Blog.findOne({_id: queue.blogId}, function(err, blog){
-                                            if(err) console.log(err);
+                                            if(err) { console.log(err); }
                                             if(blog){
                                                 console.log('Posting to ' + blog.url);
                                                 // Add caption: caption back into reblog and edit
-                                                client.reblog(blog.url, {id: post.postId, reblog_key: post.reblogKey}, function (err, data) {
-                                                    if (err) {
-                                                        if(err.message == 'API error: 400 Bad Request') {
+                                                client.reblog(blog.url, {
+                                                    id: post.postId,
+                                                    reblog_key: post.reblogKey // jshint ignore:line
+                                                }, function (err) {
+                                                    if(err) {
+                                                        if(err.message === 'API error: 400 Bad Request') {
                                                             console.log('Post was probably deleted, removing from db.');
                                                             post.remove();
                                                             queue.lastRun = lastRun;
                                                             queue.save();
-                                                        } else if(err.message == 'API error: 403 Forbidden'){
+                                                        } else if(err.message === 'API error: 403 Forbidden'){
                                                             console.log('Post seems to be from a user that\'s blocked them? Removing from db.');
                                                             post.remove();
                                                             queue.lastRun = lastRun;
                                                             queue.save();
-                                                        } else if(err.code != 'ETIMEDOUT'){
+                                                        } else if(err.code !== 'ETIMEDOUT'){
                                                             console.dir(post);
                                                             console.dir(err);
                                                             tokenSet.enabled = false;
@@ -73,7 +76,7 @@ setInterval(function(){
                                                         console.log((new Date()) + ' ' + blog.url + ' reblogged');
                                                         // if (post.clearCaption) {
                                                         //     client.edit(blog.url, { id: data.id, caption: post.caption }, function (err, edit) {
-                                                        //         if (err) console.log(err);
+                                                        //         if(err) { console.log(err); }
                                                         //         console.log((new Date()) + ' ' + blog.url + ' changed caption');
                                                         //     });
                                                         // }
@@ -89,7 +92,7 @@ setInterval(function(){
                                     }
                                 } else {
                                     Blog.findOne({_id: queue.blogId}, function(err, blog){
-                                        if(err) console.log(err);
+                                        if(err) { console.log(err); }
                                         if(blog){
                                             console.log('Counldn\'t find a token set for ' + blog.name);
                                         } else {
@@ -98,7 +101,7 @@ setInterval(function(){
                                     });
                                 }
                             });
-                        } else {
+                        } else { // jshint ignore:line
                             // console.log('They have no posts');
                         }
                     });

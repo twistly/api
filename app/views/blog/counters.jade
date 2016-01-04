@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+    .row.mt
+        .col-lg-12
+            .form-panel
+                h4.mb
+                    i.fa.fa-angle-right
+                    | 
+                    | Counters
+                p
+                    | These should be added to your theme just after the
+                    | 
+                    code= '<body>'
+                    | 
+                    | tag.
+                form.form-horizontal.style-form
+                    .form-group
+                        label.col-sm-2.control-label Followers counter
+                        .col-sm-10
+                            p.form-control-static
+                                code='<script src="' + baseUrl + '/api/blog/counter/followers/' + blog.url + '?class=btn&name=followers&fromTop=26px&fromRight=2px" type="text/javascript"></script>'
+                    .form-group
+                        label.col-sm-2.control-label Online counter
+                        .col-sm-10
+                            p.form-control-static
+                                code='<script src="' + baseUrl + '/api/blog/counter/online/' + blog.url + '?class=btn&name=followers&fromTop=48px&fromRight=2px" type="text/javascript"></script>'
+                    .form-group
+                        label.col-sm-2.control-label Views counter
+                        .col-sm-10
+                            p.form-control-static
+                                code='<script src="' + baseUrl + '/api/blog/counter/views/' + blog.url + '?class=btn&name=followers&fromTop=70px&fromRight=2px" type="text/javascript"></script>'
