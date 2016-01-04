@@ -1,10 +1,10 @@
 var mongoose = require('mongoose'),
     tumblr = require('tumblr.js'),
-    Queue = require('../models/Queue'),
-    Post = require('../models/Post'),
-    Blog = require('../models/Blog'),
-    TokenSet = require('../models/TokenSet'),
-    config = require('../config/config.js');
+    Queue = require('../app/models/Queue.js'),
+    Post = require('../app/models/Post.js'),
+    Blog = require('../app/models/Blog.js'),
+    TokenSet = require('../app/models/TokenSet.js'),
+    config = require('../app/config/config.js');
 
 mongoose.connect(config.db.uri);
 
