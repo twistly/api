@@ -1,9 +1,9 @@
 var mongoose = require('mongoose'),
     tumblr = require('tumblr.js'),
-    Blog = require('../models/Blog'),
-    Stat = require('../models/Stat'),
-    TokenSet = require('../models/TokenSet'),
-    config = require('../config/config.js');
+    Blog = require('../app/models/Blog.js'),
+    Stat = require('../app/models/Stat.js'),
+    TokenSet = require('../app/models/TokenSet.js'),
+    config = require('../app/config/config.js');
 
 mongoose.connect(config.db.uri);
 
