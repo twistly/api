@@ -1,14 +1,7 @@
-html
-    head
-        title= title ? title : 'Xtend'
+extends ./layout
 
-        meta(charset="utf-8")
-        meta(name="viewport", content="width=device-width, inital-scale=1.0")
-
-        link(href="/css/vender.min.css", rel="stylesheet")
-        link(href="/css/core.min.css", rel="stylesheet")
-    body
-        .signin-page
+block body
+    .signin-page
             .container
                 form.form-signin(action="/signin", method="post")
                     h2.form-signin-heading Sign in now

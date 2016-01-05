@@ -21,12 +21,14 @@ html
                     margin: 0;
                 }
     body
-        section#container
-            include ./includes/header
-            include ./includes/sidebar
-            section#main-content
-                section.wrapper.site-min-height
-                    block content
+        block body
+            section#container
+                if(user)
+                    include ./includes/header
+                    include ./includes/sidebar
+                section#main-content
+                    section.wrapper.site-min-height
+                        block content
         script(src="/js/vender.min.js")
         script(src="/assets/js/jquery.dcjqaccordion.2.7.js")
         script(src="/js/core.min.js")
