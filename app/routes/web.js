@@ -48,7 +48,7 @@ module.exports = (function() {
     });
 
     app.get('/', ensureAuthenticated, function(req, res){
-        res.redirect('index');
+        res.render('index');
     });
 
     app.get('/account', ensureAuthenticated, function(req, res){
