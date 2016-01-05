@@ -7,7 +7,7 @@ module.exports = (function() {
     var app = express.Router();
 
     app.get('/', function(req, res){
-        res.send('Welcome to the Xtend API. For documentation please see https://github.com/omgimalexis/xtend');
+        res.send('Welcome to the Xtend API. For documentation please see the <a href="https://github.com/omgimalexis/xtend">Github</a> repo.');
     });
 
     app.get('/check', function(req, res){
@@ -19,8 +19,8 @@ module.exports = (function() {
     app.get('/blog/counter/followers/:blogUrl', function(req, res){
         var linkClass = req.query.class || '';
         var linkString = req.query.name ? req.query.name : 'followers';
-        var fromTop = req.query.fromTop ? req.query.fromTop + 'px' : '26px';
-        var fromRight = req.query.fromRight ? req.query.fromRight + 'px' : '4px';
+        var fromTop = req.query.fromTop ? req.query.fromTop + (req.query.fromRight.slice(-2) === 'px' ? '' : 'px') : '26px';
+        var fromRight = req.query.fromRight ? req.query.fromRight + (req.query.fromRight.slice(-2) === 'px' ? '' : 'px') : '4px';
         var blogUrl = req.params.blogUrl;
         Blog.findOne({
             url: blogUrl
