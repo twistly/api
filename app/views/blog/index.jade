@@ -70,7 +70,6 @@ block scripts
             var labels = [];
             stats.forEach(function(stat){
                 var date = new Date(new Date(stat.date).setHours(0,0,0,0)).getTime();
-                console.log(new Date(date) + ' - ' + stat.followerCount);
                 fakeData[date] = stat.followerCount;
                 if(labels.indexOf(days[new Date(stat.date).getDay()]) === -1){
                     labels.push(days[new Date(stat.date).getDay()]);
@@ -111,20 +110,19 @@ block scripts
             var hourlyLineChart = $('#followersHourlyLineChart').get(0).getContext('2d');
             new Chart(hourlyLineChart).Line(hourlyLineChartData, {responsive: true, scaleFontColor: '#ffffff' });
         script.
-            var fakeData = [];
+            var fakeData = {};
             var labels = [];
             stats.forEach(function(stat){
-                var date = new Date(stat.date).getDate();
-                if (!fakeData[date]) {
-                    fakeData[date] = stat.followerCount;
-                    if(new Date(stat.date).toDateString() ==  new Date().toDateString()){
-                        labels.push('Today');
-                    } else {
-                        labels.push(days[new Date(stat.date).getDay()]);
-                    }
+                var date = new Date(new Date(stat.date).setHours(0,0,0,0)).getTime();
+                fakeData[date] = stat.followerCount;
+                if(labels.indexOf(days[new Date(stat.date).getDay()]) === -1){
+                    labels.push(days[new Date(stat.date).getDay()]);
                 }
             });
-            fakeData.clean();
+            fakeData = $.map(fakeData, function(value, index) {
+                return [value];
+            });
+            fakeData = fakeData.reverse();
             var diff = [];
             var firstDiff = 0;
             fakeData.forEach(function(data){
@@ -138,10 +136,13 @@ block scripts
                     diff.push(data - fakeData[i-1]);
                 }
             });
-                    
-            dailyBarChartData.labels = labels.reverse(),
-            dailyBarChartData.labels = labels.slice(Math.max(labels.length - 7, 1)),
+            
             dailyBarChartData.datasets[0].data = diff.slice(Math.max(diff.length - 7, 1));
+            
+            labels = labels.reverse();
+            labels.push('Today');
+            labels.shift();
+            dailyLineChartData.labels = labels;
             
             var dailyBarChart = $('#followersDailyBarChart').get(0).getContext('2d');
             new Chart(dailyBarChart).Bar(dailyBarChartData, {responsive: true, scaleFontColor: '#ffffff' });
