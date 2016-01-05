@@ -26,6 +26,6 @@ block body
                             | Already have an account?
                             br
                             a(href="/signin") Signin here
-    script(src="/assets/js/jquery.backstretch.min.js")
-    script.
-        $.backstretch("/assets/img/login-bg.jpg", {speed: 500});
+    block scripts
+        script.
+            $.backstretch("/assets/img/login-bg.jpg", {speed: 500});

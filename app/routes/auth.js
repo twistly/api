@@ -15,13 +15,13 @@ module.exports = (function() {
     app.post('/signin', passport.authenticate('local-signin', {
         successRedirect : '/', // redirect to the secure profile section
         failureRedirect : '/signin', // redirect back to the signup page if there is an error
-        failureFlash : true // allow flash messages
+        failureFlash: false // allow flash messages
     }));
 
     app.post('/signup', passport.authenticate('local-signup', {
         successRedirect : '/',
         failureRedirect : '/signup',
-        failureFlash : true // allow flash messages
+        failureFlash: false // allow flash messages
     }));
 
     app.get('/signout', function(req, res){
