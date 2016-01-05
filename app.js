@@ -44,10 +44,10 @@ app.use(function(req, res, next){
 
 require('./app/config/passport.js')(app, passport);
 app.use('/api/', require('./app/routes/api'));
-app.use('/', require('./app/routes/blog'));
 app.use('/', require('./app/routes/chromeExtension'));
 app.use('/', require('./app/routes/auth'));
 app.use('/', require('./app/routes/web'));
+app.use('/', require('./app/routes/blog'));
 
 // Handle 404
 app.use(function(req, res) {
