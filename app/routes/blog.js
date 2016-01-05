@@ -23,7 +23,7 @@ module.exports = (function() {
                             daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime())/(24*60*60*1000))),
                             gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow),
                             lastUpdated = Math.floor((new Date().getTime() - new Date(stats[0].date).getTime())/ 60000);
-                        res.render('blog/public', {
+                        res.render('blog/index', {
                             currentBlog: blog,
                             stats: stats,
                             statTable: {
