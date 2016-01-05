@@ -23,8 +23,8 @@ html
     body
         block body
             section#container
+                include ./includes/header
                 if(user)
-                    include ./includes/header
                     include ./includes/sidebar
                 section#main-content
                     section.wrapper.site-min-height
