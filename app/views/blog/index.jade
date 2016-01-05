@@ -66,23 +66,28 @@ block scripts
                 return this;
             };
         script.
-            var fakeData = [];
+            var fakeData = {};
             var labels = [];
             stats.forEach(function(stat){
-                var date = new Date(stat.date).getDate();
-                if (!fakeData[date]) {
-                    fakeData[date] = stat.followerCount;
-                    if(new Date(stat.date).toDateString() ==  new Date().toDateString()){
-                        labels.push('Today');
-                    } else {
-                        labels.push(days[new Date(stat.date).getDay()]);
-                    }
+                var date = new Date(new Date(stat.date).setHours(0,0,0,0)).getTime();
+                console.log(new Date(date) + ' - ' + stat.followerCount);
+                fakeData[date] = stat.followerCount;
+                if(labels.indexOf(days[new Date(stat.date).getDay()]) === -1){
+                    labels.push(days[new Date(stat.date).getDay()]);
                 }
             });
-            dailyLineChartData.labels = labels.reverse(),
-            dailyLineChartData.labels = dailyLineChartData.labels.slice(Math.max(labels.length - 7, 1)),
-            dailyLineChartData.datasets[0].data = fakeData.clean(),
-            dailyLineChartData.datasets[0].data = dailyLineChartData.datasets[0].data.slice(Math.max(fakeData.length - 7, 1));
+            fakeData = $.map(fakeData, function(value, index) {
+                return [value];
+            });
+            
+            fakeData = fakeData.reverse();
+            fakeData = fakeData.slice(Math.max(fakeData.length - 7, 1));
+            dailyLineChartData.datasets[0].data = fakeData;
+            
+            labels = labels.reverse();
+            labels.push('Today');
+            labels.shift();
+            dailyLineChartData.labels = labels;
             
             var dailyLineChart = $('#followersDailyLineChart').get(0).getContext('2d');
             new Chart(dailyLineChart).Line(dailyLineChartData, {responsive: true, scaleFontColor: '#ffffff' });
