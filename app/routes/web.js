@@ -13,54 +13,53 @@ var express  = require('express'),
 module.exports = (function() {
     var app = express.Router();
 
+    function ensureAuthenticated(req, res, next) {
+        if(req.isAuthenticated()) {
+            return next();
+        } else {
+            res.redirect('/');
+        }
+    }
+
     app.get('*', function(req, res, next){
         res.locals.title = 'Xtend';
         res.locals.numeral = require('numeral');
         return next();
     });
 
-    app.get('/', function(req, res){
-        if (!req.isAuthenticated()){
-            async.parallel([
-                function(callback){
-                    Post.count({}, function(err, postCount){
-                        if(err) { callback(err); }
-                        callback(null, postCount);
-                    });
-                },
-                function(callback){
-                    User.count({}, function(err, userCount){
-                        if(err) { callback(err); }
-                        callback(null, userCount);
-                    });
-                }
-            ],
-            function(err, results){
-                if(err) { console.log(err); }
-                res.render('comingSoon', {
-                    postsQueued: results[0],
-                    users: results[1]
+    app.get('/', ensureAuthenticated, function(req, res){
+        async.parallel([
+            function(callback){
+                Post.count({}, function(err, postCount){
+                    if(err) { callback(err); }
+                    callback(null, postCount);
                 });
+            },
+            function(callback){
+                User.count({}, function(err, userCount){
+                    if(err) { callback(err); }
+                    callback(null, userCount);
+                });
+            }
+        ],
+        function(err, results){
+            if(err) { console.log(err); }
+            res.render('comingSoon', {
+                postsQueued: results[0],
+                users: results[1]
             });
-        } else {
-            res.render('index');
-        }
+        });
     });
 
-    app.get('*', function(req, res, next){
-        if (req.isAuthenticated()) { return next(); }
-        res.redirect('/');
-    });
-
-    app.get('/account', function(req, res){
+    app.get('/account', ensureAuthenticated, function(req, res){
         res.render('account');
     });
 
-    app.get('/user', function(req, res){
+    app.get('/user', ensureAuthenticated, function(req, res){
         res.send(req.user);
     });
 
-    app.get('/activity', function(req, res){
+    app.get('/activity', ensureAuthenticated, function(req, res){
         var blogs = [];
         async.each(req.user.tokenSet, function(tokenSet, callback) {
             async.each(tokenSet.blogs, function(blog, callback) {
@@ -79,7 +78,7 @@ module.exports = (function() {
         });
     });
 
-    app.get('/unlink/:tokenSetId', function(req, res, next){
+    app.get('/unlink/:tokenSetId', ensureAuthenticated, function(req, res, next){
         User.findOne({_id: req.user.id, tokenSet: req.params.tokenSetId}).exec(function(err, user){
             if(err) { console.log(err); }
             if(user){
@@ -107,11 +106,11 @@ module.exports = (function() {
         });
     });
 
-    app.get('/auth/tumblr', passport.authenticate('tumblr', { callbackURL: '/auth/tumblr/callback'}), function(req, res){
+    app.get('/auth/tumblr', ensureAuthenticated, passport.authenticate('tumblr', { callbackURL: '/auth/tumblr/callback'}), function(req, res){
         res.send('??');
     });
 
-    app.get('/auth/tumblr/callback', function(req, res, next) {
+    app.get('/auth/tumblr/callback', ensureAuthenticated, function(req, res, next) {
         req._passport.instance.authenticate('tumblr', function(err, user, info) {
             if(err) { res.send(err); }
             var token = info.token,
@@ -217,7 +216,7 @@ module.exports = (function() {
         })(req, res);
     });
 
-    app.get('/genToken', function(req, res, next){
+    app.get('/genToken', ensureAuthenticated, function(req, res, next){
         if(req.user.isAdmin){
             Invite.create({token: (function(){
                 // http://stackoverflow.com/questions/9719570/generate-random-password-string-with-requirements-in-javascript
@@ -250,7 +249,7 @@ module.exports = (function() {
         }
     });
 
-    app.get('/unusedTokens', function(req, res, next){
+    app.get('/unusedTokens', ensureAuthenticated, function(req, res, next){
         if(req.user.isAdmin){
             Invite.find({used: false}).select('token').exec(function(err, invites){
                 res.send({

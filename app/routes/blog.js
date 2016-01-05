@@ -9,6 +9,14 @@ var express  = require('express'),
 module.exports = (function() {
     var app = express.Router();
 
+    function ensureAuthenticated(req, res, next) {
+        if(req.isAuthenticated()) {
+            return next();
+        } else {
+            res.redirect('/');
+        }
+    }
+
     app.get('/blog/:blogUrl/stats/public', function(req, res){
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) { console.log(err); }
@@ -45,12 +53,7 @@ module.exports = (function() {
         });
     });
 
-    app.get('*', function(req, res, next){
-        if (req.isAuthenticated()) { return next(); }
-        res.redirect('/');
-    });
-
-    app.get('/blog/:blogUrl/*', function(req, res, next){
+    app.get('/blog/:blogUrl/*', ensureAuthenticated, function(req, res, next){
         function isUserAllowed (blogUrl){
             for (var i = 0; i < req.user.tokenSet.length;i++){
                 for (var j = 0; j < req.user.tokenSet[i].blogs.length;j++){
@@ -65,7 +68,7 @@ module.exports = (function() {
         }
     });
 
-    app.get('/blog/:blogUrl/stats', function(req, res){
+    app.get('/blog/:blogUrl/stats', ensureAuthenticated, function(req, res){
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) { console.log(err); }
             if(blog){
@@ -105,7 +108,7 @@ module.exports = (function() {
         });
     });
 
-    app.get('/blog/:blogUrl/posts', function(req, res){
+    app.get('/blog/:blogUrl/posts', ensureAuthenticated, function(req, res){
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) { console.log(err); }
             if(blog){
@@ -125,7 +128,7 @@ module.exports = (function() {
         });
     });
 
-    app.get('/blog/:blogUrl/counters', function(req, res){
+    app.get('/blog/:blogUrl/counters', ensureAuthenticated, function(req, res){
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) { console.log(err); }
             if(blog){
@@ -139,7 +142,7 @@ module.exports = (function() {
         });
     });
 
-    app.get('/blog/:blogUrl/queues', function(req, res){
+    app.get('/blog/:blogUrl/queues', ensureAuthenticated, function(req, res){
         Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
             if(err) { console.log(err); }
             if(blog){
@@ -171,7 +174,7 @@ module.exports = (function() {
         });
     });
 
-    app.post('/blog/:blogUrl/queues', function(req, res){
+    app.post('/blog/:blogUrl/queues', ensureAuthenticated, function(req, res){
         Blog.findOne({url: req.params.blogUrl}, function(err, blog){
             if(req.body.interval) {
                 var interval = ((req.body.interval > 0) && (req.body.interval <= 250)) ? req.body.interval : 250;
@@ -192,7 +195,7 @@ module.exports = (function() {
         });
     });
 
-    app.post('/blog/:blogUrl/queues/:queueId/delete', function(req, res){
+    app.post('/blog/:blogUrl/queues/:queueId/delete', ensureAuthenticated, function(req, res){
         Queue.findOne({_id: req.params.queueId}, function(err, queue){
             if(err) { console.log(err); }
             queue.remove();
