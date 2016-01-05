@@ -17,7 +17,7 @@ module.exports = (function() {
         if(req.isAuthenticated()) {
             return next();
         } else {
-            res.redirect('/');
+            res.render('index');
         }
     }
 
