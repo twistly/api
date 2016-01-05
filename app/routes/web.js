@@ -17,7 +17,27 @@ module.exports = (function() {
         if(req.isAuthenticated()) {
             return next();
         } else {
-            res.render('index');
+            async.parallel([
+                function(callback){
+                    Post.count({}, function(err, postCount){
+                        if(err) { callback(err); }
+                        callback(null, postCount);
+                    });
+                },
+                function(callback){
+                    User.count({}, function(err, userCount){
+                        if(err) { callback(err); }
+                        callback(null, userCount);
+                    });
+                }
+            ],
+            function(err, results){
+                if(err) { console.log(err); }
+                res.render('comingSoon', {
+                    postsQueued: results[0],
+                    users: results[1]
+                });
+            });
         }
     }
 
@@ -28,27 +48,7 @@ module.exports = (function() {
     });
 
     app.get('/', ensureAuthenticated, function(req, res){
-        async.parallel([
-            function(callback){
-                Post.count({}, function(err, postCount){
-                    if(err) { callback(err); }
-                    callback(null, postCount);
-                });
-            },
-            function(callback){
-                User.count({}, function(err, userCount){
-                    if(err) { callback(err); }
-                    callback(null, userCount);
-                });
-            }
-        ],
-        function(err, results){
-            if(err) { console.log(err); }
-            res.render('comingSoon', {
-                postsQueued: results[0],
-                users: results[1]
-            });
-        });
+        res.redirect('index');
     });
 
     app.get('/account', ensureAuthenticated, function(req, res){
