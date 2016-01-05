@@ -24,6 +24,7 @@
     "jqueryui-touch-punch": "*",
     "Chart.js": "~1.0.2",
     "simple-line-icons": "~2.2.3",
-    "font-awesome": "~4.5.0"
+    "font-awesome": "~4.5.0",
+    "jquery-timeago": "~1.4.3"
   }
 }
