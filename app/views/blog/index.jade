@@ -68,7 +68,7 @@ block scripts
         script.
             var fakeData = {};
             var labels = [];
-            stat.forEach(function(stat){
+            stats.reverse().forEach(function(stat){
                 var date = new Date(new Date(stat.date).setHours(0,0,0,0)).getTime();
                 fakeData[date] = stat.followerCount;
                 if(labels.indexOf(days[new Date(stat.date).getDay()]) === -1){
