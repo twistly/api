@@ -65,7 +65,6 @@ block scripts
                 }
                 return this;
             };
-            stats = stats.reverse();
         script.
             var fakeData = {};
             var labels = [];
@@ -91,6 +90,7 @@ block scripts
         script.
             var fakeData = [];
             var count = 0;
+            var fakeStats = stats.reverse();
             stats.forEach(function(stat){
                 var hour = new Date(stat.date).getHours();
                 if(!fakeData[hour]){
