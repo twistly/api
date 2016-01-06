@@ -84,8 +84,7 @@ block scripts
             dailyLineChartData.datasets[0].data = fakeData;
             
             labels = labels.reverse();
-            labels.push('Today');
-            labels.shift();
+            labels[6] = 'Today';
             dailyLineChartData.labels = labels;
             
             var dailyLineChart = $('#followersDailyLineChart').get(0).getContext('2d');
@@ -140,8 +139,7 @@ block scripts
             dailyBarChartData.datasets[0].data = diff.slice(Math.max(diff.length - 7, 1));
             
             labels = labels.reverse();
-            labels.push('Today');
-            labels.shift();
+            labels[6] = 'Today';
             dailyLineChartData.labels = labels;
             
             var dailyBarChart = $('#followersDailyBarChart').get(0).getContext('2d');
