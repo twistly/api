@@ -80,7 +80,6 @@ block scripts
                 return [value];
             });
             
-            fakeData = fakeData.reverse();
             fakeData = fakeData.slice(Math.max(fakeData.length - 7, 1));
             dailyLineChartData.datasets[0].data = fakeData;
             
