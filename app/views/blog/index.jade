@@ -65,10 +65,13 @@ block scripts
                 }
                 return this;
             };
+            Array.prototype.magicReverse = function(arr) {
+                return arr.slice(0).sort();
+            }
         script.
             var fakeData = {};
             var labels = [];
-            stats.reverse().forEach(function(stat){
+            stats.magicReverse().forEach(function(stat){
                 var date = new Date(new Date(stat.date).setHours(0,0,0,0)).getTime();
                 fakeData[date] = stat.followerCount;
                 if(labels.indexOf(days[new Date(stat.date).getDay()]) === -1){
