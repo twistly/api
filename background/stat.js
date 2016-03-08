@@ -3,9 +3,13 @@ var mongoose = require('mongoose'),
     Blog = require('../app/models/Blog.js'),
     Stat = require('../app/models/Stat.js'),
     TokenSet = require('../app/models/TokenSet.js'),
-    config = require('../app/config/config.js');
+    config = require('cz');
 
-mongoose.connect(config.db.uri);
+config.load(path.normalize(__dirname + '/../config.json'));
+config.args();
+config.store('disk');
+
+mongoose.connect('mongodb://' + config.joinGets(['db:host', 'db:port', 'db:collection'], [':', '/']));
 
 setInterval(function(){
     TokenSet.find({}).populate('blogs').exec(function(err, tokenSets) {

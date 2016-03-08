@@ -6,14 +6,33 @@ var express = require('express'),
     MongoStore = require('connect-mongo')(session),
     mongoose = require('mongoose'),
     passport = require('passport'),
-    config = require('./app/config/config.js');
+    config = require('cz');
 
-mongoose.connect(config.db.uri, function(err){
-    if(err){
-        console.log('Is mongodb running?');
-        process.exit();
-    }
+config.defaults({
+    "db":{
+        "host": "mongodb",
+        "port": 27017,
+        "collection": "xtend"
+    },
+    "session": {
+        "secret": "asdjknl23knlknqlkwnd"
+    },
+    "web": {
+        "port": 3000,
+        "baseUrl": process.env.BASE_URL || 'https://xtend.wvvw.me'
+    },
+    "tumblr": {
+        "token": process.env.TUMBLR_TOKEN,
+        "tokenSecret": process.env.TUMBLR_TOKEN_SECRET
+    },
+    "defaultPlanId": '557285540cc0a43e00d2ba13'
 });
+
+config.load(path.normalize(__dirname + '/config.json'));
+config.args();
+config.store('disk');
+
+mongoose.connect('mongodb://' + config.joinGets(['db:host', 'db:port', 'db:collection'], [':', '/']));
 
 var app = express();
 
@@ -27,9 +46,11 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(methodOverride());
 app.use(session({
-    secret: config.db.session.secret,
+    secret: config.get('session:secret'),
     name: 'session',
-    store: new MongoStore({mongooseConnection: mongoose.connection}),
+    store: new MongoStore({
+        mongooseConnection: mongoose.connection
+    }),
     proxy: true,
     resave: true,
     saveUninitialized: true
@@ -64,6 +85,6 @@ app.use(function(error, req, res) {
     });
 });
 
-app.listen(config.env.port, function() {
-    console.log('Xtend is running on port %s', config.env.port);
+app.listen(config.get('web:port'), function() {
+    console.log('The server is running on port %s', config.get('web:port'));
 });

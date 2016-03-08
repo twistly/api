@@ -2,10 +2,14 @@ exports = module.exports = function(app, passport) {
     var LocalStrategy = require('passport-local').Strategy,
         TumblrStrategy = require('passport-tumblr').Strategy,
         async = require('async'),
-        config = require('./config.js'),
+        config = require('cz'),
         Plan = require('../models/Plan'),
         User = require('../models/User'),
         Invite = require('../models/Invite');
+
+        config.load(path.normalize(__dirname + '/../../config.json'));
+        config.args();
+        config.store('disk');
 
     passport.serializeUser(function(user, done) {
         done(null, user.id);
@@ -94,8 +98,8 @@ exports = module.exports = function(app, passport) {
     }));
 
     passport.use('tumblr', new TumblrStrategy({
-        consumerKey: config.tumblr.token,
-        consumerSecret: config.tumblr.tokenSecret,
+        consumerKey: config.get('tumblr:token'),
+        consumerSecret: config.get('tumblr:tokenSecret'),
         callbackURL: "/auth/tumblr/callback"
     },
     function(token, tokenSecret, profile, done) {

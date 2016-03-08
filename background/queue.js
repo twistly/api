@@ -3,10 +3,14 @@ var mongoose = require('mongoose'),
     Queue = require('../app/models/Queue.js'),
     Post = require('../app/models/Post.js'),
     Blog = require('../app/models/Blog.js'),
-    TokenSet = require('../app/models/TokenSet.js'),
-    config = require('../app/config/config.js');
+    TokenSet = require('../app/models/TokenSet.js')
+    config = require('cz');
 
-mongoose.connect(config.db.uri);
+config.load(path.normalize(__dirname + '/../config.json'));
+config.args();
+config.store('disk');
+
+mongoose.connect('mongodb://' + config.joinGets(['db:host', 'db:port', 'db:collection'], [':', '/']));
 
 setInterval(function(){
     Queue.find(function(err, queues) {

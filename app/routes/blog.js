@@ -1,10 +1,14 @@
 var express  = require('express'),
     async = require('async'),
-    config = require('../config/config.js'),
+    config = require('cz'),
     Blog  = require('../models/Blog.js'),
     Queue  = require('../models/Queue.js'),
     Stat  = require('../models/Stat.js'),
     PostSet = require('../models/PostSet.js');
+
+config.load(path.normalize(__dirname + '/../../config.json'));
+config.args();
+config.store('disk');
 
 module.exports = (function() {
     var app = express.Router();
@@ -134,7 +138,7 @@ module.exports = (function() {
             if(blog){
                 res.render('blog/counters', {
                     blog: blog,
-                    baseUrl: config.env.baseUrl
+                    baseUrl: config.get('web:baseUrl')
                 });
             } else {
                 res.send('This blog doesn\'t exist.');

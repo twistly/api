@@ -1,7 +1,11 @@
 var express  = require('express'),
     numeral = require('numeral'),
-    config = require('../config/config.js'),
+    config = require('cz'),
     Blog  = require('../models/Blog.js');
+
+config.load(path.normalize(__dirname + '/../../config.json'));
+config.args();
+config.store('disk');
 
 module.exports = (function() {
     var app = express.Router();
@@ -28,9 +32,9 @@ module.exports = (function() {
             var followers = numeral(blog.followerCount).format('0,0');
             res.setHeader('content-type', 'application/javascript');
             if(req.query.format === 'simple'){
-                res.send('document.write("<a class=\\"' + linkClass + '\\" href=\\"' + config.env.baseUrl + '/blog/' + blogUrl + '/stats/public\\">' + followers + ' ' + linkString + '</a>")');
+                res.send('document.write("<a class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + followers + ' ' + linkString + '</a>")');
             } else {
-                res.send('document.write("<a style=\\"position: fixed; top: ' + fromTop + '; right: ' + fromRight + '\\" class=\\"' + linkClass + '\\" href=\\"' + config.env.baseUrl + '/blog/' + blogUrl + '/stats/public\\">' + followers + ' ' + linkString + '</a>")');
+                res.send('document.write("<a style=\\"position: fixed; top: ' + fromTop + '; right: ' + fromRight + '\\" class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + followers + ' ' + linkString + '</a>")');
             }
         });
     });
