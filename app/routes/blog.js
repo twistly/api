@@ -1,6 +1,7 @@
 var express  = require('express'),
     async = require('async'),
     config = require('cz'),
+    path = require('path'),
     Blog  = require('../models/Blog.js'),
     Queue  = require('../models/Queue.js'),
     Stat  = require('../models/Stat.js'),

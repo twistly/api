@@ -3,7 +3,8 @@ var mongoose = require('mongoose'),
     Queue = require('../app/models/Queue.js'),
     Post = require('../app/models/Post.js'),
     Blog = require('../app/models/Blog.js'),
-    TokenSet = require('../app/models/TokenSet.js')
+    TokenSet = require('../app/models/TokenSet.js'),
+    path = require('path'),
     config = require('cz');
 
 config.load(path.normalize(__dirname + '/../config.json'));

@@ -3,6 +3,7 @@ exports = module.exports = function(app, passport) {
         TumblrStrategy = require('passport-tumblr').Strategy,
         async = require('async'),
         config = require('cz'),
+        path = require('path'),
         Plan = require('../models/Plan'),
         User = require('../models/User'),
         Invite = require('../models/Invite');

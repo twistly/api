@@ -6,6 +6,7 @@ var express = require('express'),
     MongoStore = require('connect-mongo')(session),
     mongoose = require('mongoose'),
     passport = require('passport'),
+    path = require('path'),
     config = require('cz');
 
 config.defaults({
@@ -22,10 +23,10 @@ config.defaults({
         "baseUrl": process.env.BASE_URL || 'https://xtend.wvvw.me'
     },
     "tumblr": {
-        "token": process.env.TUMBLR_TOKEN,
-        "tokenSecret": process.env.TUMBLR_TOKEN_SECRET
+        "token": process.env.TUMBLR_TOKEN || '',
+        "tokenSecret": process.env.TUMBLR_TOKEN_SECRET || ''
     },
-    "defaultPlanId": '557285540cc0a43e00d2ba13'
+    "defaultPlanId": ''
 });
 
 config.load(path.normalize(__dirname + '/config.json'));

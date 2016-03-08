@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     bcrypt = require('bcrypt'),
     config = require('cz'),
+    path = require('path'),
     SALT_WORK_FACTOR = 10;
 
 config.load(path.normalize(__dirname + '/../../config.json'));

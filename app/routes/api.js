@@ -1,6 +1,7 @@
 var express  = require('express'),
     numeral = require('numeral'),
     config = require('cz'),
+    path = require('path'),
     Blog  = require('../models/Blog.js');
 
 config.load(path.normalize(__dirname + '/../../config.json'));
