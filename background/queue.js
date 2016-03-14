@@ -42,10 +42,10 @@ setInterval(function(){
                                         tokenSet.save();
                                     } else {
                                         var client = tumblr.createClient({
-                                            consumer_key: config.tumblr.token, // jshint ignore:line
-                                            consumer_secret: config.tumblr.tokenSecret, // jshint ignore:line
-                                            token: tokenSet.token,
-                                            token_secret: tokenSet.tokenSecret // jshint ignore:line
+                                            'consumer_key': config.get('tumblr:token'),
+                                            'consumer_secret': config('tumblr:tokenSecret'),
+                                            'token': tokenSet.token,
+                                            'token_secret': tokenSet.tokenSecret
                                         });
                                         // var caption = post.clearCaption ? '' : post.caption;
                                         Blog.findOne({_id: queue.blogId}, function(err, blog){

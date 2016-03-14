@@ -21,10 +21,10 @@ setInterval(function(){
                 tokenSet.lastUpdatedStat = new Date(timeNow);
                 tokenSet.save();
                 var client = tumblr.createClient({
-                    consumer_key: config.tumblr.token, // jshint ignore:line
-                    consumer_secret: config.tumblr.tokenSecret, // jshint ignore:line
-                    token: tokenSet.token,
-                    token_secret: tokenSet.tokenSecret // jshint ignore:line
+                    'consumer_key': config.get('tumblr:token'),
+                    'consumer_secret': config('tumblr:tokenSecret'),
+                    'token': tokenSet.token,
+                    'token_secret': tokenSet.tokenSecret
                 });
                 client.userInfo(function (err, data) {
                     if(err) {
