@@ -34,6 +34,8 @@ module.exports = (function() {
             res.setHeader('content-type', 'application/javascript');
             if(req.query.format === 'simple'){
                 res.send('document.write("<a class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + followers + ' ' + linkString + '</a>")');
+            } else if(req.query.format === 'json'){
+                res.send(followers);
             } else {
                 res.send('document.write("<a style=\\"position: fixed; top: ' + fromTop + '; right: ' + fromRight + '\\" class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + followers + ' ' + linkString + '</a>")');
             }
