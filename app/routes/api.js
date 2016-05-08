@@ -30,6 +30,7 @@ module.exports = (function() {
         var goal = req.query.goal || 0;
         var goalString = req.query.goalName ? req.query.goalName : 'days till ' + (goal > 999 ? (goal/1000).toFixed(1) + 'k' : goal);
         var gainsPerMonth = req.query.gainsPerMonth || 0;
+        var gainsPerDay = gainsPerMonth ? (gainsPerMonth / 30) : req.query.gainsPerDay;
         var blogUrl = req.params.blogUrl;
         Blog.findOne({
             url: blogUrl
@@ -40,7 +41,7 @@ module.exports = (function() {
             } else {
                 res.setHeader('content-type', 'application/javascript');
                 if(goal){
-                    var daysToGoal = (goal - blog.followerCount) / (gainsPerMonth / 30);
+                    var daysToGoal = Math.floor((goal - blog.followerCount) / gainsPerDay);
                     res.send('document.write("<a style=\\"position: fixed; top: ' + fromTop + '; right: ' + fromRight + '\\" class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + daysToGoal + ' ' + goalString + '</a>")');
                 } else {
                     if(req.query.format === 'simple'){
