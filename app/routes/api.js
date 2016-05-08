@@ -25,7 +25,7 @@ module.exports = (function() {
         res.setHeader("Access-Control-Allow-Origin", "*");
         var linkClass = req.query.class || '';
         var linkString = req.query.name ? req.query.name : 'followers';
-        var fromTop = req.query.fromTop ? req.query.fromTop + (req.query.fromRight.slice(-2) === 'px' ? '' : 'px') : '26px';
+        var fromTop = req.query.fromTop ? req.query.fromTop + (req.query.fromTop.slice(-2) === 'px' ? '' : 'px') : '26px';
         var fromRight = req.query.fromRight ? req.query.fromRight + (req.query.fromRight.slice(-2) === 'px' ? '' : 'px') : '4px';
         var goal = req.query.goal || 0;
         var goalString = req.query.goalName ? req.query.goalName : 'days till ' + (goal > 999 ? (goal/1000).toFixed(1) + 'k' : goal);
