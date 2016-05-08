@@ -29,7 +29,7 @@ module.exports = (function() {
         var fromRight = req.query.fromRight ? req.query.fromRight + (req.query.fromRight.slice(-2) === 'px' ? '' : 'px') : '4px';
         var goal = req.query.goal || 0;
         var goalString = req.query.goalName ? req.query.goalName : 'days till ' + (goal > 999 ? (goal/1000).toFixed(1) + 'k' : goal);
-        var gainsPerMonth = req.query.goal || 0;
+        var gainsPerMonth = req.query.gainsPerMonth || 0;
         var blogUrl = req.params.blogUrl;
         Blog.findOne({
             url: blogUrl
