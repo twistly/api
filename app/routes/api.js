@@ -27,20 +27,31 @@ module.exports = (function() {
         var linkString = req.query.name ? req.query.name : 'followers';
         var fromTop = req.query.fromTop ? req.query.fromTop + (req.query.fromRight.slice(-2) === 'px' ? '' : 'px') : '26px';
         var fromRight = req.query.fromRight ? req.query.fromRight + (req.query.fromRight.slice(-2) === 'px' ? '' : 'px') : '4px';
+        var goal = req.query.goal || 0;
+        var goalString = req.query.goalName ? req.query.goalName : 'days till ' + (goal > 999 ? (goal/1000).toFixed(1) + 'k' : goal);
+        var gainsPerMonth = req.query.goal || 0;
         var blogUrl = req.params.blogUrl;
         Blog.findOne({
             url: blogUrl
         }, function(err, blog){
             var followers = numeral(blog.followerCount).format('0,0');
-            res.setHeader('content-type', 'application/javascript');
-            if(req.query.format === 'simple'){
-                res.send('document.write("<a class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + followers + ' ' + linkString + '</a>")');
-            } else if(req.query.format === 'json'){
+            if(req.query.format === 'json'){
                 res.send(followers);
             } else {
-                res.send('document.write("<a style=\\"position: fixed; top: ' + fromTop + '; right: ' + fromRight + '\\" class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + followers + ' ' + linkString + '</a>")');
+                res.setHeader('content-type', 'application/javascript');
+                if(goal){
+                    var daysToGoal = (goal - followers) / (gainsPerMonth / 30);
+                    res.send('document.write("<a style=\\"position: fixed; top: ' + fromTop + '; right: ' + fromRight + '\\" class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + daysToGoal + ' ' + goalString + '</a>")');
+                } else {
+                    if(req.query.format === 'simple'){
+                        res.send('document.write("<a class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + followers + ' ' + linkString + '</a>")');
+                    } else {
+                        res.send('document.write("<a style=\\"position: fixed; top: ' + fromTop + '; right: ' + fromRight + '\\" class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + followers + ' ' + linkString + '</a>")');
+                    }
+                }
             }
         });
     });
+
     return app;
 })();
