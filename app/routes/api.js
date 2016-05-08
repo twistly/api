@@ -22,6 +22,7 @@ module.exports = (function() {
     });
 
     app.get('/blog/counter/followers/:blogUrl', function(req, res){
+        res.setHeader("Access-Control-Allow-Origin", "*");
         var linkClass = req.query.class || '';
         var linkString = req.query.name ? req.query.name : 'followers';
         var fromTop = req.query.fromTop ? req.query.fromTop + (req.query.fromRight.slice(-2) === 'px' ? '' : 'px') : '26px';
