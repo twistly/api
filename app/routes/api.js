@@ -28,7 +28,7 @@ module.exports = (function() {
         var fromTop = req.query.fromTop ? req.query.fromTop + (req.query.fromTop.slice(-2) === 'px' ? '' : 'px') : '26px';
         var fromRight = req.query.fromRight ? req.query.fromRight + (req.query.fromRight.slice(-2) === 'px' ? '' : 'px') : '4px';
         var goal = req.query.goal || 0;
-        var goalString = req.query.goalName ? req.query.goalName : 'days till ' + parseFloat((goal > 999 ? (goal/1000).toFixed(1)) + 'k' : goal);
+        var goalString = req.query.goalName ? req.query.goalName : 'days till ' + (goal > 999 ? parseFloat((goal/1000).toFixed(1)) + 'k' : goal);
         var gainsPerMonth = req.query.gainsPerMonth || 0;
         var gainsPerDay = gainsPerMonth ? (gainsPerMonth / 30) : req.query.gainsPerDay;
         var blogUrl = req.params.blogUrl;
