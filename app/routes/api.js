@@ -40,7 +40,7 @@ module.exports = (function() {
             } else {
                 res.setHeader('content-type', 'application/javascript');
                 if(goal){
-                    var daysToGoal = (goal - followers) / (gainsPerMonth / 30);
+                    var daysToGoal = (goal - blog.followerCount) / (gainsPerMonth / 30);
                     res.send('document.write("<a style=\\"position: fixed; top: ' + fromTop + '; right: ' + fromRight + '\\" class=\\"' + linkClass + '\\" href=\\"' + config.get('web:baseUrl') + '/blog/' + blogUrl + '/stats/public\\">' + daysToGoal + ' ' + goalString + '</a>")');
                 } else {
                     if(req.query.format === 'simple'){
