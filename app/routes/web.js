@@ -251,10 +251,26 @@ module.exports = (function() {
 
     app.get('/unusedTokens', ensureAuthenticated, function(req, res, next){
         if(req.user.isAdmin){
-            Invite.find({used: false}).select('token').exec(function(err, invites){
+            Invite.find({
+                used: false
+            }).select('token').exec(function(err, invites){
                 res.send({
                     count: invites.length,
                     invites: invites
+                });
+            });
+        } else {
+            next();
+        }
+    });
+
+    app.get('/userCount', ensureAuthenticated, function(req, res, next){
+        if(req.user.isAdmin){
+            Users.find({
+                used: false
+            }).count(function(err, userCount){
+                res.send({
+                    userCount: userCount
                 });
             });
         } else {
