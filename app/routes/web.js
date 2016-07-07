@@ -266,9 +266,7 @@ module.exports = (function() {
 
     app.get('/userCount', ensureAuthenticated, function(req, res, next){
         if(req.user.isAdmin){
-            Users.find({
-                used: false
-            }).count(function(err, userCount){
+            User.count(function(err, userCount){
                 res.send({
                     userCount: userCount
                 });
