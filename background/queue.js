@@ -1,11 +1,11 @@
-var mongoose = require('mongoose'),
-    tumblr = require('tumblr.js'),
-    Queue = require('../app/models/Queue.js'),
-    Post = require('../app/models/Post.js'),
-    Blog = require('../app/models/Blog.js'),
-    TokenSet = require('../app/models/TokenSet.js'),
-    path = require('path'),
-    config = require('cz');
+const mongoose = require('mongoose');
+const tumblr = require('tumblr.js');
+const Queue = require('../app/models/Queue.js');
+const Post = require('../app/models/Post.js');
+const Blog = require('../app/models/Blog.js');
+const TokenSet = require('../app/models/TokenSet.js');
+const path = require('path');
+const config = require('cz');
 
 config.load(path.normalize(__dirname + '/../config.json'));
 config.args();
