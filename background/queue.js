@@ -115,8 +115,6 @@ setInterval(function(){
                             });
                         }
                     });
-                } else { // jshint ignore:line
-                    // console.log('They have no posts');
                 }
             });
         });
