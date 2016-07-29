@@ -108,7 +108,7 @@ setInterval(function(){
                             }, function(err, blog){
                                 if(err) { console.log(err); }
                                 if(blog){
-                                    console.log('Couldn\'t find a token set for ' + blog.name);
+                                    console.log('Couldn\'t find a token set for ' + blog.url);
                                 } else {
                                     console.log('Didn\'t find that blog?' + queue.blogId);
                                 }
