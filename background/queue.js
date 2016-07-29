@@ -56,7 +56,7 @@ setInterval(function(){
                             } else {
                                 var client = tumblr.createClient({
                                     'consumer_key': config.get('tumblr:token'),
-                                    'consumer_secret': config('tumblr:tokenSecret'),
+                                    'consumer_secret': config.get('tumblr:tokenSecret'),
                                     'token': tokenSet.token,
                                     'token_secret': tokenSet.tokenSecret
                                 });
