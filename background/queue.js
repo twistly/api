@@ -22,7 +22,7 @@ setInterval(function(){
             var now = new Date();
             var timeNow = now.getTime();
             var hourNow = now.getHours();
-            if((this.startHour <= hourNow && this.endHour >= hourNow) && new Date((this.lastRun.getTime() + ((((this.endHour - this.startHour) * 60 * 60) / this.interval) * 1000)) <= now)){
+            if((this.startHour <= hourNow && this.endHour >= hourNow) && new Date((this.lastRun.getTime() + ((((this.endHour - this.startHour) * 60 * 60) / this.interval) * 1000))) <= now){
                 return true;
             } else {
                 return false;
@@ -33,7 +33,7 @@ setInterval(function(){
         queues.forEach(function(queue){
             var lastRun = queue.lastRun.getTime();
             var nextRun = lastRun + ((((queue.endHour - queue.startHour) * 60 * 60) / queue.interval) * 1000);
-            if (queue.backfill) {
+            if(queue.backfill) {
                 queue.lastRun = nextRun;
             } else {
                 queue.lastRun = timeNow;
@@ -48,7 +48,7 @@ setInterval(function(){
                         blogs: queue.blogId
                     }, function(err, tokenSet){
                         if(err) { console.log(err); }
-                        if (tokenSet && tokenSet.enabled) {
+                        if(tokenSet && tokenSet.enabled) {
                             if (tokenSet.token === '' || tokenSet.tokenSecret === '' ) {
                                 tokenSet.enabled = false;
                                 tokenSet.errorMessage = 'Please reauthenticate with Tumblr.';
@@ -65,7 +65,7 @@ setInterval(function(){
                                 }, function(err, blog){
                                     if(err) { console.log(err); }
                                     if(blog){
-                                        console.log('Posting to ' + blog.url);
+                                        console.log((new Date()) + ' Posting ' + post._id + ' to ' + blog.url);
                                         client.reblog(blog.url, {
                                             id: post.postId,
                                             reblog_key: post.reblogKey // jshint ignore:line
@@ -81,8 +81,14 @@ setInterval(function(){
                                                     post.remove();
                                                     queue.lastRun = lastRun;
                                                     queue.save();
+                                                } else if(err.message === 'API error: 401 Unauthorized'){
+                                                    console.log('Auth has been revoked. Disabling all blogs linked to this tokenSet.');
+                                                    tokenSet.enabled = false;
+                                                    tokenSet.errorMessage = 'Please reauthenticate with Tumblr.';
+                                                    tokenSet.save();
+                                                    queue.lastRun = lastRun;
+                                                    queue.save();
                                                 } else if(err.code !== 'ETIMEDOUT'){
-                                                    console.dir(post);
                                                     console.dir(err);
                                                     tokenSet.enabled = false;
                                                     tokenSet.errorMessage = err;
@@ -91,9 +97,10 @@ setInterval(function(){
                                                     console.log('Tumblr timeout?' + err);
                                                 }
                                             } else {
-                                                console.log((new Date()) + ' ' + blog.url + ' reblogged');
+                                                console.log((new Date()) + ' Reblogged ' + post._id + ' to ' + blog.url);
                                                 blog.postsInQueue--;
                                                 blog.save();
+                                                console.log((new Date()) + ' Deleted ' + post._id + ' as it was reblogged to ' + blog.url);
                                                 post.remove();
                                             }
                                         });
@@ -108,9 +115,13 @@ setInterval(function(){
                             }, function(err, blog){
                                 if(err) { console.log(err); }
                                 if(blog){
-                                    console.log('Couldn\'t find a token set for ' + blog.url);
+                                    if(tokenSet.enabled){
+                                        console.log('Couldn\'t find a token set for ' + blog.url);
+                                    } else {
+                                        console.log('Please reauth ' + blog.url);
+                                    }
                                 } else {
-                                    console.log('Didn\'t find that blog?' + queue.blogId);
+                                    console.log('Didn\'t find that blog? ' + queue.blogId);
                                 }
                             });
                         }
@@ -119,4 +130,4 @@ setInterval(function(){
             });
         });
     });
-}, 1000);
+}, 5000);

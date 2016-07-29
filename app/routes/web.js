@@ -127,6 +127,8 @@ module.exports = (function() {
                                 if(tokenSet){
                                     tokenSet.token = token;
                                     tokenSet.tokenSecret = tokenSecret;
+                                    tokenSet.enabled = true;
+                                    tokenSet.errorMessage = undefined;
                                     User.findOne({_id: req.user.id, tokenSet: tokenSet.id}, function(err, tokenUser){
                                         if(tokenUser){
                                             tokenSet.save(function(err, tokenSet){
