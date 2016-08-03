@@ -3,6 +3,7 @@ var express  = require('express'),
     config = require('cz'),
     path = require('path'),
     Blog  = require('../models/Blog.js'),
+    Post  = require('../models/Post.js'),
     Queue  = require('../models/Queue.js'),
     Stat  = require('../models/Stat.js'),
     PostSet = require('../models/PostSet.js');
@@ -204,6 +205,35 @@ module.exports = (function() {
         Queue.findOne({_id: req.params.queueId}, function(err, queue){
             if(err) { console.log(err); }
             queue.remove();
+            res.redirect('/blog/' + req.params.blogUrl + '/queues');
+        });
+    });
+
+    app.post('/blog/:blogUrl/queues/shuffle', ensureAuthenticated, function(req, res){
+        async.waterfall([
+            function(callback) {
+                Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog){
+                    if(err){ callback(err); }
+                    callback(null, blog._id);
+                });
+            },
+            function(blogId, callback) {
+                Post.count({blogId: blogId}).exec(function(err, postCount){
+                    if(err){ callback(err); }
+                    callback(null, blogId, postCount);
+                });
+            },
+            function(blogId, postCount, callback){
+                Post.find({blogId: blogId}, function(err, posts) {
+                    if(err) { callback(err); }
+                    async.each(posts, function(post, done) {
+                        post.postOrder = Math.floor(Math.random() * (postCount - 1));
+                        post.save(done);
+                    }, callback(null, 'done'));
+                });
+            }
+        ], function(err, result) {
+            if(err){ console.log(err); }
             res.redirect('/blog/' + req.params.blogUrl + '/queues');
         });
     });

@@ -9,6 +9,15 @@ html
         link(href="/assets/css/style.css", rel="stylesheet")
         link(href="/assets/css/style-responsive.css", rel="stylesheet")
         link(href="/css/core.min.css", rel="stylesheet")
+        style.
+            #nav-accordion {
+                height: 100%;
+                overflow: scroll;
+            }
+            span.credit {
+                background: #424a5d;
+                padding-top: 5px;
+            }
         block styles
         if(user)
             style.
@@ -27,7 +36,7 @@ html
                 if(user)
                     include ./includes/sidebar
                 section#main-content
-                    section.wrapper.site-min-height
+                    section.wrapper
                         block content
         script(src="/js/vender.min.js")
         script(src="/assets/js/jquery.dcjqaccordion.2.7.js")

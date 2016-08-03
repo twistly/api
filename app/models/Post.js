@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
 
 var postSchema = new mongoose.Schema({
     postId: String,
+    postOrder: Number,
     blogId: {
         type: Schema.Types.ObjectId,
         ref: 'Blog'

@@ -41,7 +41,7 @@ setInterval(function(){
             queue.save();
             Post.findOne({
                 blogId: queue.blogId
-            }, function(err, post){
+            }).sort('postOrder').exec(function(err, post){
                 if(err) { console.log(err); }
                 if (post){
                     TokenSet.findOne({

@@ -7,6 +7,9 @@ block styles
             padding-bottom: 0;
             margin-bottom: 0;
         }
+        .shuffle {
+            margin: 0;
+        }
 
 block content
     .form-panel
@@ -27,7 +30,10 @@ block content
                 label.col-sm-2.control-label End Hour (0 - 24)
                 .col-sm-10
                     input(type="number", name="endHour", min="0", max="24").form-control
-            button(type="submit").btn.btn-theme Create
+            button(type="submit").btn.btn-theme.queue_inline Create
+    .form-panel
+        form(action="/blog/" + blog.url + "/queues/shuffle", method="post").shuffle
+            button(type="submit").btn.btn-theme02 Shuffle All Queues
     .form-panel
         h4.mb
             i.fa.fa-angle-right
@@ -53,5 +59,5 @@ block content
                     .col-sm-10
                         p.form-control-static
                             time(datetime=(new Date(queue.lastRun).toISOString())) #{new Date(queue.lastRun).toISOString()}
-            form(action="/blog/" + blog.url + "/queues/" + queue.id + "/delete", method="post")
-                button(type="submit").btn.btn-theme Delete
+            form(action="/blog/" + blog.url + "/queues/" + queue.id + "/delete", method="post").queue_inline
+                button(type="submit").btn.btn-theme04 Delete

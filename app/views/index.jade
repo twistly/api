@@ -3,6 +3,9 @@ extends ./layout
 block content
     .row.mt
         .col-lg-12
+            - tokenSetsPerAccount = user.plan.toObject().tokenSetsPerAccount
+            if(tokenSetsPerAccount > user.tokenSet.length)
+                a(href="/auth/tumblr", style="margin-bottom: 10px;").btn.btn-theme02 + Link another blog (#{user.tokenSet.length}/#{tokenSetsPerAccount})
             if(user.tokenSet.length)
                 - for(var i = 0; i < user.tokenSet.length; i++)
                     .panel.panel-default
