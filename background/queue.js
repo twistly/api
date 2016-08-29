@@ -76,7 +76,7 @@ setInterval(function() {
                                             reblog_key: post.reblogKey // eslint-disable-line camelcase
                                         }, function(err) { // eslint-disable-line max-nested-callbacks
                                             if (err) {
-                                                if (err.message === 'API error: 400 Bad Request') {
+                                                if (err.message === 'API error: 400 Bad Request' || err.message === 'API error: 404 Not Found') {
                                                     console.log('Post was probably deleted, removing from db.');
                                                     post.remove();
                                                     queue.lastRun = lastRun;
