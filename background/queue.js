@@ -30,14 +30,6 @@ setInterval(function() {
             console.log(err);
         }
         queues.forEach(function(queue) {
-            var lastRun = queue.lastRun.getTime();
-            var nextRun = lastRun + ((((queue.endHour - queue.startHour) * 60 * 60) / queue.interval) * 1000);
-            if (queue.backfill) {
-                queue.lastRun = nextRun;
-            } else {
-                queue.lastRun = timeNow;
-            }
-            queue.save();
             Post.findOne({
                 blogId: queue.blogId
             }).sort('postOrder').exec(function(err, post) {
@@ -45,6 +37,14 @@ setInterval(function() {
                     console.log(err);
                 }
                 if (post) {
+                    var lastRun = queue.lastRun.getTime();
+                    var nextRun = lastRun + ((((queue.endHour - queue.startHour) * 60 * 60) / queue.interval) * 1000);
+                    if (queue.backfill) {
+                        queue.lastRun = nextRun;
+                    } else {
+                        queue.lastRun = timeNow;
+                    }
+                    queue.save();
                     TokenSet.findOne({
                         blogs: queue.blogId
                     }, function(err, tokenSet) {
@@ -70,7 +70,6 @@ setInterval(function() {
                                         console.log(err);
                                     }
                                     if (blog) {
-                                        console.log((new Date()) + ' Posting ' + post._id + ' to ' + blog.url);
                                         client.reblog(blog.url, {
                                             id: post.postId,
                                             reblog_key: post.reblogKey // eslint-disable-line camelcase
@@ -78,12 +77,10 @@ setInterval(function() {
                                             if (err) {
                                                 if (err.message === 'API error: 400 Bad Request' || err.message === 'API error: 404 Not Found') {
                                                     console.log('Post was probably deleted, removing from db.');
-                                                    post.remove();
                                                     queue.lastRun = lastRun;
                                                     queue.save();
                                                 } else if (err.message === 'API error: 403 Forbidden') {
                                                     console.log('Post seems to be from a user that\'s blocked them? Removing from db.');
-                                                    post.remove();
                                                     queue.lastRun = lastRun;
                                                     queue.save();
                                                 } else if (err.message === 'API error: 401 Unauthorized') {
@@ -93,21 +90,21 @@ setInterval(function() {
                                                     tokenSet.save();
                                                     queue.lastRun = lastRun;
                                                     queue.save();
-                                                } else if (err.code !== 'ETIMEDOUT') { // eslint-disable-line no-negated-condition
+                                                } else if (err.code === 'ETIMEDOUT') {
+                                                    console.log('Tumblr timedout.');
+                                                } else {
                                                     console.dir(err);
                                                     tokenSet.enabled = false;
                                                     tokenSet.errorMessage = err;
                                                     tokenSet.save();
-                                                } else {
-                                                    console.log('Tumblr timeout?' + err);
                                                 }
                                             } else {
                                                 console.log((new Date()) + ' Reblogged ' + post._id + ' to ' + blog.url);
                                                 blog.postsInQueue--;
                                                 blog.save();
                                                 console.log((new Date()) + ' Deleted ' + post._id + ' as it was reblogged to ' + blog.url);
-                                                post.remove();
                                             }
+                                            post.remove();
                                         });
                                     } else {
                                         console.log('Didn\'t find that blog?' + queue.blogId);

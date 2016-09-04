@@ -17,10 +17,10 @@ block content
                         .panel-body
                             | #{postSet.blogId.url} reblogged #{postSet.postCount.start} from #{postSet.queuedFrom || 'Unknown'}
                             | 
-                            time(datetime=postSet._id.getTimestamp()) #{postSet._id.getTimestamp()}
+                            time(datetime=postSet._id.getTimestamp().toString()) #{postSet._id.getTimestamp().toString()}
                             | 
                             | -
                             | 
-                            | There's #{postSet.posts.length}
+                            | There's #{postSet.postCount.now}
                             | 
                             | posts left to post.

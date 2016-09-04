@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-var inviteSchema = mongoose.Schema({
+var inviteSchema = new Schema({
     token: {
         type: String,
         unique: true

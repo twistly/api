@@ -1,6 +1,6 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    User = require('./User.js');
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var User = require('./User.js');
 
 var tokenSetSchema = new Schema({
     token: {
@@ -28,9 +28,16 @@ var tokenSetSchema = new Schema({
 });
 
 tokenSetSchema.pre('remove', function(next) {
-    User.update({ tokenSet: this._id }, { $pull: { tokenSet: this._id } }, { multi: true }).exec();
+    User.update({
+        tokenSet: this._id
+    }, {
+        $pull: {
+            tokenSet: this._id
+        }
+    }, {
+        multi: true
+    }).exec();
     next();
 });
-
 
 module.exports = mongoose.model('TokenSet', tokenSetSchema);

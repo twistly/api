@@ -1,17 +1,32 @@
-var mongoose = require('mongoose'),
-    bcrypt = require('bcrypt'),
-    config = require('cz'),
-    path = require('path'),
-    SALT_WORK_FACTOR = 10;
+var path = require('path');
+var crypto = require('crypto');
+var mongoose = require('mongoose');
+var bcrypt = require('bcrypt');
+var config = require('cz');
 
-config.load(path.normalize(__dirname + '/../../config.json'));
+var Schema = mongoose.Schema;
+
+var SALT_WORK_FACTOR = 10;
+
+config.load(path.normalize(path.join(__dirname, '/../../config.json')));
 config.args();
 config.store('disk');
 
-var userSchema = mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true},
+var userSchema = new Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
     tokenSet: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'TokenSet'
@@ -33,26 +48,31 @@ var userSchema = mongoose.Schema({
 });
 
 // Bcrypt middleware
-userSchema.pre('save', function(next){
+userSchema.pre('save', function(next) {
     var user = this;
 
-    if(!user.isModified('password')) { return next(); }
+    if (!user.isModified('password')) {
+        return next();
+    }
 
     bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
-        if(err) { return next(err); }
+        if (err) {
+            return next(err);
+        }
 
         bcrypt.hash(user.password, salt, function(err, hash) {
-            if(err) { return next(err); }
+            if (err) {
+                return next(err);
+            }
             user.password = hash;
             next();
         });
     });
 });
 
-userSchema.pre('save', function(next){
+userSchema.pre('save', function(next) {
     var user = this;
-    if(!user.apiKey.length){
-        var crypto = require('crypto');
+    if (!user.apiKey.length) {
         user.apiKey = crypto.createHmac('sha1', crypto.randomBytes(16)).update(crypto.randomBytes(16)).digest('hex');
     }
     next();
@@ -61,7 +81,9 @@ userSchema.pre('save', function(next){
 // Password verification
 userSchema.methods.comparePassword = function(candidatePassword, cb) {
     bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-        if(err) { return cb(err); }
+        if (err) {
+            return cb(err);
+        }
         cb(null, isMatch);
     });
 };

@@ -1,6 +1,6 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    PostSet = require('./PostSet.js');
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var PostSet = require('./PostSet.js');
 
 var postSchema = new mongoose.Schema({
     postId: String,
@@ -21,7 +21,18 @@ var postSchema = new mongoose.Schema({
 });
 
 postSchema.pre('remove', function(next) {
-    PostSet.update({ posts: this._id }, { $pull: { posts: this._id } }, { multi: true }).exec();
+    PostSet.update({
+        posts: this._id
+    }, {
+        $pull: {
+            posts: this._id
+        },
+        $inc: {
+            'postCount.now': -1
+        }
+    }, {
+        multi: true
+    }).exec();
     next();
 });
 

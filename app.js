@@ -34,6 +34,9 @@ config.args();
 config.store('disk');
 
 mongoose.connect('mongodb://' + config.joinGets(['db:host', 'db:port', 'db:collection'], [':', '/']));
+if (process.env.NODE_ENV !== 'production') {
+    mongoose.set('debug', true);
+}
 
 var app = express();
 

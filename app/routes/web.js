@@ -78,7 +78,7 @@ module.exports = (function() {
         });
         PostSet.find({
             $or: blogs
-        }).limit(50).sort('-_id').populate('blogId posts').exec(function(err, postSets) {
+        }).limit(50).sort('-_id').lean().populate('blogId').exec(function(err, postSets) {
             if (err) {
                 res.send(err);
             }

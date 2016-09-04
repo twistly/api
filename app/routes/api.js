@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const numeral = require('numeral');
 const config = require('cz');
+const _package = require('../../package.json');
 const Blog = require('../models/Blog.js');
 
 config.load(path.normalize(path.join(__dirname, '/../../config.json')));
@@ -15,9 +16,11 @@ module.exports = (function() {
         res.send('Welcome to the Xtend API. For documentation please see the <a href="https://github.com/omgimalexis/xtend">Github</a> repo.');
     });
 
-    app.get('/check', function(req, res) {
+    app.get('/version', function(req, res) {
         res.send({
-            ok: 'okay'
+            name: _package.name,
+            version: _package.version,
+            commit: _package.commit
         });
     });
 

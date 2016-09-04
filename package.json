@@ -1,12 +1,14 @@
 {
-    "name": "xtend",
+    "name": "twistly-backend",
     "version": "1.0.0",
+    "commit": "f249307",
     "description": "",
     "main": "app.js",
     "scripts": {
         "test": "xo",
         "snyk-protect": "snyk protect",
-        "prepublish": "npm run snyk-protect"
+        "update-commit": "node update-commit",
+        "prepublish": "npm run snyk-protect && npm run update-commit"
     },
     "private": true,
     "author": "OmgImAlexis <xo@wvvw.me>",
@@ -28,8 +30,9 @@
         "passport": "^0.3.2",
         "passport-local": "^1.0.0",
         "passport-tumblr": "^0.1.2",
+        "snyk": "1.16.0",
         "tumblr.js": "0.0.7",
-        "snyk": "1.16.0"
+        "version-healthcheck": "^0.1.2"
     },
     "devDependencies": {
         "grunt": "^0.4.5",

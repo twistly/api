@@ -108,6 +108,7 @@ module.exports = (function() {
                                             var postSet = new PostSet({
                                                 posts: newPosts,
                                                 blogId: blog.id,
+                                                queuedFrom: queuedFrom,
                                                 clearCaption: false,
                                                 postCount: {
                                                     start: newPosts.length,

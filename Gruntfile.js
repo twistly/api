@@ -4,7 +4,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         clean: {
            dist: './dist/',
-           bower: './bower_components' // jshint ignore:line
+           bower: './bower_components'
        },
        bower: {
             install: {
@@ -13,7 +13,7 @@ module.exports = function(grunt) {
                 }
             }
         },
-        bower_concat: { // jshint ignore:line
+        bower_concat: {
             vender: {
                 dest: './dist/vender.js',
                 cssDest: './dist/vender.css',
@@ -78,7 +78,7 @@ module.exports = function(grunt) {
             options: {
                 eqeqeq: true
             },
-            uses_defaults: [ // jshint ignore:line
+            uses_defaults: [
                 'app.js',
                 'app/**/*.js',
                 'config/**/*.js'

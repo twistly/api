@@ -15,62 +15,61 @@ config.store('disk');
 module.exports = (function() {
     var app = new express.Router();
 
-    function ensureAuthenticated(req, res, next) {
-        if (req.isAuthenticated()) {
-            return next();
-        }
-        res.render('index');
-    }
-
-    app.get('/blog/:blogUrl/stats(?:/public)?', function(req, res) {
+    app.get('/blog/:blogUrl/*', function(req, res, next) {
         Blog.findOne({
             url: req.params.blogUrl
-        }).exec(function(err, blog) {
+        }).lean().exec(function(err, blog) {
             if (err) {
                 console.log(err);
             }
             if (blog) {
-                Stat.find({
-                    blogId: blog.id
-                }, '-_id -__v -blogId').sort('-date').limit(384).exec(function(err, stats) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    Stat.findOne({
-                        blogId: blog.id
-                    }, '-_id -__v -blogId').sort('date').exec(function(err, firstStat) { // eslint-disable-line max-nested-callbacks
-                        if (err) {
-                            console.log(err);
-                        }
-                        // This is for the weekly gains and stuff
-                        var current = stats[0];
-                        var currentFollowers = current.followerCount;
-                        var daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime()) / (24 * 60 * 60 * 1000)));
-                        var gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow);
-                        var lastUpdated = Math.floor((new Date().getTime() - new Date(stats[0].date).getTime()) / 60000);
-                        res.render('blog/index', {
-                            currentBlog: blog,
-                            stats: stats,
-                            statTable: {
-                                forecast: {
-                                    week: currentFollowers + (gainsPerDay * 7),
-                                    month: currentFollowers + (gainsPerDay * 30),
-                                    year: currentFollowers + (gainsPerDay * 365)
-                                },
-                                lastUpdated: lastUpdated < 2 ? 'just now' : lastUpdated + ' minutes ago',
-                                currentFollowers: currentFollowers,
-                                html: []
-                            }
-                        });
-                    });
-                });
-            } else {
-                res.send('This blog doesn\'t exist.');
+                req.blog = blog;
+                return next();
             }
+            // @TODO: Replace this with a 404
+            res.render('index');
         });
     });
 
-    app.get('/blog/:blogUrl/*', ensureAuthenticated, function(req, res, next) {
+    app.get('/blog/:blogUrl/stats(?:/public)?', function(req, res) {
+        Stat.find({
+            blogId: req.blog._id
+        }, '-_id -__v -blogId').sort('-date').limit(384).lean().exec(function(err, stats) {
+            if (err) {
+                console.log(err);
+            }
+            Stat.findOne({
+                blogId: req.blog._id
+            }, '-_id -__v -blogId').sort('date').exec(function(err, firstStat) { // eslint-disable-line max-nested-callbacks
+                if (err) {
+                    console.log(err);
+                }
+                // This is for the weekly gains and stuff
+                var current = stats[0];
+                var currentFollowers = current.followerCount;
+                var daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime()) / (24 * 60 * 60 * 1000)));
+                var gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow);
+                var lastUpdated = Math.floor((new Date().getTime() - new Date(stats[0].date).getTime()) / 60000);
+                res.render('blog/index', {
+                    currentBlog: req.blog,
+                    stats: stats,
+                    statTable: {
+                        forecast: {
+                            week: currentFollowers + (gainsPerDay * 7),
+                            month: currentFollowers + (gainsPerDay * 30),
+                            year: currentFollowers + (gainsPerDay * 365)
+                        },
+                        lastUpdated: lastUpdated < 2 ? 'just now' : lastUpdated + ' minutes ago',
+                        currentFollowers: currentFollowers,
+                        html: []
+                    }
+                });
+            });
+        });
+    });
+
+    app.get('/blog/:blogUrl/*', function(req, res, next) {
+        // @TODO: Change Schema to remove the need for this nested crap :(
         function isUserAllowed (blogUrl) {
             for (var i = 0; i < req.user.tokenSet.length; i++) {
                 for (var j = 0; j < req.user.tokenSet[i].blogs.length; j++) {
@@ -80,128 +79,95 @@ module.exports = (function() {
                 }
             }
         }
-        if (isUserAllowed(req.params.blogUrl)) {
-            next();
+
+        if (req.isAuthenticated()) {
+            if (isUserAllowed(req.blog.url)) {
+                return next();
+            }
+            return res.send('You do not own this blog!');
+        }
+        res.render('index');
+    });
+
+    app.get('/blog/:blogUrl/posts', function(req, res) {
+        PostSet.find({
+            blogId: req.blog._id
+        }).populate('posts').limit(100).exec(function(err, postSets) {
+            if (err) {
+                console.log(err);
+            }
+            if (postSets.length) {
+                res.render('blog/posts', {
+                    postSets: postSets
+                });
+            } else {
+                res.send('This blog doesn\'t have any posts.');
+            }
+        });
+    });
+
+    app.get('/blog/:blogUrl/counters', function(req, res) {
+        res.render('blog/counters', {
+            blog: req.blog,
+            baseUrl: config.get('web:baseUrl')
+        });
+    });
+
+    app.get('/blog/:blogUrl/queues', function(req, res) {
+        async.parallel([
+            function(callback) {
+                Queue.find({
+                    blogId: req.blog._id
+                }).exec(function(err, queues) {
+                    if (err) {
+                        callback(err);
+                    }
+                    callback(null, queues);
+                });
+            },
+            function(callback) {
+                PostSet.find({
+                    blogId: req.blog._id
+                }).sort('-_id').exec(function(err, postSets) {
+                    if (err) {
+                        callback(err);
+                    }
+                    callback(null, postSets);
+                });
+            }
+        ],
+        function(err, results) {
+            if (err) {
+                console.log(err);
+            }
+            res.render('blog/queues/index', {
+                blog: req.blog,
+                queues: results[0],
+                postSets: results[1]
+            });
+        });
+    });
+
+    app.post('/blog/:blogUrl/queues', function(req, res) {
+        if (req.body.interval) {
+            var interval = ((req.body.interval > 0) && (req.body.interval <= 250)) ? req.body.interval : 250;
+            var startHour = ((req.body.startHour > 0) && (req.body.startHour <= 24)) ? req.body.startHour : 0;
+            var endHour = ((req.body.endHour > 0) && (req.body.endHour <= 24)) ? req.body.endHour : 24;
+            var queue = new Queue({
+                blogId: req.blog._id,
+                interval: interval,
+                startHour: startHour,
+                endHour: endHour,
+                backfill: false
+            });
+            queue.save();
+            res.redirect('/blog/' + req.blog.url + '/queues');
         } else {
-            res.send('You do not own this blog!');
+            res.send('You need to set an amount per 24 hours.');
         }
     });
 
-    app.get('/blog/:blogUrl/posts', ensureAuthenticated, function(req, res) {
-        Blog.findOne({
-            url: req.params.blogUrl
-        }).exec(function(err, blog) {
-            if (err) {
-                console.log(err);
-            }
-            if (blog) {
-                PostSet.find({
-                    blogId: blog.id
-                }).populate('posts').limit(100).exec(function(err, postSets) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    if (postSets.length) {
-                        res.render('blog/posts', {
-                            postSets: postSets
-                        });
-                    } else {
-                        res.send('This blog doesn\'t have any posts.');
-                    }
-                });
-            } else {
-                res.send('This blog doesn\'t exist.');
-            }
-        });
-    });
-
-    app.get('/blog/:blogUrl/counters', ensureAuthenticated, function(req, res) {
-        Blog.findOne({url: req.params.blogUrl}).exec(function(err, blog) {
-            if (err) {
-                console.log(err);
-            }
-            if (blog) {
-                res.render('blog/counters', {
-                    blog: blog,
-                    baseUrl: config.get('web:baseUrl')
-                });
-            } else {
-                res.send('This blog doesn\'t exist.');
-            }
-        });
-    });
-
-    app.get('/blog/:blogUrl/queues', ensureAuthenticated, function(req, res) {
-        Blog.findOne({
-            url: req.params.blogUrl
-        }).exec(function(err, blog) {
-            if (err) {
-                console.log(err);
-            }
-            if (blog) {
-                async.parallel([
-                    function(callback) {
-                        Queue.find({blogId: blog._id}).exec(function(err, queues) {
-                            if (err) {
-                                callback(err);
-                            }
-                            callback(null, queues);
-                        });
-                    },
-                    function(callback) {
-                        PostSet.find({
-                            blogId: blog.id
-                        }).sort('-_id').exec(function(err, postSets) {
-                            if (err) {
-                                callback(err);
-                            }
-                            callback(null, postSets);
-                        });
-                    }
-                ],
-                function(err, results) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    res.render('blog/queues/index', {
-                        blog: blog,
-                        queues: results[0],
-                        postSets: results[1]
-                    });
-                });
-            } else {
-                res.send('This blog doesn\'t exist.');
-            }
-        });
-    });
-
-    app.post('/blog/:blogUrl/queues', ensureAuthenticated, function(req, res) {
-        Blog.findOne({
-            url: req.params.blogUrl
-        }, function(err, blog) {
-            if (err) {
-                console.log(err);
-            }
-            if (req.body.interval) {
-                var interval = ((req.body.interval > 0) && (req.body.interval <= 250)) ? req.body.interval : 250;
-                var startHour = ((req.body.startHour > 0) && (req.body.startHour <= 24)) ? req.body.startHour : 0;
-                var endHour = ((req.body.endHour > 0) && (req.body.endHour <= 24)) ? req.body.endHour : 24;
-                var queue = new Queue({
-                    blogId: blog.id,
-                    interval: interval,
-                    startHour: startHour,
-                    endHour: endHour,
-                    backfill: false
-                });
-                queue.save();
-                res.redirect('/blog/' + req.params.blogUrl + '/queues');
-            } else {
-                res.send('You need to set an amount per 24 hours.');
-            }
-        });
-    });
-
-    app.post('/blog/:blogUrl/queues/:queueId/delete', ensureAuthenticated, function(req, res) {
+    app.post('/blog/:blogUrl/queues/:queueId/delete', function(req, res) {
         Queue.findOne({
             _id: req.params.queueId
         }, function(err, queue) {
@@ -209,32 +175,26 @@ module.exports = (function() {
                 console.log(err);
             }
             queue.remove();
-            res.redirect('/blog/' + req.params.blogUrl + '/queues');
+            res.redirect('/blog/' + req.blog.url + '/queues');
         });
     });
 
-    app.post('/blog/:blogUrl/queues/shuffle', ensureAuthenticated, function(req, res) {
+    app.post('/blog/:blogUrl/queues/shuffle', function(req, res) {
         async.waterfall([
             function(callback) {
-                Blog.findOne({
-                    url: req.params.blogUrl
-                }).exec(function(err, blog) {
+                Post.count({
+                    blogId: req.blog._id
+                }).exec(function(err, postCount) {
                     if (err) {
                         callback(err);
                     }
-                    callback(null, blog._id);
+                    callback(null, postCount);
                 });
             },
-            function(blogId, callback) {
-                Post.count({blogId: blogId}).exec(function(err, postCount) {
-                    if (err) {
-                        callback(err);
-                    }
-                    callback(null, blogId, postCount);
-                });
-            },
-            function(blogId, postCount, callback) {
-                Post.find({blogId: blogId}, function(err, posts) {
+            function(postCount, callback) {
+                Post.find({
+                    blogId: req.blog._id
+                }, function(err, posts) {
                     if (err) {
                         callback(err);
                     }
@@ -248,7 +208,7 @@ module.exports = (function() {
             if (err) {
                 console.log(err);
             }
-            res.redirect('/blog/' + req.params.blogUrl + '/queues');
+            res.redirect('/blog/' + req.blog.url + '/queues');
         });
     });
 
