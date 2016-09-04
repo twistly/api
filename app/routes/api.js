@@ -13,7 +13,7 @@ module.exports = (function() {
     var app = new express.Router();
 
     app.get('/', function(req, res) {
-        res.send('Welcome to the Xtend API. For documentation please see the <a href="https://github.com/omgimalexis/xtend">Github</a> repo.');
+        res.send('Welcome to the Twistly API. For documentation please see the <a href="https://github.com/omgimalexis/twistly">Github</a> repo.');
     });
 
     app.get('/version', function(req, res) {

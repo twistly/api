@@ -13,14 +13,14 @@ config.defaults({
     db: {
         host: 'mongodb',
         port: 27017,
-        collection: 'xtend'
+        collection: 'twistly'
     },
     session: {
         secret: 'asdjknl23knlknqlkwnd'
     },
     web: {
         port: 3000,
-        baseUrl: process.env.BASE_URL || 'https://xtend.wvvw.me'
+        baseUrl: process.env.BASE_URL || 'https://twistly.xyz'
     },
     tumblr: {
         token: process.env.TUMBLR_TOKEN || '',

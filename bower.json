@@ -1,12 +1,12 @@
 {
-  "name": "xtend",
+  "name": "twistly",
   "description": "",
   "main": "app.js",
   "authors": [
     "X O <xo@wvvw.me>"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/OmgImAlexis/Xtend",
+  "homepage": "https://github.com/OmgImAlexis/Twistly",
   "moduleType": [],
   "private": true,
   "ignore": [

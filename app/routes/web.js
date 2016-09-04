@@ -47,7 +47,7 @@ module.exports = (function() {
     }
 
     app.get('*', function(req, res, next) {
-        res.locals.title = 'Xtend';
+        res.locals.title = 'Twistly';
         res.locals.numeral = require('numeral');
 
         return next();
@@ -66,6 +66,10 @@ module.exports = (function() {
     });
 
     app.get('/activity', ensureAuthenticated, function(req, res) {
+        var skip = 0;
+        if (req.query.page) {
+            skip = req.query.page * 50;
+        }
         var blogs = [];
         async.each(req.user.tokenSet, function(tokenSet, callback) {
             async.each(tokenSet.blogs, function(blog, callback) {
@@ -78,7 +82,7 @@ module.exports = (function() {
         });
         PostSet.find({
             $or: blogs
-        }).limit(50).sort('-_id').lean().populate('blogId').exec(function(err, postSets) {
+        }).skip(skip).limit(50).sort('-_id').lean().populate('blogId').exec(function(err, postSets) {
             if (err) {
                 res.send(err);
             }

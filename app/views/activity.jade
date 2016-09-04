@@ -15,9 +15,10 @@ block content
                 - var postSet = postSets[i];
                     .panel.panel-default
                         .panel-body
+                            - var timeStamp = new Date(postSet._id.getTimestamp().toString()).toISOString();
                             | #{postSet.blogId.url} reblogged #{postSet.postCount.start} from #{postSet.queuedFrom || 'Unknown'}
                             | 
-                            time(datetime=postSet._id.getTimestamp().toString()) #{postSet._id.getTimestamp().toString()}
+                            time(datetime=timeStamp) #{timeStamp}
                             | 
                             | -
                             | 

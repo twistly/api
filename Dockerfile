@@ -20,7 +20,7 @@ RUN . $HOME/.nvm/nvm.sh && npm install -g nodemon
 RUN mkdir /src \
     && cd /src \
     && git init . \
-    && git remote add -t \* -f origin https://github.com/OmgImAlexis/Xtend.git \
+    && git remote add -t \* -f origin https://github.com/OmgImAlexis/Twistly.git \
     && git checkout master \
     && echo "{}" > /src/config.json
 
