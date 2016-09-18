@@ -8,6 +8,7 @@ const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
 const passport = require('passport');
 const config = require('cz');
+const rollbar = require('rollbar');
 
 config.defaults({
     db: {
@@ -88,6 +89,8 @@ app.use(function(error, req, res) {
         error: error
     });
 });
+
+app.use(rollbar.errorHandler(config.get('rollbarToken')));
 
 app.listen(config.get('web:port'), function() {
     console.log('The server is running on port %s', config.get('web:port'));

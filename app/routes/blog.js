@@ -2,11 +2,11 @@ const path = require('path');
 const express = require('express');
 const async = require('async');
 const config = require('cz');
-const Blog = require('../models/Blog.js');
-const Post = require('../models/Post.js');
-const Queue = require('../models/Queue.js');
-const Stat = require('../models/Stat.js');
-const PostSet = require('../models/PostSet.js');
+const Blog = require('../models/blog.js');
+const Post = require('../models/post.js');
+const Queue = require('../models/queue.js');
+const Stat = require('../models/stat.js');
+const PostSet = require('../models/post-set.js');
 
 config.load(path.normalize(path.join(__dirname, '/../../config.json')));
 config.args();

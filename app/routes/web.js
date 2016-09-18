@@ -1,14 +1,14 @@
 const express = require('express'); // eslint-disable-line max-lines
 const passport = require('passport');
 const async = require('async');
-const User = require('../models/User.js');
-const Blog = require('../models/Blog.js');
-const Post = require('../models/Post.js');
-const PostSet = require('../models/PostSet.js');
-const TokenSet = require('../models/TokenSet.js');
-const Invite = require('../models/Invite.js');
-const Notification = require('../models/Notification.js');
-const Stat = require('../models/Stat.js');
+const User = require('../models/user.js');
+const Blog = require('../models/blog.js');
+const Post = require('../models/post.js');
+const PostSet = require('../models/post-set.js');
+const TokenSet = require('../models/token-set.js');
+const Invite = require('../models/invite.js');
+const Notification = require('../models/notification.js');
+const Stat = require('../models/stat.js');
 
 module.exports = (function() {
     var app = new express.Router();

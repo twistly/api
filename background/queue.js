@@ -2,10 +2,10 @@ const path = require('path');
 const mongoose = require('mongoose');
 const tumblr = require('tumblr.js');
 const config = require('cz');
-const Queue = require('../app/models/Queue.js');
-const Post = require('../app/models/Post.js');
-const Blog = require('../app/models/Blog.js');
-const TokenSet = require('../app/models/TokenSet.js');
+const Queue = require('../app/models/queue.js');
+const Post = require('../app/models/post.js');
+const Blog = require('../app/models/blog.js');
+const TokenSet = require('../app/models/token-set.js');
 
 config.load(path.normalize(path.join(__dirname, '/../config.json')));
 config.args();

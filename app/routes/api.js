@@ -3,7 +3,7 @@ const express = require('express');
 const numeral = require('numeral');
 const config = require('cz');
 const _package = require('../../package.json');
-const Blog = require('../models/Blog.js');
+const Blog = require('../models/blog.js');
 
 config.load(path.normalize(path.join(__dirname, '/../../config.json')));
 config.args();

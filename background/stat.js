@@ -2,9 +2,9 @@ const path = require('path');
 const config = require('cz');
 const mongoose = require('mongoose');
 const tumblr = require('tumblr.js');
-const Blog = require('../app/models/Blog.js');
-const Stat = require('../app/models/Stat.js');
-const TokenSet = require('../app/models/TokenSet.js');
+const Blog = require('../app/models/blog.js');
+const Stat = require('../app/models/stat.js');
+const TokenSet = require('../app/models/token-set.js');
 
 config.load(path.normalize(path.join(__dirname, '/../config.json')));
 config.args();

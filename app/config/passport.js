@@ -4,9 +4,9 @@ exports = module.exports = function(app, passport) {
     const async = require('async');
     const config = require('cz');
     const path = require('path');
-    const User = require('../models/User.js');
-    const Invite = require('../models/Invite.js');
-    const Plan = require('../models/Plan.js');
+    const User = require('../models/user.js');
+    const Invite = require('../models/invite.js');
+    const Plan = require('../models/plan.js'); // eslint-disable-line no-unused-vars
 
     config.load(path.normalize(path.join(__dirname, '/../../config.json')));
     config.args();

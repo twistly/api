@@ -1,10 +1,10 @@
 const express = require('express');
 const async = require('async');
-const User = require('../models/User.js');
-const Blog = require('../models/Blog.js');
-const Notification = require('../models/Notification.js');
-const PostSet = require('../models/PostSet.js');
-const Post = require('../models/Post.js');
+const User = require('../models/user.js');
+const Blog = require('../models/blog.js');
+const Notification = require('../models/notification.js');
+const PostSet = require('../models/post-set.js');
+const Post = require('../models/post.js');
 
 module.exports = (function() {
     var app = new express.Router();
