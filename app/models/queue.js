@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var queueSchema = new Schema({
+const queueSchema = new Schema({
     blogId: {
         type: Schema.Types.ObjectId,
         ref: 'Blog'
@@ -20,4 +20,4 @@ var queueSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('Queue', queueSchema);
+export default mongoose.model('Queue', queueSchema);

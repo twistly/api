@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var planSchema = new Schema({
+const planSchema = new Schema({
     costPerMonth: Number,
     currency: String,
     maxPosts: Number,
@@ -10,4 +10,4 @@ var planSchema = new Schema({
     name: String
 });
 
-module.exports = mongoose.model('Plan', planSchema);
+export default mongoose.model('Plan', planSchema);

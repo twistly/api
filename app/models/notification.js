@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var notificationSchema = new Schema({
+const notificationSchema = new Schema({
     blogUrl: String,
     content: String,
     read: {
@@ -11,4 +11,4 @@ var notificationSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('Notification', notificationSchema);
+export default mongoose.model('Notification', notificationSchema);

@@ -1,58 +1,53 @@
-exports = module.exports = function(app, passport) {
+import async from 'async'
+import User from '../models/user.js'
+import Invite from '../models/invite.js'
+import Plan from '../models/plan.js'
+
+export default (app, passport) => {
     const LocalStrategy = require('passport-local').Strategy;
     const TumblrStrategy = require('passport-tumblr').Strategy;
-    const async = require('async');
-    const config = require('cz');
-    const path = require('path');
-    const User = require('../models/user.js');
-    const Invite = require('../models/invite.js');
-    const Plan = require('../models/plan.js'); // eslint-disable-line no-unused-vars
 
-    config.load(path.normalize(path.join(__dirname, '/../../config.json')));
-    config.args();
-    config.store('disk');
-
-    passport.serializeUser(function(user, done) {
+    passport.serializeUser((user, done) => {
         done(null, user.id);
     });
 
-    passport.deserializeUser(function(id, done) {
-        User.findById(id).populate('tokenSet').populate('plan').exec(function(err, user) {
+    passport.deserializeUser((id, done) => {
+        User.findById(id).populate('tokenSet').populate('plan').exec((err, user) => {
             if (err) {
                 console.log(err);
             }
-            async.each(user.tokenSet, function (tokenSet, callback) {
+            async.each(user.tokenSet, (tokenSet, callback) => {
                 tokenSet.populate({
                     path: 'blogs'
-                }, function (err) {
+                }, err => {
                     if (err) {
                         done(err);
                     }
-                    async.each(tokenSet.blogs, function (blog, callback) { // eslint-disable-line max-nested-callbacks
+                    async.each(tokenSet.blogs, (blog, callback) => {
                         blog.populate({
                             path: 'notifications'
-                        }, function(err) { // eslint-disable-line max-nested-callbacks
+                        }, err => {
                             if (err) {
                                 done(err);
                             }
                             callback();
                         });
-                    }, function (err) { // eslint-disable-line max-nested-callbacks
+                    }, err => {
                         if (err) {
                             done(err);
                         }
                         callback();
                     });
                 });
-            }, function (err) {
+            }, err => {
                 done(err, user);
             });
         });
     });
 
-    passport.use('local-signin', new LocalStrategy(function(username, password, done) {
-        var criteria = (username.indexOf('@') === -1) ? {username: username} : {email: username};
-        User.findOne(criteria, function(err, user) {
+    passport.use('local-signin', new LocalStrategy((username, password, done) => {
+        const criteria = (username.indexOf('@') === -1) ? {username} : {email: username};
+        User.findOne(criteria, (err, user) => {
             if (err) {
                 return done(err);
             }
@@ -61,7 +56,7 @@ exports = module.exports = function(app, passport) {
                     message: 'Unknown user ' + username
                 });
             }
-            user.comparePassword(password, function(err, isMatch) {
+            user.comparePassword(password, (err, isMatch) => {
                 if (err) {
                     return done(err);
                 }
@@ -78,11 +73,10 @@ exports = module.exports = function(app, passport) {
     passport.use('local-signup', new LocalStrategy({
         usernameField: 'username',
         passwordField: 'password',
-        passReqToCallback: true // allows us to pass back the entire request to the callback
-    },
-    function(req, username, password, done) {
-        process.nextTick(function() {
-            User.findOne({username: username}, function(err, user) {
+        passReqToCallback: true // Allows us to pass back the entire request to the callback
+    }, (req, username, password, done) => {
+        process.nextTick(() => {
+            User.findOne({username}, (err, user) => {
                 if (err) {
                     return done(err);
                 }
@@ -94,7 +88,7 @@ exports = module.exports = function(app, passport) {
 
                 Invite.findOne({
                     token: req.body.invite
-                }, function(err, invite) {
+                }, (err, invite) => {
                     if (err) {
                         return done(err);
                     }
@@ -105,17 +99,17 @@ exports = module.exports = function(app, passport) {
                             });
                         }
                         invite.used = true;
-                        invite.save(function(err, invite) {
+                        invite.save((err, invite) => {
                             if (err) {
                                 console.log(err);
                             }
-                            var user = new User({
-                                username: username,
+                            const user = new User({
+                                username,
                                 email: req.body.email,
-                                password: password,
+                                password,
                                 inviteToken: invite.token
                             });
-                            user.save(function(err, user) { // eslint-disable-line max-nested-callbacks
+                            user.save((err, user) => {
                                 if (err) {
                                     return done(err);
                                 }
@@ -133,15 +127,14 @@ exports = module.exports = function(app, passport) {
     }));
 
     passport.use('tumblr', new TumblrStrategy({
-        consumerKey: config.get('tumblr:token'),
-        consumerSecret: config.get('tumblr:tokenSecret'),
+        consumerKey: process.env.TUMBLR_CONSUMER_KEY,
+        consumerSecret: process.env.TUMBLR_CONSUMER_SECRET,
         callbackURL: '/auth/tumblr/callback'
-    },
-    function(token, tokenSecret, profile, done) {
+    }, (token, tokenSecret, profile, done) => {
         done(null, false, {
             tumblr: profile,
-            token: token,
-            tokenSecret: tokenSecret
+            token,
+            tokenSecret
         });
     }));
 };

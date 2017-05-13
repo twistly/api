@@ -1,10 +1,10 @@
-var mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var postSetSchema = new Schema({
+const postSetSchema = new Schema({
     posts: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Post'
     }],
     blogId: {
@@ -20,4 +20,4 @@ var postSetSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('PostSet', postSetSchema);
+export default mongoose.model('PostSet', postSetSchema);

@@ -1,9 +1,10 @@
-var mongoose = require('mongoose');
-var PostSet = require('./post-set.js');
+import mongoose from 'mongoose';
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var postSchema = new mongoose.Schema({
+const PostSet = require('./post-set.js');
+
+const Post = new Schema({
     postId: String,
     postOrder: Number,
     blogId: {
@@ -21,7 +22,7 @@ var postSchema = new mongoose.Schema({
     }
 });
 
-postSchema.pre('remove', function(next) {
+Post.pre('remove', function(next) {
     PostSet.update({
         posts: this._id
     }, {
@@ -37,4 +38,4 @@ postSchema.pre('remove', function(next) {
     next();
 });
 
-module.exports = mongoose.model('Post', postSchema);
+export default mongoose.model('Post', Post);

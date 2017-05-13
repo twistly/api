@@ -1,16 +1,16 @@
-const path = require('path');
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const methodOverride = require('method-override');
+import path from 'path';
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import methodOverride from 'method-override';
+import mongoose from 'mongoose';
+import passport from 'passport';
+import passportConfig from './app/config/passport';
+
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
-const mongoose = require('mongoose');
-const passport = require('passport');
-const config = require('cz');
-const rollbar = require('rollbar');
 
-config.defaults({
+const config = {
     db: {
         host: 'mongodb',
         port: 27017,
@@ -28,18 +28,14 @@ config.defaults({
         tokenSecret: process.env.TUMBLR_TOKEN_SECRET || ''
     },
     defaultPlanId: ''
-});
+};
 
-config.load(path.normalize(path.join(__dirname, '/config.json')));
-config.args();
-config.store('disk');
-
-mongoose.connect('mongodb://' + config.joinGets(['db:host', 'db:port', 'db:collection'], [':', '/']));
+mongoose.connect('mongodb://localhost:27017/twistly');
 if (process.env.NODE_ENV !== 'production') {
     mongoose.set('debug', true);
 }
 
-var app = express();
+const app = express();
 
 app.set('views', path.join(__dirname, '/app/views'));
 app.set('view engine', 'jade');
@@ -51,7 +47,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(methodOverride());
 app.use(session({
-    secret: config.get('session:secret'),
+    secret: config.session.secret,
     name: 'session',
     store: new MongoStore({
         mongooseConnection: mongoose.connection
@@ -63,35 +59,31 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
     res.locals.user = req.user;
     next();
 });
 
-require('./app/config/passport.js')(app, passport);
+passportConfig(app, passport);
 app.use('/api/', require('./app/routes/api'));
 app.use('/', require('./app/routes/chrome-extension'));
 app.use('/', require('./app/routes/auth'));
 app.use('/', require('./app/routes/web'));
 app.use('/', require('./app/routes/blog'));
 
-// Handle 404
-app.use(function(req, res) {
+app.use((req, res) => {
     res.status(404).render('http/404', {
         title: '404: File Not Found'}
     );
 });
 
-// Handle 500
-app.use(function(error, req, res) {
+app.use((error, req, res) => {
     res.status(500).render('http/500', {
         title: '500: Internal Server Error',
-        error: error
+        error
     });
 });
 
-app.use(rollbar.errorHandler(config.get('rollbarToken')));
-
-app.listen(config.get('web:port'), function() {
-    console.log('The server is running on port %s', config.get('web:port'));
+app.listen(3000, () => {
+    console.log('The server is running on port 3000');
 });

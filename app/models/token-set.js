@@ -1,9 +1,10 @@
-var mongoose = require('mongoose');
-var User = require('./user.js');
+import mongoose from 'mongoose';
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var tokenSetSchema = new Schema({
+const User = require('./user.js');
+
+const tokenSetSchema = new Schema({
     token: {
         required: true,
         type: String
@@ -13,7 +14,7 @@ var tokenSetSchema = new Schema({
         type: String
     },
     blogs: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Blog'
     }],
     enabled: {
@@ -41,4 +42,4 @@ tokenSetSchema.pre('remove', function(next) {
     next();
 });
 
-module.exports = mongoose.model('TokenSet', tokenSetSchema);
+export default mongoose.model('TokenSet', tokenSetSchema);

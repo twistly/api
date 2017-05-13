@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var inviteSchema = new Schema({
+const inviteSchema = new Schema({
     token: {
         type: String,
         unique: true
@@ -10,4 +10,4 @@ var inviteSchema = new Schema({
     used: Boolean
 });
 
-module.exports = mongoose.model('Invite', inviteSchema);
+export default mongoose.model('Invite', inviteSchema);

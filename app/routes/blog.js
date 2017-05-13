@@ -1,24 +1,19 @@
-const path = require('path');
-const express = require('express');
-const async = require('async');
-const config = require('cz');
+import express from 'express';
+import async from 'async';
+
 const Blog = require('../models/blog.js');
 const Post = require('../models/post.js');
 const Queue = require('../models/queue.js');
 const Stat = require('../models/stat.js');
 const PostSet = require('../models/post-set.js');
 
-config.load(path.normalize(path.join(__dirname, '/../../config.json')));
-config.args();
-config.store('disk');
-
 module.exports = (function() {
-    var app = new express.Router();
+    const app = new express.Router();
 
-    app.get('/blog/:blogUrl/*', function(req, res, next) {
+    app.get('/blog/:blogUrl/*', (req, res, next) => {
         Blog.findOne({
             url: req.params.blogUrl
-        }).lean().exec(function(err, blog) {
+        }).lean().exec((err, blog) => {
             if (err) {
                 console.log(err);
             }
@@ -31,28 +26,28 @@ module.exports = (function() {
         });
     });
 
-    app.get('/blog/:blogUrl/stats(?:/public)?', function(req, res) {
+    app.get('/blog/:blogUrl/stats(?:/public)?', (req, res) => {
         Stat.find({
             blogId: req.blog._id
-        }, '-_id -__v -blogId').sort('-date').limit(384).lean().exec(function(err, stats) {
+        }, '-_id -__v -blogId').sort('-date').limit(384).lean().exec((err, stats) => {
             if (err) {
                 console.log(err);
             }
             Stat.findOne({
                 blogId: req.blog._id
-            }, '-_id -__v -blogId').sort('date').exec(function(err, firstStat) { // eslint-disable-line max-nested-callbacks
+            }, '-_id -__v -blogId').sort('date').exec((err, firstStat) => {
                 if (err) {
                     console.log(err);
                 }
                 // This is for the weekly gains and stuff
-                var current = stats[0];
-                var currentFollowers = current.followerCount;
-                var daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime()) / (24 * 60 * 60 * 1000)));
-                var gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow);
-                var lastUpdated = Math.floor((new Date().getTime() - new Date(stats[0].date).getTime()) / 60000);
+                const current = stats[0];
+                const currentFollowers = current.followerCount;
+                const daysBetweenFirstStatAndNow = Math.round(Math.abs((new Date(stats[0].date).getTime() - new Date(firstStat.date).getTime()) / (24 * 60 * 60 * 1000)));
+                const gainsPerDay = Math.floor((currentFollowers - firstStat.followerCount) / daysBetweenFirstStatAndNow);
+                const lastUpdated = Math.floor((new Date().getTime() - new Date(stats[0].date).getTime()) / 60000);
                 res.render('blog/index', {
                     currentBlog: req.blog,
-                    stats: stats,
+                    stats,
                     statTable: {
                         forecast: {
                             week: currentFollowers + (gainsPerDay * 7),
@@ -60,7 +55,7 @@ module.exports = (function() {
                             year: currentFollowers + (gainsPerDay * 365)
                         },
                         lastUpdated: lastUpdated < 2 ? 'just now' : lastUpdated + ' minutes ago',
-                        currentFollowers: currentFollowers,
+                        currentFollowers,
                         html: []
                     }
                 });
@@ -68,17 +63,17 @@ module.exports = (function() {
         });
     });
 
-    app.get('/blog/:blogUrl/*', function(req, res, next) {
+    app.get('/blog/:blogUrl/*', (req, res, next) => {
         // @TODO: Change Schema to remove the need for this nested crap :(
-        function isUserAllowed (blogUrl) {
-            for (var i = 0; i < req.user.tokenSet.length; i++) {
-                for (var j = 0; j < req.user.tokenSet[i].blogs.length; j++) {
+        const isUserAllowed = blogUrl => {
+            for (let i = 0; i < req.user.tokenSet.length; i++) {
+                for (let j = 0; j < req.user.tokenSet[i].blogs.length; j++) {
                     if (req.user.tokenSet[i].blogs[j].url.toLowerCase() === blogUrl.toLowerCase()) {
                         return true;
                     }
                 }
             }
-        }
+        };
 
         if (req.isAuthenticated()) {
             if (isUserAllowed(req.blog.url)) {
@@ -89,16 +84,16 @@ module.exports = (function() {
         res.render('index');
     });
 
-    app.get('/blog/:blogUrl/posts', function(req, res) {
+    app.get('/blog/:blogUrl/posts', (req, res) => {
         PostSet.find({
             blogId: req.blog._id
-        }).populate('posts').limit(100).exec(function(err, postSets) {
+        }).populate('posts').limit(100).exec((err, postSets) => {
             if (err) {
                 console.log(err);
             }
-            if (postSets.length) {
+            if (postSets.length >= 1) {
                 res.render('blog/posts', {
-                    postSets: postSets
+                    postSets
                 });
             } else {
                 res.send('This blog doesn\'t have any posts.');
@@ -106,37 +101,36 @@ module.exports = (function() {
         });
     });
 
-    app.get('/blog/:blogUrl/counters', function(req, res) {
+    app.get('/blog/:blogUrl/counters', (req, res) => {
         res.render('blog/counters', {
             blog: req.blog,
-            baseUrl: config.get('web:baseUrl')
+            baseUrl: 'https://twistly.xyz/'
         });
     });
 
-    app.get('/blog/:blogUrl/queues', function(req, res) {
+    app.get('/blog/:blogUrl/queues', (req, res) => {
         async.parallel([
-            function(callback) {
+            callback => {
                 Queue.find({
                     blogId: req.blog._id
-                }).exec(function(err, queues) {
+                }).exec((err, queues) => {
                     if (err) {
                         callback(err);
                     }
                     callback(null, queues);
                 });
             },
-            function(callback) {
+            callback => {
                 PostSet.find({
                     blogId: req.blog._id
-                }).sort('-_id').exec(function(err, postSets) {
+                }).sort('-_id').exec((err, postSets) => {
                     if (err) {
                         callback(err);
                     }
                     callback(null, postSets);
                 });
             }
-        ],
-        function(err, results) {
+        ], (err, results) => {
             if (err) {
                 console.log(err);
             }
@@ -148,16 +142,16 @@ module.exports = (function() {
         });
     });
 
-    app.post('/blog/:blogUrl/queues', function(req, res) {
+    app.post('/blog/:blogUrl/queues', (req, res) => {
         if (req.body.interval) {
-            var interval = ((req.body.interval > 0) && (req.body.interval <= 250)) ? req.body.interval : 250;
-            var startHour = ((req.body.startHour > 0) && (req.body.startHour <= 24)) ? req.body.startHour : 0;
-            var endHour = ((req.body.endHour > 0) && (req.body.endHour <= 24)) ? req.body.endHour : 24;
-            var queue = new Queue({
+            const interval = ((req.body.interval > 0) && (req.body.interval <= 250)) ? req.body.interval : 250;
+            const startHour = ((req.body.startHour > 0) && (req.body.startHour <= 24)) ? req.body.startHour : 0;
+            const endHour = ((req.body.endHour > 0) && (req.body.endHour <= 24)) ? req.body.endHour : 24;
+            const queue = new Queue({
                 blogId: req.blog._id,
-                interval: interval,
-                startHour: startHour,
-                endHour: endHour,
+                interval,
+                startHour,
+                endHour,
                 backfill: false
             });
             queue.save();
@@ -167,10 +161,10 @@ module.exports = (function() {
         }
     });
 
-    app.post('/blog/:blogUrl/queues/:queueId/delete', function(req, res) {
+    app.post('/blog/:blogUrl/queues/:queueId/delete', (req, res) => {
         Queue.findOne({
             _id: req.params.queueId
-        }, function(err, queue) {
+        }, (err, queue) => {
             if (err) {
                 console.log(err);
             }
@@ -179,12 +173,12 @@ module.exports = (function() {
         });
     });
 
-    app.post('/blog/:blogUrl/queues/shuffle', function(req, res) {
+    app.post('/blog/:blogUrl/queues/shuffle', (req, res) => {
         async.waterfall([
             function(callback) {
                 Post.count({
                     blogId: req.blog._id
-                }).exec(function(err, postCount) {
+                }).exec((err, postCount) => {
                     if (err) {
                         callback(err);
                     }
@@ -194,17 +188,17 @@ module.exports = (function() {
             function(postCount, callback) {
                 Post.find({
                     blogId: req.blog._id
-                }, function(err, posts) {
+                }, (err, posts) => {
                     if (err) {
                         callback(err);
                     }
-                    async.each(posts, function(post, done) {
+                    async.each(posts, (post, done) => {
                         post.postOrder = Math.floor(Math.random() * (postCount - 1));
                         post.save(done);
                     }, callback(null, 'done'));
                 });
             }
-        ], function(err) {
+        ], err => {
             if (err) {
                 console.log(err);
             }

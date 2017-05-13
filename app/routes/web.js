@@ -1,33 +1,42 @@
-const express = require('express'); // eslint-disable-line max-lines
-const passport = require('passport');
-const async = require('async');
-const User = require('../models/user.js');
-const Blog = require('../models/blog.js');
-const Post = require('../models/post.js');
-const PostSet = require('../models/post-set.js');
-const TokenSet = require('../models/token-set.js');
-const Invite = require('../models/invite.js');
-const Notification = require('../models/notification.js');
-const Stat = require('../models/stat.js');
+import express from 'express';
+import passport from 'passport';
+import Agenda from 'agenda';
+import agendash from 'agendash';
+import async from 'async';
+
+import Post from '../models/post';
+import User from '../models/user';
+import Blog from '../models/blog';
+import PostSet from '../models/post-set';
+import TokenSet from '../models/token-set';
+import Invite from '../models/invite';
+import Notification from '../models/notification';
+import Stat from '../models/stat';
+
+const agenda = new Agenda({
+    db: {
+        address: 'mongodb://127.0.0.1/agenda'
+    }
+});
 
 module.exports = (function() {
-    var app = new express.Router();
+    const app = new express.Router();
 
     function ensureAuthenticated(req, res, next) {
         if (req.isAuthenticated()) {
             return next();
         }
         async.parallel([
-            function(callback) {
-                Post.count({}, function(err, postCount) {
+            callback => {
+                Post.count({}, (err, postCount) => {
                     if (err) {
                         callback(err);
                     }
                     callback(null, postCount);
                 });
             },
-            function(callback) {
-                User.count({}, function(err, userCount) {
+            callback => {
+                User.count({}, (err, userCount) => {
                     if (err) {
                         callback(err);
                     }
@@ -35,7 +44,7 @@ module.exports = (function() {
                 });
             }
         ],
-        function(err, results) {
+        (err, results) => {
             if (err) {
                 console.log(err);
             }
@@ -46,33 +55,33 @@ module.exports = (function() {
         });
     }
 
-    app.get('*', function(req, res, next) {
+    app.get('*', (req, res, next) => {
         res.locals.title = 'Twistly';
         res.locals.numeral = require('numeral');
 
         return next();
     });
 
-    app.get('/', ensureAuthenticated, function(req, res) {
+    app.get('/', ensureAuthenticated, (req, res) => {
         res.render('index');
     });
 
-    app.get('/account', ensureAuthenticated, function(req, res) {
+    app.get('/account', ensureAuthenticated, (req, res) => {
         res.render('account');
     });
 
-    app.get('/user', ensureAuthenticated, function(req, res) {
+    app.get('/user', ensureAuthenticated, (req, res) => {
         res.send(req.user);
     });
 
-    app.get('/activity', ensureAuthenticated, function(req, res) {
-        var skip = 0;
+    app.get('/activity', ensureAuthenticated, (req, res) => {
+        let skip = 0;
         if (req.query.page) {
             skip = req.query.page * 50;
         }
-        var blogs = [];
-        async.each(req.user.tokenSet, function(tokenSet, callback) {
-            async.each(tokenSet.blogs, function(blog, callback) {
+        const blogs = [];
+        async.each(req.user.tokenSet, (tokenSet, callback) => {
+            async.each(tokenSet.blogs, (blog, callback) => {
                 blogs.push({
                     blogId: blog.id
                 });
@@ -82,34 +91,34 @@ module.exports = (function() {
         });
         PostSet.find({
             $or: blogs
-        }).skip(skip).limit(50).sort('-_id').lean().populate('blogId').exec(function(err, postSets) {
+        }).skip(skip).limit(50).sort('-_id').lean().populate('blogId').exec((err, postSets) => {
             if (err) {
                 res.send(err);
             }
             res.render('activity', {
-                postSets: postSets
+                postSets
             });
         });
     });
 
-    app.get('/unlink/:tokenSetId', ensureAuthenticated, function(req, res, next) {
+    app.get('/unlink/:tokenSetId', ensureAuthenticated, (req, res, next) => {
         User.findOne({
             _id: req.user.id,
             tokenSet: req.params.tokenSetId
-        }).exec(function(err, user) {
+        }).exec((err, user) => {
             if (err) {
                 console.log(err);
             }
             if (user) {
                 TokenSet.findOne({
                     _id: req.params.tokenSetId
-                }, function(err, tokenSet) {
+                }, (err, tokenSet) => {
                     if (err) {
                         console.log(err);
                     }
                     if (tokenSet) {
-                        async.eachSeries(tokenSet.blogs, function(blog, callback) {
-                            Blog.findByIdAndRemove(blog, function(err, doc) {  // eslint-disable-line max-nested-callbacks
+                        async.eachSeries(tokenSet.blogs, (blog, callback) => {
+                            Blog.findByIdAndRemove(blog, (err, doc) => {
                                 if (err) {
                                     console.log(err);
                                 }
@@ -117,8 +126,8 @@ module.exports = (function() {
                                     callback();
                                 }
                             });
-                        }, function () {
-                            tokenSet.remove(function(err) {  // eslint-disable-line max-nested-callbacks
+                        }, () => {
+                            tokenSet.remove(err => {
                                 if (err) {
                                     next(err);
                                 }
@@ -128,42 +137,42 @@ module.exports = (function() {
                     }
                 });
             } else {
-                res.send('You don\'t have that token, what do you think you\'re trying to do?');
+                res.send(`You don't have that token, what do you think you're trying to do?`);
             }
         });
     });
 
     app.get('/auth/tumblr', ensureAuthenticated, passport.authenticate('tumblr', {
         callbackURL: '/auth/tumblr/callback'
-    }), function(req, res) {
+    }), (req, res) => {
         res.send('??');
     });
 
-    app.get('/auth/tumblr/callback', ensureAuthenticated, function(req, res, next) {
-        req._passport.instance.authenticate('tumblr', function(err, user, info) {
+    app.get('/auth/tumblr/callback', ensureAuthenticated, (req, res, next) => {
+        req._passport.instance.authenticate('tumblr', (err, user, info) => {
             if (err) {
                 res.send(err);
             }
             const token = info.token;
             const tokenSecret = info.tokenSecret;
-            let blogs = info.tumblr._json.response.user.blogs;
+            const blogs = info.tumblr._json.response.user.blogs;
             User.findOne({
                 _id: req.user.id
-            }, function(err, user) {
+            }, (err, user) => {
                 if (err) {
                     console.log(err);
                 }
                 if (user) {
                     Blog.findOne({
                         url: blogs[0].name
-                    }).exec(function(err, blog) {
+                    }).exec((err, blog) => {
                         if (err) {
                             console.log(err);
                         }
                         if (blog) {
                             TokenSet.findOne({
                                 blogs: blog.id
-                            }, function(err, tokenSet) {  // eslint-disable-line max-nested-callbacks
+                            }, (err, tokenSet) => {
                                 if (err) {
                                     console.log(err);
                                 }
@@ -175,12 +184,12 @@ module.exports = (function() {
                                     User.findOne({
                                         _id: req.user.id,
                                         tokenSet: tokenSet.id
-                                    }, function(err, tokenUser) {  // eslint-disable-line max-nested-callbacks
+                                    }, (err, tokenUser) => {
                                         if (err) {
                                             console.log(err);
                                         }
                                         if (tokenUser) {
-                                            tokenSet.save(function(err, tokenSet) {  // eslint-disable-line max-nested-callbacks
+                                            tokenSet.save((err, tokenSet) => {
                                                 if (err) {
                                                     next(err);
                                                 }
@@ -190,12 +199,12 @@ module.exports = (function() {
                                             });
                                         } else {
                                             user.tokenSet.push(tokenSet.id);
-                                            user.save(function(err, user) {  // eslint-disable-line max-nested-callbacks
+                                            user.save((err, user) => {
                                                 if (err) {
                                                     next(err);
                                                 }
                                                 if (user) {
-                                                    tokenSet.save(function(err, tokenSet) {  // eslint-disable-line max-nested-callbacks
+                                                    tokenSet.save((err, tokenSet) => {
                                                         if (err) {
                                                             next(err);
                                                         }
@@ -213,35 +222,35 @@ module.exports = (function() {
                             });
                         } else {
                             TokenSet.create({
-                                token: token,
-                                tokenSecret: tokenSecret
-                            }, function (err, tokenSet) { // eslint-disable-line max-nested-callbacks
+                                token,
+                                tokenSecret
+                            }, (err, tokenSet) => {
                                 if (err) {
                                     console.log(err);
                                 }
-                                async.eachSeries(blogs, function(blog, callback) { // eslint-disable-line max-nested-callbacks
+                                async.eachSeries(blogs, (blog, callback) => {
                                     Notification.find({
                                         blogUrl: blog.name
-                                    }, function(err, notifications) { // eslint-disable-line max-nested-callbacks
+                                    }, (err, notifications) => {
                                         if (err) {
                                             console.log(err);
                                         }
-                                        var newBlog = new Blog({
+                                        const newBlog = new Blog({
                                             url: blog.name,
                                             postCount: blog.posts,
                                             isNsfw: blog.is_nsfw, // jshint ignore:line
                                             followerCount: blog.followers,
                                             primary: blog.primary,
                                             public: (blog.type === 'public'),
-                                            notifications: notifications
+                                            notifications
                                         });
-                                        newBlog.save(function(err, blog) { // eslint-disable-line max-nested-callbacks
+                                        newBlog.save((err, blog) => {
                                             if (err) {
                                                 console.log(err);
                                             }
                                             if (blog) {
-                                                var now = new Date();
-                                                var stat = new Stat({
+                                                const now = new Date();
+                                                const stat = new Stat({
                                                     blogId: blog._id,
                                                     followerCount: blog.followerCount,
                                                     postCount: blog.postCount,
@@ -254,7 +263,7 @@ module.exports = (function() {
                                                 });
                                                 stat.save();
                                                 tokenSet.blogs = tokenSet.blogs.toObject().concat([blog._id]);
-                                                tokenSet.save(function(err, tokenSet) { // eslint-disable-line max-nested-callbacks
+                                                tokenSet.save((err, tokenSet) => {
                                                     if (err) {
                                                         next(err);
                                                     }
@@ -267,9 +276,9 @@ module.exports = (function() {
                                             }
                                         });
                                     });
-                                }, function () { // eslint-disable-line max-nested-callbacks
+                                }, () => {
                                     user.tokenSet.push(tokenSet.id);
-                                    user.save(function(err, user) { // eslint-disable-line max-nested-callbacks
+                                    user.save((err, user) => {
                                         if (err) {
                                             next(err);
                                         }
@@ -288,7 +297,7 @@ module.exports = (function() {
         })(req, res);
     });
 
-    app.get('/genToken', ensureAuthenticated, function(req, res, next) {
+    app.get('/genToken', ensureAuthenticated, (req, res, next) => {
         if (req.user.isAdmin) {
             Invite.create({
                 token: (function() {
@@ -300,7 +309,7 @@ module.exports = (function() {
                     let numCount = 0;
                     let rnum = 0;
 
-                    for (var i = 0; i < stringLength; i++) {
+                    for (let i = 0; i < stringLength; i++) {
                         // If random bit is 0, there are less than 3 digits already saved, and there are not already 5 characters saved, generate a numeric value.
                         if (((Math.floor(Math.random() * 2) === 0) && numCount < 3) || charCount >= 5) {
                             rnum = Math.floor(Math.random() * 10);
@@ -316,7 +325,7 @@ module.exports = (function() {
                     return randomString;
                 })(),
                 used: false
-            }, function(err, invite) {
+            }, (err, invite) => {
                 if (err) {
                     console.log(err);
                 }
@@ -327,17 +336,17 @@ module.exports = (function() {
         }
     });
 
-    app.get('/unusedTokens', ensureAuthenticated, function(req, res, next) {
+    app.get('/unusedTokens', ensureAuthenticated, (req, res, next) => {
         if (req.user.isAdmin) {
             Invite.find({
                 used: false
-            }).select('token').exec(function(err, invites) {
+            }).select('token').exec((err, invites) => {
                 if (err) {
                     console.log(err);
                 }
                 res.send({
                     count: invites.length,
-                    invites: invites
+                    invites
                 });
             });
         } else {
@@ -345,20 +354,22 @@ module.exports = (function() {
         }
     });
 
-    app.get('/userCount', ensureAuthenticated, function(req, res, next) {
+    app.get('/userCount', ensureAuthenticated, (req, res, next) => {
         if (req.user.isAdmin) {
-            User.count(function(err, userCount) {
+            User.count((err, userCount) => {
                 if (err) {
                     console.log(err);
                 }
                 res.send({
-                    userCount: userCount
+                    userCount
                 });
             });
         } else {
             next();
         }
     });
+
+    app.use('/agendash', agendash(agenda));
 
     return app;
 })();

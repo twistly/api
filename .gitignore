@@ -1,3 +1,5 @@
+# Created by http://www.gitignore.io
+
 ### Node ###
 # Logs
 logs
@@ -28,6 +30,7 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 
+
 ### OSX ###
 .DS_Store
 .AppleDouble
@@ -35,6 +38,7 @@ node_modules
 
 # Icon must end with two \r
 Icon
+
 
 # Thumbnails
 ._*
@@ -50,9 +54,16 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# Config files with passwords and such
+# Build tools
+bower_components
+_bower.js
+_bower.css
 config.json
 
-# Bower files
-bower_components
-dist
+# Database files
+dbs
+
+# Tests
+node_modules
+coverage
+.nyc_output

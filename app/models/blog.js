@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var blogSchema = new Schema({
+const blogSchema = new Schema({
     url: {
         required: true,
         type: String
@@ -17,9 +17,9 @@ var blogSchema = new Schema({
         default: 0
     },
     notifications: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Notification'
     }]
 });
 
-module.exports = mongoose.model('Blog', blogSchema);
+export default mongoose.model('Blog', blogSchema);

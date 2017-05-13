@@ -1,28 +1,28 @@
 {
-  "name": "twistly-backend",
+  "name": "Twistly",
   "version": "1.0.0",
-  "commit": "f249307",
   "description": "",
-  "main": "app.js",
-  "scripts": {
-    "test": "xo",
-    "snyk-protect": "snyk protect",
-    "update-commit": "node update-commit",
-    "prepublish": "npm run snyk-protect && npm run update-commit"
-  },
-  "private": true,
-  "author": "OmgImAlexis <xo@wvvw.me>",
-  "license": "MIT",
+  "main": "index.js",
   "dependencies": {
+    "agenda": "^0.9.1",
+    "agenda-ui": "^0.0.7",
+    "agendash": "^0.4.0",
     "async": "^1.5.2",
+    "babel-cli": "^6.24.0",
+    "babel-core": "^6.24.0",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-stage-2": "^6.22.0",
     "bcrypt": "^0.8.3",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.15.0",
     "connect-mongo": "^0.8.2",
     "cookie-parser": "^1.4.1",
     "cz": "^1.3.1",
     "express": "^4.13.4",
+    "express-jwt": "^5.1.0",
     "express-session": "^1.13.0",
     "jade": "^1.10.0",
+    "jsonwebtoken": "^7.3.0",
     "method-override": "^2.3.3",
     "moment": "^2.12.0",
     "mongoose": "^4.4.6",
@@ -33,27 +33,60 @@
     "rollbar": "^0.6.2",
     "snyk": "1.16.0",
     "tumblr.js": "0.0.7",
-    "version-healthcheck": "^0.1.2"
+    "version-healthcheck": "^0.1.2",
+    "xo": "^0.18.2"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-bower-concat": "^0.6.0",
-    "grunt-bower-task": "^0.4.0",
-    "grunt-contrib-clean": "^0.7.0",
-    "grunt-contrib-copy": "^0.8.2",
-    "grunt-contrib-cssmin": "^0.14.0",
-    "grunt-contrib-jshint": "^0.11.3",
-    "grunt-contrib-uglify": "^0.11.0",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-sass": "^1.1.0",
-    "load-grunt-tasks": "^3.3.0",
-    "xo": "^0.16.0"
+    "ava": "^0.19.1",
+    "babel-watch": "^2.0.6",
+    "coveralls": "^2.13.0",
+    "cross-env": "^4.0.0",
+    "nyc": "^10.2.0",
+    "supertest": "^3.0.0"
   },
-  "snyk": true,
+  "private": true,
+  "scripts": {
+    "test": "xo && cross-env NODE_ENV=test 'nyc ava test/*.spec.js'",
+    "start": "yarn start:production",
+    "start:production": "cross-env NODE_ENV=production babel-node index.js",
+    "start:development": "cross-env NODE_ENV=dev yarn start",
+    "start:background": "cross-env NODE_ENV=production babel-node background/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OmgImAlexis/wvvw.me"
+  },
+  "author": "OmgImAlexis",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/OmgImAlexis/wvvw.me/issues"
+  },
+  "homepage": "https://github.com/OmgImAlexis/wvvw.me",
   "xo": {
     "space": 4,
     "rules": {
-      "space-before-function-paren": 0
-    }
+      "space-before-function-paren": [
+        "error",
+        "never"
+      ]
+    },
+    "envs": [
+      "node",
+      "es6"
+    ]
+  },
+  "ava": {
+    "require": [
+      "babel-core/register"
+    ]
+  },
+  "nyc": {
+    "exclude": [
+      "test",
+      "test{,-*}.js",
+      "**/*.test.js",
+      "**/__tests__/**",
+      "**/node_modules/**"
+    ]
   }
 }

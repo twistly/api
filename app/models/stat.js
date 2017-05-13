@@ -1,8 +1,8 @@
-var mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var statSchema = new mongoose.Schema({
+const statSchema = new Schema({
     blogId: {
         type: Schema.Types.ObjectId,
         ref: 'Blog'
@@ -15,4 +15,4 @@ var statSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Stat', statSchema);
+export default mongoose.model('Stat', statSchema);
