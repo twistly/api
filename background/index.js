@@ -1,4 +1,7 @@
+import mongoose from 'mongoose';
 import Agenda from 'agenda';
+
+import stats from './stats-new';
 
 const agenda = new Agenda({
     db: {
@@ -6,15 +9,43 @@ const agenda = new Agenda({
     }
 });
 
-agenda.define('send email report', {
+agenda.define('stats', {
     priority: 'high',
     concurrency: 10
-}, ({attrs: {data}}, done) => {
-    console.log(data);
-    done();
-});
+}, stats);
 
-agenda.on('ready', () => {
-    agenda.schedule('2 hours', 'send email report', {to: 'admin@example.com'});
+agenda.on('ready', async () => {
+    const blogs = [{
+        _id: new mongoose.Types.ObjectId(),
+        url: 'staff'
+    }, {
+        _id: new mongoose.Types.ObjectId(),
+        url: 'random'
+    }, {
+        _id: new mongoose.Types.ObjectId(),
+        url: 'tom'
+    }, {
+        _id: new mongoose.Types.ObjectId(),
+        url: 'josh'
+    }, {
+        _id: new mongoose.Types.ObjectId(),
+        url: 'sarah'
+    }, {
+        _id: new mongoose.Types.ObjectId(),
+        url: 'mary'
+    }, {
+        _id: new mongoose.Types.ObjectId(),
+        url: 'harry'
+    }, {
+        _id: new mongoose.Types.ObjectId(),
+        url: 'x'
+    }];
+    await blogs.forEach(blog => {
+        agenda.create('stats', blog).unique({
+            url: blog.url
+        }, {
+            insertOnly: true
+        }).repeatEvery('10 seconds').save();
+    });
     agenda.start();
 });
