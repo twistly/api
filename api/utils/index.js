@@ -14,7 +14,10 @@ const postsLeftInPlan = (blog, plan) => {
     return plan.maxPosts - blog.postsInQueue;
 };
 
+const flatten = list => list.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
+
 export {
-    canAccessBlog, // eslint-disable-line import/prefer-default-export
-    postsLeftInPlan
+    canAccessBlog,
+    postsLeftInPlan,
+    flatten
 };

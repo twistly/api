@@ -1,13 +1,13 @@
 import api from './api';
-import auth from './auth';
 import blog from './blog';
-import chromeExtension from './chrome-extension';
+import queue from './queue';
+import token from './token';
 import web from './web';
 
 export {
     api,
-    auth,
     blog,
-    chromeExtension,
+    queue,
+    token,
     web
 };

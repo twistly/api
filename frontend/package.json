@@ -1,5 +1,5 @@
 {
-    "name": "Twistly",
+    "name": "Twistly-Frontend",
     "private": true,
     "scripts": {
         "test": "yarn lint && yarn coverage",

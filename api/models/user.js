@@ -18,7 +18,8 @@ const User = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
     tokenSet: [{
         type: Schema.Types.ObjectId,
@@ -34,10 +35,10 @@ const User = new Schema({
         default: ''
     },
     inviteToken: String,
-    isAdmin: {
-        type: Boolean,
-        default: false
-    }
+    roles: [{
+        type: String,
+        default: ['user']
+    }]
 });
 
 // Bcrypt middleware

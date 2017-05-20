@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import Agenda from 'agenda';
 
-import stats from './stats-new';
+import queue from './queue';
+import stats from './stats';
 
 const agenda = new Agenda({
     db: {

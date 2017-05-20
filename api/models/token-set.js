@@ -7,11 +7,13 @@ const User = require('./user.js');
 const TokenSet = new Schema({
     token: {
         required: true,
-        type: String
+        type: String,
+        select: false
     },
     tokenSecret: {
         required: true,
-        type: String
+        type: String,
+        select: false
     },
     blogs: [{
         type: Schema.Types.ObjectId,
