@@ -46,14 +46,15 @@ router.post('/', (req, res, next) => {
                 return next(new HTTPError.InternalServerError(`User could not be saved.`));
             }
             // Just to be sure we remove the password here incase we fuck up somewhere.
-            const {username, email, roles, plan, tumblr} = user;
+            const {username, email, roles, plan, tumblr, apiKey} = user;
             return res.status(201).send({
                 user: {
                     username,
                     email,
                     roles,
                     plan,
-                    tumblr
+                    tumblr,
+                    apiKey
                 }
             });
         });

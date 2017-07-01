@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import config from '../config';
 
 const Schema = mongoose.Schema;
-const SALT_WORK_FACTOR = 10;
 
 const User = new Schema({
     username: {
@@ -36,27 +36,13 @@ const User = new Schema({
     }]
 });
 
-// Bcrypt middleware
 User.pre('save', function(next) {
-    const user = this;
-
-    if (!user.isModified('password')) {
+    // Only hash the password if it has been modified (or is new)
+    if (!this.isModified('password')) {
         return next();
     }
-
-    bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
-        if (err) {
-            return next(err);
-        }
-
-        bcrypt.hash(user.password, salt, (err, hash) => {
-            if (err) {
-                return next(err);
-            }
-            user.password = hash;
-            next();
-        });
-    });
+    this.password = bcrypt.hashSync(this.password, config.get('bcypt.rounds'));
+    next();
 });
 
 // Password verification
