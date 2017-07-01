@@ -7,8 +7,8 @@
     "scripts": {
         "test": "xo && cross-env NODE_ENV=test 'nyc ava test/*.spec.js'",
         "start": "yarn start:production",
-        "start:production": "cross-env NODE_ENV=production babel-node index.js",
-        "start:development": "cross-env NODE_ENV=dev yarn start"
+        "start:production": "cross-env NODE_ENV=production babel-node index.js | bunyan",
+        "start:development": "cross-env NODE_ENV=development babel-node index.js | bunyan"
     },
     "dependencies": {
         "agenda": "^0.9.1",
@@ -17,9 +17,10 @@
         "babel-preset-es2015": "^6.24.0",
         "babel-preset-stage-2": "^6.22.0",
         "bcryptjs": "^2.4.3",
+        "bunyan": "^1.8.10",
         "jsonwebtoken": "^7.3.0",
         "loglevel": "^1.4.1",
-        "mongoose": "^4.4.6",
+        "mongoose": "^4.9.10",
         "snyk": "1.16.0",
         "tumblr.js": "0.0.7",
         "xo": "^0.18.2"
@@ -48,7 +49,20 @@
             "space-before-function-paren": [
                 "error",
                 "never"
-            ]
+            ],
+            "no-console": "error",
+            "unicorn/no-new-buffer": "off",
+            "unicorn/filename-case": "off",
+            "unicorn/custom-error-definition": "off",
+            "unicorn/no-array-instanceof": "off",
+            "unicorn/catch-error-name": "off",
+            "unicorn/no-process-exit": "off",
+            "unicorn/throw-new-error": "off",
+            "unicorn/number-literal-case": "off",
+            "unicorn/prefer-starts-ends-with": "off",
+            "unicorn/prefer-type-error": "off",
+            "unicorn/explicit-length-check": "off",
+            "unicorn/no-abusive-eslint-disable": "off"
         },
         "envs": [
             "node",

@@ -1,23 +1,23 @@
 import tumblr from 'tumblr.js';
 
-import Blog from '../app/models/blog';
-import Post from '../app/models/post';
+import {Blog, Post} from '../api/models';
+import log from '../api/log';
 
 const failed = (job, err) => {
     job.fail(err);
     job.disable();
     job.save();
-}
+};
 
-const Tumblr = tumblr.createClient({
-    credentials: {
-        consumer_key: process.env.TUMBLR_CONSUMER_KEY, // eslint-disable-line camelcase
-        consumer_secret: process.env.TUMBLR_CONSUMER_SECRET // eslint-disable-line camelcase
-        // token: tokenSet.token, // eslint-disable-line camelcase
-        // token_secret: tokenSet.tokenSecret // eslint-disable-line camelcase
-    },
-    returnPromises: true
-});
+// const Tumblr = tumblr.createClient({
+//     credentials: {
+//         consumer_key: process.env.TUMBLR_CONSUMER_KEY, // eslint-disable-line camelcase
+//         consumer_secret: process.env.TUMBLR_CONSUMER_SECRET // eslint-disable-line camelcase
+//         // token: tokenSet.token, // eslint-disable-line camelcase
+//         // token_secret: tokenSet.tokenSecret // eslint-disable-line camelcase
+//     },
+//     returnPromises: true
+// });
 
 export default async (job, done) => {
     const data = job.attrs.data;
@@ -29,7 +29,7 @@ export default async (job, done) => {
     if (!post) {
         failed(job, 'Post is missing');
     }
-    console.log({
+    log.info({
         blog,
         post
     });
