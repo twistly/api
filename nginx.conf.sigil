@@ -55,6 +55,11 @@ server {
   add_header X-Content-Type-Options "nosniff" always;
   add_header Referrer-Policy no-referrer-when-downgrade;
 
+  more_set_headers 'Access-Control-Allow-Origin: https://twistly.xyz';
+  more_set_headers 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE, HEAD';
+  more_set_headers 'Access-Control-Allow-Credentials: true';
+  more_set_headers 'Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization';
+
   keepalive_timeout   70;
   {{ if and (eq $.SPDY_SUPPORTED "true") (ne $.HTTP2_SUPPORTED "true") }}add_header          Alternate-Protocol  {{ $.NGINX_SSL_PORT }}:npn-spdy/2;{{ end }}
 
@@ -77,31 +82,14 @@ server {
     proxy_set_header X-Request-Start $msec;
 
     if ($request_method = 'OPTIONS') {
-       add_header 'Access-Control-Allow-Origin' '*';
-       add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-       #
-       # Custom headers and headers various browsers *should* be OK with but aren't
-       #
-       add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range';
-       #
-       # Tell client that this pre-flight info is valid for 20 days
-       #
-       add_header 'Access-Control-Max-Age' 1728000;
-       add_header 'Content-Type' 'text/plain charset=UTF-8';
-       add_header 'Content-Length' 0;
-       return 204;
-    }
-    if ($request_method = 'POST') {
-       add_header 'Access-Control-Allow-Origin' '*';
-       add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-       add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range';
-       add_header 'Access-Control-Expose-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range';
-    }
-    if ($request_method = 'GET') {
-       add_header 'Access-Control-Allow-Origin' '*';
-       add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-       add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range';
-       add_header 'Access-Control-Expose-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range';
+      more_set_headers 'Access-Control-Allow-Origin: https://twistly.xyz';
+      more_set_headers 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE, HEAD';
+      more_set_headers 'Access-Control-Max-Age: 1728000';
+      more_set_headers 'Access-Control-Allow-Credentials: true';
+      more_set_headers 'Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization';
+      more_set_headers 'Content-Type: text/plain; charset=UTF-8';
+      more_set_headers 'Content-Length: 0';
+      return 204;
     }
   }
   include {{ $.DOKKU_ROOT }}/{{ $.APP }}/nginx.conf.d/*.conf;
