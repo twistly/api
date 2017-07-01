@@ -18,6 +18,7 @@
         "bunyan": "^1.8.10",
         "configstore": "^3.1.0",
         "cors": "^2.8.3",
+        "dumb-passwords": "^0.2.1",
         "express": "^4.13.4",
         "express-api-error-handler": "^1.1.0",
         "express-healthcheck": "^0.1.0",
@@ -62,46 +63,46 @@
     },
     "homepage": "https://github.com/OmgImAlexis/twistly",
     "xo": {
-       "space": 4,
-       "rules": {
-           "space-before-function-paren": [
-               "error",
-               "never"
-           ],
-           "no-console": "error",
-           "unicorn/no-new-buffer": "off",
-           "unicorn/filename-case": "off",
-           "unicorn/custom-error-definition": "off",
-           "unicorn/no-array-instanceof": "off",
-           "unicorn/catch-error-name": "off",
-           "unicorn/no-process-exit": "off",
-           "unicorn/throw-new-error": "off",
-           "unicorn/number-literal-case": "off",
-           "unicorn/prefer-starts-ends-with": "off",
-           "unicorn/prefer-type-error": "off",
-           "unicorn/explicit-length-check": "off",
-           "unicorn/no-abusive-eslint-disable": "off"
-       },
-       "envs": [
-           "node",
-           "es6"
-       ]
-   },
-   "ava": {
-       "babel": "inherit",
-       "ignore": [
-           "test/server/index.js",
-           "test/server/token.spec.js"
-       ],
-       "require": [
-           "babel-register",
-           "babel-polyfill"
-       ]
-   },
-   "nyc": {
-       "reporter": [
-           "lcov",
-           "text"
-       ]
-   }
+        "space": 4,
+        "rules": {
+            "space-before-function-paren": [
+                "error",
+                "never"
+            ],
+            "no-console": "error",
+            "unicorn/no-new-buffer": "off",
+            "unicorn/filename-case": "off",
+            "unicorn/custom-error-definition": "off",
+            "unicorn/no-array-instanceof": "off",
+            "unicorn/catch-error-name": "off",
+            "unicorn/no-process-exit": "off",
+            "unicorn/throw-new-error": "off",
+            "unicorn/number-literal-case": "off",
+            "unicorn/prefer-starts-ends-with": "off",
+            "unicorn/prefer-type-error": "off",
+            "unicorn/explicit-length-check": "off",
+            "unicorn/no-abusive-eslint-disable": "off"
+        },
+        "envs": [
+            "node",
+            "es6"
+        ]
+    },
+    "ava": {
+        "babel": "inherit",
+        "ignore": [
+            "test/server/index.js",
+            "test/server/token.spec.js"
+        ],
+        "require": [
+            "babel-register",
+            "babel-polyfill"
+        ]
+    },
+    "nyc": {
+        "reporter": [
+            "lcov",
+            "text"
+        ]
+    }
 }

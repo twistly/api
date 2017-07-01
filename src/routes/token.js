@@ -22,16 +22,18 @@ router.post('/', async (req, res, next) => {
             jwt.sign({
                 username: user.username,
                 roles: user.roles,
-                iat: Math.floor(Date.now() / 1000) - 10 // Set issue date 10 seconds ago
-            }, config.jwt.secret, {
-                expiresIn: 3600,
-                issuer: 'twistly.xyz'
+                iat: Math.floor(Date.now() / 1000) - 5, // Set issue date 5 seconds ago
+                iss: 'https://api.twistly.xyz',
+                aud: 'https://api.twistly.xyz',
+                maxAge: 3600
+            }, config.get('jwt.secret'), {
+                expiresIn: 3600
             }, (err, token) => {
                 if (err) {
                     return next(err);
                 }
                 log.debug('Sending JWT.');
-                return res.status(201).json({
+                return res.status(201).send({
                     token
                 });
             });

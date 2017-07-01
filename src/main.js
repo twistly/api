@@ -3,9 +3,11 @@ import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import passport from 'passport';
 import session from 'express-session';
+import jwt from 'express-jwt';
 import {errorHandler, notFoundHandler} from 'express-api-error-handler';
 import {Strategy as TumblrStrategy} from 'passport-tumblr';
 import loudRejection from 'loud-rejection';
+import config from './config';
 import log from './log';
 import {
     api,
@@ -21,6 +23,22 @@ import {
 loudRejection();
 
 const app = express();
+
+app.use(jwt({
+    secret: config.get('jwt.secret'),
+    audience: 'https://api.twistly.xyz',
+    issuer: 'https://api.twistly.xyz',
+    requestProperty: 'jwt',
+    credentialsRequired: false
+}).unless({
+    path: [{
+        url: '/token',
+        methods: ['POST']
+    }, {
+        url: '/user',
+        methods: ['POST']
+    }]
+}));
 
 passport.use(new TumblrStrategy({
     consumerKey: process.env.TUMBLR_CONSUMER_KEY,
@@ -38,9 +56,15 @@ passport.deserializeUser((obj, done) => {
 });
 
 app.use(bodyParser.urlencoded({
-    extended: true
+    extended: false
 }));
 app.use(bodyParser.json());
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return next(new Error('Invalid JSON.'));
+    }
+    return next(err);
+});
 app.use(methodOverride());
 app.use(session({
     secret: 'keyboard cat',
@@ -55,7 +79,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api/', api);
+app.use('/api', api);
 app.use('/blog', blog);
 app.use('/queue', queue);
 app.use('/stat', stat);
