@@ -1,6 +1,6 @@
 import {Router} from 'express';
 
-import {version} from '../../../package';
+import {version} from '../../package';
 
 const app = new Router();
 

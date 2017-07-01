@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import {version} from '../../package';
+import {version} from '../package';
 import app from './main';
 import config from './config';
 import log from './log';
