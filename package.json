@@ -1,8 +1,7 @@
 {
-    "name": "Twistly-API",
+    "name": "twistly",
     "version": "1.0.0",
-    "description": "API for Twistly",
-    "main": "index.js",
+    "description": "Twistly",
     "private": true,
     "scripts": {
         "clean-dist": "rm -rf dist && mkdir -p dist/server dist/client",
@@ -12,9 +11,6 @@
         "lint": "xo",
         "test": "nyc ava test/**/*.spec.js",
         "start": "node ./dist/server/index.js"
-    },
-    "bin": {
-        "twistly": "bin/index.js"
     },
     "dependencies": {
         "agenda": "^0.9.1",
@@ -67,57 +63,47 @@
         "url": "https://github.com/OmgImAlexis/twistly/issues"
     },
     "homepage": "https://github.com/OmgImAlexis/twistly",
-    "babel": {
-        "plugins": [
-            "babel-plugin-stack-trace-sourcemap",
-            {
-                "importOverride": [
-                    "source-map-support",
-                    "install",
-                    "_sourceMapSupport"
-                ],
-                "execute": true
-            }
-        ]
-    },
     "xo": {
-        "space": 4,
-        "rules": {
-            "space-before-function-paren": [
-                "error",
-                "never"
-            ],
-            "no-console": "error",
-            "unicorn/no-new-buffer": "off",
-            "unicorn/filename-case": "off",
-            "unicorn/custom-error-definition": "off",
-            "unicorn/no-array-instanceof": "off",
-            "unicorn/catch-error-name": "off",
-            "unicorn/no-process-exit": "off",
-            "unicorn/throw-new-error": "off",
-            "unicorn/number-literal-case": "off",
-            "unicorn/prefer-starts-ends-with": "off",
-            "unicorn/prefer-type-error": "off",
-            "unicorn/explicit-length-check": "off",
-            "unicorn/no-abusive-eslint-disable": "off"
-        },
-        "envs": [
-            "node",
-            "es6"
-        ]
-    },
-    "ava": {
-        "require": [
-            "babel-core/register"
-        ]
-    },
-    "nyc": {
-        "exclude": [
-            "test",
-            "test{,-*}.js",
-            "**/*.test.js",
-            "**/__tests__/**",
-            "**/node_modules/**"
-        ]
-    }
+       "space": 4,
+       "rules": {
+           "space-before-function-paren": [
+               "error",
+               "never"
+           ],
+           "no-console": "error",
+           "unicorn/no-new-buffer": "off",
+           "unicorn/filename-case": "off",
+           "unicorn/custom-error-definition": "off",
+           "unicorn/no-array-instanceof": "off",
+           "unicorn/catch-error-name": "off",
+           "unicorn/no-process-exit": "off",
+           "unicorn/throw-new-error": "off",
+           "unicorn/number-literal-case": "off",
+           "unicorn/prefer-starts-ends-with": "off",
+           "unicorn/prefer-type-error": "off",
+           "unicorn/explicit-length-check": "off",
+           "unicorn/no-abusive-eslint-disable": "off"
+       },
+       "envs": [
+           "node",
+           "es6"
+       ]
+   },
+   "ava": {
+       "babel": "inherit",
+       "ignore": [
+           "test/server/index.js",
+           "test/server/token.spec.js"
+       ],
+       "require": [
+           "babel-register",
+           "babel-polyfill"
+       ]
+   },
+   "nyc": {
+       "reporter": [
+           "lcov",
+           "text"
+       ]
+   }
 }

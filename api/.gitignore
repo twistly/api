@@ -1,8 +1,0 @@
-coverage
-.DS_Store
-.AppleDouble
-.LSOverride
-node_modules
-coverage
-.nyc_output
-dist
