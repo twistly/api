@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+import {apiLogger as log} from '../log';
+
 const api = axios.create({
-    baseURL: '/api/v2/',
+    baseURL: process.env.NODE_ENV === 'production' ? 'https://api.twistly.xyz' : 'http://localhost:3000/',
     timeout: 10000,
     headers: {
         Accept: 'application/json',
@@ -15,26 +17,17 @@ api.interceptors.request.use(request => {
 
     if (token !== null && token !== 'undefined') {
         // @TODO: Switch back to Bearer once we have jwt added properly
-        // headers.Authorization = `Bearer ${token}`;
-        headers['X-Api-Key'] = token;
+        log.debug(`setting token to ${token}`);
+        headers.Authorization = `Bearer ${token}`;
     }
 
     return request;
 }, err => Promise.reject(err));
 
 api.interceptors.response.use(response => {
-    if (response.status && response.status.code === 401) {
+    if (response.status && (response.status.code === 401 || response.status.code === 403)) {
         localStorage.removeItem('token');
     }
-
-    // @TODO: Add a way to save token when passed back in response
-    // if (response.headers && response.headers.Authorization) {
-    //     localStorage.setItem('token', response.headers.Authorization);
-    // }
-    //
-    // if (response.entity && response.entity.token && response.entity.token.length > 10) {
-    //     localStorage.setItem('token', response.entity.token);
-    // }
 
     return response;
 }, err => Promise.reject(err));

@@ -2,57 +2,73 @@
     <div>
         <loader v-if="loading" type="square"></loader>
         <template v-else>
-            This is the homepage.<br>
-            <form v-on:submit.prevent="submitSeries">
-                <input v-model="series.id" type="text"></input>
-                <input v-model="series.name" type="text"></input>
-                <button>{{$t('series.add.new')}}</button>
-            </form>
-            <div v-for="series in allSeries">{{series}}</div>
+            <template v-if="isAuthenticated">
+                <div v-for="blog in blogs" class="col-md-4 mb">
+                    <div class="darkblue-panel pn">
+                        <br>
+                        <br>
+                        <p><img src="http://placehold.it/60x60?text=+" class="img-circle" width="80"></p>
+                        <p><b>{{blog.url}}</b></p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="small mt">New Followers</p>
+                                <p>+100</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="small mt">Total Followers</p>
+                                <p>{{blog.followerCount}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <template v-else>
+                Replace this with a nice splash page.
+            </template>
         </template>
     </div>
 </template>
 
 <script>
-import {mapActions, mapGetters} from 'vuex';
+import {mapGetters, mapActions} from 'vuex';
 
 import loader from './loader.vue';
 
 export default {
-    name: 'Home',
+    name: 'home',
     data() {
         return {
-            series: {
-                id: '',
-                name: ''
-            },
-            loading: true
+            loading: false
         };
     },
     mounted() {
         const vm = this;
-        vm.getAllSeries().then(() => {
+        vm.checkAuth().then(({token}) => {
+            if (token) {
+                vm.getUser();
+                vm.getAllBlogs();
+            }
+        }).then(() => {
             vm.loading = false;
+        }).catch(err => {
+            vm.loading = false;
+            if (err.message === 'Network Error') {
+                vm.maintenanceMode = true;
+            }
         });
-    },
-    methods: {
-        ...mapActions([
-            'addSeries',
-            'getAllSeries'
-        ]),
-        submitSeries() {
-            const vm = this;
-            vm.addSeries({
-                ...vm.series
-            });
-            vm.series = {};
-        }
     },
     computed: {
         ...mapGetters([
-            'allSeries',
-            'seriesByName',
-            'seriesById'
+            'isAuthenticated',
+            'blogs',
+            'gainedThisWeek'
+        ])
+    },
+    methods: {
+        ...mapActions([
+            'getUser',
+            'getAllBlogs',
+            'checkAuth'
         ])
     },
     components: {

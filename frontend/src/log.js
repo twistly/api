@@ -6,13 +6,15 @@ const generalLogger = log.getLogger('general');
 
 // Each component of our app should have it's own logger
 const apiLogger = log.getLogger('api');
-const seriesLogger = log.getLogger('series');
+const appLogger = log.getLogger('app');
+const blogLogger = log.getLogger('blog');
 
 export default generalLogger;
 
 export {
     testLogger,
     generalLogger,
+    appLogger,
     apiLogger,
-    seriesLogger
+    blogLogger
 };
