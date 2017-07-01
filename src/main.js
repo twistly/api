@@ -10,7 +10,6 @@ import loudRejection from 'loud-rejection';
 import config from './config';
 import log from './log';
 import {
-    api,
     blog,
     queue,
     stat,
@@ -79,7 +78,10 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api', api);
+app.get('/', (req, res) => {
+    res.sendStatus(200);
+});
+
 app.use('/blog', blog);
 app.use('/queue', queue);
 app.use('/stat', stat);
