@@ -1,6 +1,10 @@
 {
     "presets": [
         "es2015",
-        "stage-2"
+        "stage-2",
+        "@ava/transform-test-files"
+    ],
+    "plugins": [
+        "transform-runtime"
     ]
 }
