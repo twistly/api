@@ -55,10 +55,19 @@ server {
   add_header X-Content-Type-Options "nosniff" always;
   add_header Referrer-Policy no-referrer-when-downgrade;
 
-  more_set_headers 'Access-Control-Allow-Origin: https://twistly.xyz http://localhost';
-  more_set_headers 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE, HEAD';
-  more_set_headers 'Access-Control-Allow-Credentials: true';
-  more_set_headers 'Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization';
+  set $cors '';
+  if ($http_origin ~ '^https?://(localhost|twistly\.xyz)') {
+    set $cors 'true';
+  }
+
+  if ($cors = 'true') {
+    more_set_headers 'Access-Control-Allow-Origin: $http_origin';
+    more_set_headers 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE, HEAD';
+    more_set_headers 'Access-Control-Allow-Credentials: true';
+    more_set_headers 'Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization';
+    # required to be able to read Authorization header in frontend
+    more_set_headers 'Access-Control-Expose-Headers' 'Authorization' always;
+  }
 
   keepalive_timeout   70;
   {{ if and (eq $.SPDY_SUPPORTED "true") (ne $.HTTP2_SUPPORTED "true") }}add_header          Alternate-Protocol  {{ $.NGINX_SSL_PORT }}:npn-spdy/2;{{ end }}
@@ -82,7 +91,7 @@ server {
     proxy_set_header X-Request-Start $msec;
 
     if ($request_method = 'OPTIONS') {
-      more_set_headers 'Access-Control-Allow-Origin: https://twistly.xyz http://localhost';
+      more_set_headers 'Access-Control-Allow-Origin: https://twistly.xyz';
       more_set_headers 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE, HEAD';
       more_set_headers 'Access-Control-Max-Age: 1728000';
       more_set_headers 'Access-Control-Allow-Credentials: true';
