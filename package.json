@@ -4,13 +4,11 @@
     "description": "Twistly",
     "private": true,
     "scripts": {
-        "clean-dist": "rm -rf dist && mkdir -p dist/server dist/client",
-        "build": "npm run clean-dist && npm run build-client && npm run build-server",
-        "build-client": "exit 0",
-        "build-server": "babel ./src/server -d ./dist/server -s",
+        "clean-dist": "rm -rf dist && mkdir dist",
+        "build": "npm run clean-dist && babel ./src -d ./dist -s",
         "lint": "xo",
         "test": "nyc ava test/**/*.spec.js",
-        "start": "node ./dist/server/index.js"
+        "start": "node ./dist/index.js"
     },
     "dependencies": {
         "agenda": "^0.9.1",
