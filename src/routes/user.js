@@ -39,12 +39,23 @@ router.post('/', (req, res, next) => {
         });
         user.save(error => {
             if (error) {
+                if (error.name === 'MongoError' && error.code === 11000) {
+                    return next(new HTTPError.Conflict(`Username and/or email already taken.`));
+                }
                 log.error(error);
-                return res.send(new HTTPError.InternalServerError(`User could not be saved.`));
+                return next(new HTTPError.InternalServerError(`User could not be saved.`));
             }
-            // Just to be sure we remove the password here incase the hashing fucks up somehow.
-            delete user.password;
-            return res.status(201).send({user});
+            // Just to be sure we remove the password here incase we fuck up somewhere.
+            const {username, email, roles, plan, tumblr} = user;
+            return res.status(201).send({
+                user: {
+                    username,
+                    email,
+                    roles,
+                    plan,
+                    tumblr
+                }
+            });
         });
     });
 });
