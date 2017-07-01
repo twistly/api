@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import Configstore from 'configstore';
-import {name, version} from '../../../package';
+import {name, version} from '../../package';
 
 const config = new Configstore(name, {
     app: {
@@ -11,7 +11,7 @@ const config = new Configstore(name, {
     },
     database: {
         enabled: true,
-        url: 'mongodb://localhost/wvvw_me'
+        url: 'mongodb://localhost/twistly'
     },
     log: {
         directory: './logs/error.log'
