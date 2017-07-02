@@ -31,7 +31,11 @@ router.post('/', (req, res, next) => {
         }
         const {username, password, email} = values;
         if (dumbPasswords.check(password)) {
-            return next(new HTTPError.UnprocessableEntity('Invalid password.'));
+            return next(new HTTPError.UnprocessableEntity(`Bad little human, use a better password.`));
+        }
+
+        if (password === username) {
+            return next(new HTTPError.UnprocessableEntity(`We don't allow usernames and passwords to be the same thing. That's not really a smart move.`));
         }
 
         const user = new User({

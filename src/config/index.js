@@ -5,7 +5,7 @@ import {name, version} from '../../package';
 const config = new Configstore(name, {
     app: {
         port: 3000,
-        title: 'Personal API',
+        title: 'Twistly',
         name,
         version
     },
@@ -30,7 +30,7 @@ const config = new Configstore(name, {
         token: process.env.TUMBLR_TOKEN || '',
         tokenSecret: process.env.TUMBLR_TOKEN_SECRET || ''
     },
-    defaultPlanId: ''
+    defaultPlanId: '5915b29ecc79a276b591b817' // @TODO: Create this doc if missing on first boot
 });
 
 export default config;
