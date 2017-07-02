@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import hat from 'hat';
 import config from '../config';
 
 const Schema = mongoose.Schema;
@@ -27,9 +28,12 @@ const User = new Schema({
     plan: {
         type: Schema.Types.ObjectId,
         ref: 'Plan',
-        default: '5915b29ecc79a276b591b817' // @TODO: Make this use the config
+        default: config.get('plan')
     },
-    apiKey: String,
+    apiKey: {
+        type: String,
+        default: hat()
+    },
     roles: [{
         type: String,
         default: ['user']

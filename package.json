@@ -24,6 +24,7 @@
         "express-healthcheck": "^0.1.0",
         "express-jwt": "^5.1.0",
         "express-session": "^1.15.3",
+        "hat": "^0.0.3",
         "http-errors": "^1.6.1",
         "joi": "^10.5.0",
         "jsonwebtoken": "^7.3.0",
