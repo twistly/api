@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === 'production') {
     authenticationLogger.level(INFO);
     middlewareLogger.level(INFO);
     mongooseLogger.level(SILENT);
-} else if (process.env.NODE_ENV === 'test') {
+} else if (process.env.NODE_ENV === 'test' || process.env.NODE_END === 'testing') {
     testLogger.level(SILENT);
     generalLogger.level(SILENT);
     apiLogger.level(SILENT);
