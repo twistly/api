@@ -37,5 +37,11 @@ test.serial('creates user then returns jwt', async t => {
     t.true(newUser.roles.includes('user'));
 });
 
+test.serial('compares password', async t => {
+    const user = await User.findOne({username: 'xo'}).select('+password').exec();
+    t.true(await user.comparePassword('xopass'));
+    t.false(await user.comparePassword('wrong password'));
+});
+
 test.afterEach.always(afterEach);
 test.after.always(after);

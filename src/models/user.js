@@ -58,9 +58,17 @@ User.pre('save', function(next) {
 });
 
 // Password verification
-User.methods.comparePassword = function(password, cb) {
+User.methods.comparePassword = function(password, callback) {
     const hash = this.password;
-    bcrypt.compare(password, hash).then(match => cb(null, match)).catch(err => cb(err));
+    const promise = new Promise((resolve, reject) => {
+        bcrypt.compare(password, hash).then(match => resolve(match)).catch(err => reject(err));
+    });
+
+    if (callback && typeof callback === 'function') {
+        promise.then(callback.bind(null, null), callback);
+    }
+
+    return promise;
 };
 
 export default mongoose.model('User', User);
