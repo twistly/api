@@ -10,14 +10,8 @@ import statsMonitor from 'express-status-monitor';
 import loudRejection from 'loud-rejection';
 import config from './config';
 import log from './log';
-import {
-    blog,
-    queue,
-    stat,
-    token,
-    user,
-    web
-} from './routes';
+import {blog, queue, stat, token, user, web} from './routes';
+import {isAuthenticated, hasRole} from './middleware';
 
 // Stops promises being silent
 loudRejection();
@@ -41,6 +35,7 @@ app.use(jwt({
 }));
 
 app.use(statsMonitor());
+app.get('/status', isAuthenticated, hasRole('admin'), statsMonitor.pageRoute);
 
 passport.use(new TumblrStrategy({
     consumerKey: process.env.TUMBLR_CONSUMER_KEY,
