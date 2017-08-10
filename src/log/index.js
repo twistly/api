@@ -27,20 +27,27 @@ const mongooseLogger = bunyan.createLogger({
     }
 });
 
-if (process.env.NODE_ENV !== 'production') { // eslint-disable-line no-negated-condition
-    testLogger.level(TRACE);
-    generalLogger.level(TRACE);
-    apiLogger.level(TRACE);
-    authenticationLogger.level(TRACE);
-    middlewareLogger.level(TRACE);
-    mongooseLogger.level(TRACE);
-} else {
+if (process.env.NODE_ENV === 'production') {
     testLogger.level(INFO);
     generalLogger.level(INFO);
     apiLogger.level(INFO);
     authenticationLogger.level(INFO);
     middlewareLogger.level(INFO);
     mongooseLogger.level(SILENT);
+} else if (process.env.NODE_ENV === 'test') {
+    testLogger.level(SILENT);
+    generalLogger.level(SILENT);
+    apiLogger.level(SILENT);
+    authenticationLogger.level(SILENT);
+    middlewareLogger.level(SILENT);
+    mongooseLogger.level(SILENT);
+} else {
+    testLogger.level(TRACE);
+    generalLogger.level(TRACE);
+    apiLogger.level(TRACE);
+    authenticationLogger.level(TRACE);
+    middlewareLogger.level(TRACE);
+    mongooseLogger.level(TRACE);
 }
 
 export default generalLogger;

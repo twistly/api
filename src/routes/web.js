@@ -1,7 +1,6 @@
 import passport from 'passport';
 import HTTPError from 'http-errors';
 import {Router} from 'express';
-
 import {apiLogger as log} from '../log';
 import {Blog, User, TumblrAccount} from '../models';
 import {isAuthenticated, hasRole} from '../middleware';

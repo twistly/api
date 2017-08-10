@@ -1,15 +1,7 @@
 import Joi from 'joi';
-
-import async from 'async';
 import HTTPError from 'http-errors';
 import {Router} from 'express';
-
-import {
-    Blog,
-    Post,
-    Queue
-} from '../models';
-
+import {Blog, Post, Queue} from '../models';
 import {isAuthenticated, resolveBlogUrl} from '../middleware';
 import {flatten} from '../utils';
 
@@ -73,9 +65,9 @@ router.post('/', async (req, res, next) => {
 router.post('/:queueId', async (req, res, next) => {
     const postCount = await Post.count({blogId: req.blog._id}).exec().catch(next);
     const posts = await Post.find({blogId: req.blog._id}).exec().catch(next);
-    async.each(posts, (post, done) => {
+    posts.forEach(async post => {
         post.postOrder = Math.floor(Math.random() * (postCount - 1));
-        post.save(done);
+        await post.save();
     }).then(() => {
         res.redirect('/blog/' + req.blog.url + '/queues');
     });

@@ -17,7 +17,7 @@ const config = new Configstore(name, {
         directory: './logs/error.log'
     },
     jwt: {
-        secret: crypto.randomBytes(64).toString('hex')
+        secret: process.env.JWT || crypto.randomBytes(64).toString('hex')
     },
     bcrypt: {
         rounds: 10
@@ -30,7 +30,7 @@ const config = new Configstore(name, {
         token: process.env.TUMBLR_TOKEN || '',
         tokenSecret: process.env.TUMBLR_TOKEN_SECRET || ''
     },
-    defaultPlanId: '5915b29ecc79a276b591b817' // @TODO: Create this doc if missing on first boot
+    defaultPlanId: process.env.PLAN_ID || '5915b29ecc79a276b591b817' // @TODO: Create this doc if missing on first boot
 });
 
 export default config;

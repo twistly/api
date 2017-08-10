@@ -35,9 +35,12 @@ const User = new Schema({
         default: hat()
     },
     roles: [{
-        type: String,
-        default: ['user']
-    }]
+        type: String
+    }],
+    suspended: {
+        type: Boolean,
+        default: false
+    }
 });
 
 User.pre('save', function(next) {
@@ -46,6 +49,11 @@ User.pre('save', function(next) {
         return next();
     }
     this.password = bcrypt.hashSync(this.password, config.get('bcypt.rounds'));
+
+    if (this.roles.length === 0 && !this.supended) {
+        this.roles.push('user');
+    }
+
     next();
 });
 

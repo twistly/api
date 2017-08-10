@@ -1,12 +1,6 @@
 import HTTPError from 'http-errors';
-
 import {Router} from 'express';
-
-import {
-    Post,
-    Notification
-} from '../models';
-
+import {Post, Notification} from '../models';
 import {apiLogger as log} from '../log';
 import {canUserAccessBlog} from '../middleware';
 import {postsLeftInPlan} from '../utils';

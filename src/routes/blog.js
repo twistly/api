@@ -1,13 +1,7 @@
 import numeral from 'numeral';
 import HTTPError from 'http-errors';
 import {Router} from 'express';
-
-import {
-    Blog, // eslint-disable-line
-    TumblrStat,
-    User
-} from '../models';
-
+import {Blog, TumblrStat, User} from '../models'; // eslint-disable-line no-unused-vars
 import {resolveBlogUrl, isAuthenticated} from '../middleware';
 import {flatten} from '../utils';
 

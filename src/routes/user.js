@@ -43,7 +43,7 @@ router.post('/', (req, res, next) => {
             password,
             email
         });
-        user.save(error => {
+        user.save(async error => {
             if (error) {
                 if (error.name === 'MongoError' && error.code === 11000) {
                     return next(new HTTPError.Conflict(`Username and/or email already taken.`));
@@ -51,8 +51,8 @@ router.post('/', (req, res, next) => {
                 log.error(error);
                 return next(new HTTPError.InternalServerError(`User could not be saved.`));
             }
-            // Just to be sure we remove the password here incase we fuck up somewhere.
-            const {username, roles} = user;
+
+            const {username, roles} = await User.findOne({_id: user._id}).lean().exec();
 
             jwt.sign({
                 username,
