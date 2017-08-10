@@ -6,17 +6,37 @@ import session from 'express-session';
 import jwt from 'express-jwt';
 import {errorHandler, notFoundHandler} from 'express-api-error-handler';
 import {Strategy as TumblrStrategy} from 'passport-tumblr';
-import statsMonitor from 'express-status-monitor';
+import statusMonitor from 'express-status-monitor';
 import loudRejection from 'loud-rejection';
 import config from './config';
 import log from './log';
+import {User} from './models';
 import {blog, queue, stat, token, user, web} from './routes';
-import {isAuthenticated, hasRole} from './middleware';
 
 // Stops promises being silent
 loudRejection();
 
 const app = express();
+app.use(statusMonitor({
+    authorize: socket => {
+        return new Promise(async resolve => {
+            const url = socket.handshake.headers.referer;
+            const apiKey = url.replace(/^\?/, '').split('?')[1].split('&').filter(param => {
+                const [key] = param.split('=');
+                return key === 'api_key' || key === 'apiKey';
+            })[0].split('=')[1];
+            if (apiKey) {
+                log.debug(`Auth looks good using ${JSON.stringify({apiKey})} to check DB.`);
+                const user = await User.findOne({apiKey}).lean().exec().catch(() => resolve(false));
+                if (user) {
+                    resolve(user.roles.indexOf('admin') !== -1);
+                } else {
+                    resolve(false);
+                }
+            }
+        });
+    }
+}));
 
 app.use(jwt({
     secret: config.get('jwt.secret'),
@@ -33,9 +53,6 @@ app.use(jwt({
         methods: ['POST']
     }]
 }));
-
-app.use(statsMonitor());
-app.get('/status', isAuthenticated, hasRole('admin'), statsMonitor.pageRoute);
 
 passport.use(new TumblrStrategy({
     consumerKey: process.env.TUMBLR_CONSUMER_KEY,
