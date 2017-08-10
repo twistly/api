@@ -6,6 +6,7 @@ import session from 'express-session';
 import jwt from 'express-jwt';
 import {errorHandler, notFoundHandler} from 'express-api-error-handler';
 import {Strategy as TumblrStrategy} from 'passport-tumblr';
+import statsMonitor from 'express-status-monitor';
 import loudRejection from 'loud-rejection';
 import config from './config';
 import log from './log';
@@ -38,6 +39,8 @@ app.use(jwt({
         methods: ['POST']
     }]
 }));
+
+app.use(statsMonitor());
 
 passport.use(new TumblrStrategy({
     consumerKey: process.env.TUMBLR_CONSUMER_KEY,
