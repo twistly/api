@@ -14,8 +14,7 @@ if (config.get('database.enabled')) {
     mongoose.connect(db).then(() => {
         log.info(`Connected to ${db}`);
     }).catch(err => {
-        log.error(err);
-        process.exit(1);
+        throw err;
     });
 } else {
     log.info('Starting without database');
