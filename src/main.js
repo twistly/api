@@ -7,11 +7,20 @@ import jwt from 'express-jwt';
 import {errorHandler, notFoundHandler} from 'express-api-error-handler';
 import {Strategy as TumblrStrategy} from 'passport-tumblr';
 import statusMonitor from 'express-status-monitor';
+import expressStatsd from 'express-statsd';
 import loudRejection from 'loud-rejection';
 import config from './config';
 import log from './log';
 import {User} from './models';
 import {blog, queue, stat, token, user, web} from './routes';
+
+const statsd = path => {
+    return (req, res, next) => {
+        const method = req.method || 'unknown_method';
+        req.statsdKey = ['http', method.toLowerCase(), path].join('.');
+        next();
+    };
+};
 
 // Stops promises being silent
 loudRejection();
@@ -37,6 +46,7 @@ app.use(statusMonitor({
         });
     }
 }));
+app.use(expressStatsd());
 
 app.use(jwt({
     secret: config.get('jwt.secret'),
@@ -93,16 +103,16 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/', (req, res) => {
+app.get('/', statsd('index'), (req, res) => {
     res.sendStatus(200);
 });
 
-app.use('/blog', blog);
-app.use('/queue', queue);
-app.use('/stat', stat);
-app.use('/token', token);
-app.use('/user', user);
-app.use('/', web);
+app.use('/blog', statsd('blog'), blog);
+app.use('/queue', statsd('queue'), queue);
+app.use('/stat', statsd('stat'), stat);
+app.use('/token', statsd('token'), token);
+app.use('/user', statsd('user'), user);
+app.use('/', statsd('web'), web);
 app.use('/healthcheck', (req, res) => {
     res.status(200).json({
         uptime: process.uptime()

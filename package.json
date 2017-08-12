@@ -1,14 +1,14 @@
 {
     "name": "twistly",
     "version": "1.0.0",
-    "description": "Twistly",
+    "description": "Twistly api server.",
     "private": true,
     "scripts": {
         "clean-dist": "rm -rf dist && mkdir dist",
         "build": "yarn run clean-dist && babel ./src -d ./dist -s",
         "test": "yarn run lint && yarn run ava",
         "lint": "xo",
-        "ava": "NODE_ENV=test nyc ava --verbose --fail-fast",
+        "ava": "nyc ava --verbose --fail-fast",
         "start": "node ./dist/index.js"
     },
     "dependencies": {
@@ -19,11 +19,13 @@
         "configstore": "^3.1.1",
         "cors": "^2.8.4",
         "dumb-passwords": "^0.2.1",
+        "etcd3": "^0.2.4",
         "express": "^4.15.4",
         "express-api-error-handler": "^1.1.0",
         "express-healthcheck": "^0.1.0",
         "express-jwt": "^5.3.0",
         "express-session": "^1.15.5",
+        "express-statsd": "^0.3.0",
         "express-status-monitor": "^1.0.0",
         "hat": "^0.0.3",
         "http-errors": "^1.6.2",
@@ -54,34 +56,21 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/OmgImAlexis/wvvw.me"
+        "url": "https://github.com/twistly/api"
     },
     "author": "OmgImAlexis",
     "license": "SEE LICENSE IN LICENSE.md",
     "bugs": {
-        "url": "https://github.com/OmgImAlexis/twistly/issues"
+        "url": "https://github.com/twistly/api/issues"
     },
-    "homepage": "https://github.com/OmgImAlexis/twistly",
+    "homepage": "https://github.com/twistly/api",
     "xo": {
         "space": 4,
         "rules": {
             "space-before-function-paren": [
                 "error",
                 "never"
-            ],
-            "no-console": "error",
-            "unicorn/no-new-buffer": "off",
-            "unicorn/filename-case": "off",
-            "unicorn/custom-error-definition": "off",
-            "unicorn/no-array-instanceof": "off",
-            "unicorn/catch-error-name": "off",
-            "unicorn/no-process-exit": "off",
-            "unicorn/throw-new-error": "off",
-            "unicorn/number-literal-case": "off",
-            "unicorn/prefer-starts-ends-with": "off",
-            "unicorn/prefer-type-error": "off",
-            "unicorn/explicit-length-check": "off",
-            "unicorn/no-abusive-eslint-disable": "off"
+            ]
         },
         "envs": [
             "node",
@@ -90,10 +79,6 @@
     },
     "ava": {
         "babel": "inherit",
-        "ignore": [
-            "test/server/index.js",
-            "test/server/token.spec.js"
-        ],
         "require": [
             "babel-register",
             "babel-polyfill"

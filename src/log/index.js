@@ -1,6 +1,6 @@
 import bunyan from 'bunyan';
 
-const {SILENT, INFO, TRACE} = bunyan;
+const {SILENT, INFO, TRACE, FATAL} = bunyan;
 
 // Please only use testLogger when testing
 const testLogger = bunyan.createLogger({name: 'test'});
@@ -34,13 +34,13 @@ if (process.env.NODE_ENV === 'production') {
     authenticationLogger.level(INFO);
     middlewareLogger.level(INFO);
     mongooseLogger.level(SILENT);
-} else if (process.env.NODE_ENV === 'test' || process.env.NODE_END === 'testing') {
-    testLogger.level(SILENT);
-    generalLogger.level(SILENT);
-    apiLogger.level(SILENT);
-    authenticationLogger.level(SILENT);
-    middlewareLogger.level(SILENT);
-    mongooseLogger.level(SILENT);
+} else if (process.env.NODE_ENV === 'test' || process.env.LOGGING_OFF) {
+    testLogger.level(FATAL + 1);
+    generalLogger.level(FATAL + 1);
+    apiLogger.level(FATAL + 1);
+    authenticationLogger.level(FATAL + 1);
+    middlewareLogger.level(FATAL + 1);
+    mongooseLogger.level(FATAL + 1);
 } else {
     testLogger.level(TRACE);
     generalLogger.level(TRACE);

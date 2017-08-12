@@ -9,6 +9,7 @@ const mongoServer = new MongodbMemoryServer();
 
 // Create connection to mongoose before all tests
 const before = async () => {
+    process.env.LOGGING_OFF = true;
     await mongoose.connect(await mongoServer.getConnectionString(), {useMongoClient: true});
 };
 

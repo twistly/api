@@ -1,4 +1,4 @@
-// @TODO: Give these better names.
+import announce from './announce';
 
 const canAccessBlog = (user, blogUrl) => {
     for (let i = 0; i < user.tumblr.length; i++) {
@@ -17,6 +17,7 @@ const postsLeftInPlan = (blog, plan) => {
 const flatten = list => list.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
 
 export {
+    announce,
     canAccessBlog,
     postsLeftInPlan,
     flatten
