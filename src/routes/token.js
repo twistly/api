@@ -11,16 +11,20 @@ router.post('/', async (req, res, next) => {
     // Must include password here otherwise comparePassword has nothing to compare it to.
     const user = await User.findOne({username: req.body.username}).select('+password').exec().catch(err => next(err));
     if (user) {
+        const now = Date.now();
         const isMatch = await user.comparePassword(req.body.password).catch(next);
 
         if (!isMatch) {
             return next(new HTTPError.Forbidden(`The username and/or password you provided don't match any current user.`));
         }
+
+        await user.active();
+
         log.debug('Trying to sign JWT.');
         jwt.sign({
             username: user.username,
             roles: user.roles,
-            iat: Math.floor(Date.now() / 1000) - 5, // Set issue date 5 seconds ago
+            iat: Math.floor(now / 1000) - 5, // Set issue date 5 seconds ago
             iss: 'https://api.twistly.xyz',
             aud: 'https://api.twistly.xyz',
             maxAge: 3600
