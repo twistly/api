@@ -121,7 +121,9 @@ app.use('/healthcheck', (req, res) => {
 
 app.use(errorHandler({
     log: ({err, req, body}) => {
-        log.error(err, `${body.status} ${req.method} ${req.url}`);
+        if (body.status >= 500) {
+            log.error(err, `${body.status} ${req.method} ${req.url}`);
+        }
     },
     // This hides 5XX errors in production to prevent info leaking
     hideProdErrors: true
