@@ -98,7 +98,7 @@ router.get('/auth/tumblr/callback', isAuthenticated, passport.authenticate('tumb
         // No tumblr account exists so let's make one and link it to our user.
         const toCreate = profile._json.response.user.blogs.map(blog => {
             return {
-                url: blog.url.replace('http://', '').replace('https://', '').replace('.tumblr.com', ''),
+                url: blog.url.replace('http://', '').replace('https://', '').replace('.tumblr.com', '').replace('/', ''),
                 postCount: blog.total_posts,
                 isNsfw: blog.is_nsfw,
                 followerCount: blog.followers,
@@ -125,10 +125,9 @@ router.get('/auth/tumblr/callback', isAuthenticated, passport.authenticate('tumb
         }).exec().catch(next);
 
         user.tumblr.push(newTumblrAccount);
-        user.save().then(async () => {
-            const tumblrAccount = await TumblrAccount.findOne({_id: newTumblrAccount._id}).exec().catch(next);
-            return res.send({tumblrAccount});
-        }).catch(next);
+        await user.save().catch(next);
+
+        return res.redirect('/');
     }
 });
 
