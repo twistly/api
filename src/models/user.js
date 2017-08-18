@@ -75,4 +75,25 @@ User.methods.comparePassword = function(password, callback) {
     return promise;
 };
 
+// Run this every time the user interacts with Twistly
+User.methods.active = function(callback) {
+    const self = this;
+    const promise = new Promise((resolve, reject) => {
+        self.lastActive = Date.now();
+        self.save(err => {
+            if (err) {
+                reject(err);
+            }
+
+            resolve();
+        });
+    });
+
+    if (callback && typeof callback === 'function') {
+        promise.then(callback.bind(null, null), callback);
+    }
+
+    return promise;
+};
+
 export default mongoose.model('User', User);
