@@ -97,7 +97,9 @@ app.use(session({
     store: new RedisStore({
         url: config.get('redis.uri')
     }),
-    secret: config.get('session.secret')
+    secret: config.get('session.secret'),
+    resave: true,
+    saveUninitialized: true
 }));
 app.use(passport.initialize());
 app.use(passport.session());
