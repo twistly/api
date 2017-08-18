@@ -16,8 +16,12 @@ const config = new Configstore(name, {
     log: {
         directory: './logs/error.log'
     },
+    session: {
+        secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
+        uri: process.env.REDIS_URL || 'redis://127.0.0.1:8888'
+    },
     jwt: {
-        secret: process.env.JWT || crypto.randomBytes(64).toString('hex')
+        secret: process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex')
     },
     bcrypt: {
         rounds: 10

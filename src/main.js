@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import passport from 'passport';
 import session from 'express-session';
+import connectRedis from 'connect-redis';
 import HTTPError from 'http-errors';
 import jwt from 'express-jwt';
 import {errorHandler, notFoundHandler} from 'express-api-error-handler';
@@ -15,6 +16,7 @@ import log from './log';
 import {User} from './models';
 import {blog, queue, stat, token, user, web} from './routes';
 
+const RedisStore = connectRedis(session);
 const statsd = path => {
     return (req, res, next) => {
         const method = req.method || 'unknown_method';
@@ -92,9 +94,10 @@ app.use((err, req, res, next) => {
 });
 app.use(methodOverride());
 app.use(session({
-    secret: 'keyboard cat',
-    resave: true,
-    saveUninitialized: true
+    store: new RedisStore({
+        url: config.get('redis.uri')
+    }),
+    secret: config.get('session.secret')
 }));
 app.use(passport.initialize());
 app.use(passport.session());
