@@ -13,7 +13,7 @@ const isAuthenticated = async (req, res, next) => {
     if (apiKey || jwt) {
         const find = jwt === null ? {apiKey} : {username: jwt.username};
         log.debug(`Auth looks good using ${JSON.stringify(find)} to check DB.`);
-        const user = await User.findOne(find).populate('tumblr').populate('plan').lean().exec().catch(err => next(err));
+        const user = await User.findOne(find).populate('tumblr').populate('plan').exec().catch(err => next(err));
         if (user) {
             req.user = user;
             return next();
