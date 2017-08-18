@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import passport from 'passport';
 import session from 'express-session';
+import HTTPError from 'http-errors';
 import jwt from 'express-jwt';
 import {errorHandler, notFoundHandler} from 'express-api-error-handler';
 import {Strategy as TumblrStrategy} from 'passport-tumblr';
@@ -117,6 +118,14 @@ app.use('/healthcheck', (req, res) => {
     res.status(200).json({
         uptime: process.uptime()
     });
+});
+
+app.use((err, req, res, next) => {
+    if (err.code !== 'invalid_token') {
+        return next();
+    }
+
+    return next(new HTTPError.Unauthorized('Token expired.'));
 });
 
 app.use(errorHandler({
