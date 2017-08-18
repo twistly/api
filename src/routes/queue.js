@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import HTTPError from 'http-errors';
 import {Router} from 'express';
-import {Blog, Post, Queue} from '../models';
+import {Post, Queue} from '../models';
 import {isAuthenticated, resolveBlogUrl} from '../middleware';
 import {flatten} from '../utils';
 
