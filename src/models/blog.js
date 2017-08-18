@@ -17,6 +17,10 @@ const Blog = new Schema({
     postsInQueue: {
         type: Number,
         default: 0
+    },
+    publicStats: {
+        type: Boolean,
+        default: true
     }
 });
 
