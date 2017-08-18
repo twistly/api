@@ -4,7 +4,7 @@ import {Blog} from '../models';
 
 const resolveBlogUrl = async (req, res, next) => {
     const url = req.params.blogUrl;
-    const blog = await Blog.findOne({url}).exec().catch(err => next(err));
+    const blog = await Blog.findOne({url}).lean().exec().catch(err => next(err));
     if (blog) {
         req.blog = blog;
         return next();
