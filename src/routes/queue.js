@@ -12,10 +12,11 @@ router.use(isAuthenticated);
 router.get('/', async (req, res, next) => {
     const blogs = flatten(req.user.tumblr.map(tumblr => tumblr.blogs));
     const queues = await Queue.find({
-        blogId: {
+        blogs: {
             $in: blogs
         }
     }).populate('blogId', '_id url').exec().catch(next);
+
     if (queues.length >= 1) {
         return res.send({queues});
     }
@@ -28,15 +29,16 @@ router.get('/:blogUrl', resolveBlogUrl, async (req, res, next) => {
     res.send({queues});
 });
 
-// @TODO: Replace this
 router.post('/', async (req, res, next) => {
+    const isUserAllowed = blog => req.user.tumblr.filter(tumblr => tumblr.blogs.filter(_blog => _blog === blog._id));
+
     Joi.validate({
-        blogId: req.body.blogId,
+        blogs: req.body.blogs,
         interval: req.body.interval,
         startHour: req.body.startHour,
         endHour: req.body.endHour
     }, {
-        blogId: Joi.string(),
+        blogs: Joi.array().items(Joi.string().required()).min(1).max(50).required(),
         interval: Joi.number().min(1).max(250).required(),
         startHour: Joi.number().min(0).max(23).required(),
         endHour: Joi.number().min(0).max(23).required()
@@ -45,10 +47,13 @@ router.post('/', async (req, res, next) => {
             return next(error);
         }
 
-        const {blogId, interval, startHour, endHour} = values;
-        const blog = await Blog.findOne({_id: blogId}).exec().catch(next);
+        const {blogs, interval, startHour, endHour} = values;
+
+        // Removes all blogs not found on current user's req.user object
+        blogs.filter(blog => isUserAllowed(blog));
+
         const queue = new Queue({
-            blogId: blog._id,
+            blogs,
             interval,
             startHour,
             endHour
