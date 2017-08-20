@@ -1,7 +1,8 @@
 import Joi from 'joi';
 import HTTPError from 'http-errors';
+import {Types} from 'mongoose';
 import {Router} from 'express';
-import {Post, Queue} from '../models';
+import {Blog, Post, Queue} from '../models';
 import {isAuthenticated, resolveBlogUrl} from '../middleware';
 import {flatten} from '../utils';
 
@@ -20,7 +21,7 @@ router.get('/', async (req, res, next) => {
     if (queues.length >= 1) {
         return res.send({queues});
     }
-    return next(new HTTPError.NotFound(`No queues found.`));
+    return res.sendStatus(204);
 });
 
 router.get('/:blogUrl', resolveBlogUrl, async (req, res, next) => {
@@ -31,13 +32,10 @@ router.get('/:blogUrl', resolveBlogUrl, async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
     const isUserAllowed = blog => req.user.tumblr.filter(tumblr => tumblr.blogs.filter(_blog => _blog === blog._id));
+    const {name, blogs, interval, startHour, endHour} = req.body;
 
-    Joi.validate({
-        blogs: req.body.blogs,
-        interval: req.body.interval,
-        startHour: req.body.startHour,
-        endHour: req.body.endHour
-    }, {
+    Joi.validate({name, blogs, interval, startHour, endHour}, {
+        name: Joi.string().min(1).max(100),
         blogs: Joi.array().items(Joi.string().required()).min(1).max(50).required(),
         interval: Joi.number().min(1).max(250).required(),
         startHour: Joi.number().min(0).max(23).required(),
@@ -47,13 +45,24 @@ router.post('/', async (req, res, next) => {
             return next(error);
         }
 
-        const {blogs, interval, startHour, endHour} = values;
+        const {name, blogs, interval, startHour, endHour} = values;
+
+        // If we get passed a bunch of urls instead of ids convert them
+        const mappedBlogs = blogs.map(async blog => {
+            if (!Types.ObjectId.isValid(blog)) {
+                const url = blog;
+                const foundBlog = await Blog.findOne({url}).select('_id').lean().exec().catch(next);
+                return foundBlog._id;
+            }
+            return blog;
+        });
 
         // Removes all blogs not found on current user's req.user object
-        blogs.filter(blog => isUserAllowed(blog));
+        mappedBlogs.filter(blog => isUserAllowed(blog));
 
         const queue = new Queue({
-            blogs,
+            name,
+            blogs: mappedBlogs,
             interval,
             startHour,
             endHour
