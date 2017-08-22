@@ -9,21 +9,14 @@ import jwt from 'express-jwt';
 import {errorHandler, notFoundHandler} from 'express-api-error-handler';
 import {Strategy as TumblrStrategy} from 'passport-tumblr';
 import statusMonitor from 'express-status-monitor';
-import expressStatsd from 'express-statsd';
 import loudRejection from 'loud-rejection';
-import config from './config';
-import log from './log';
-import {User} from './models';
-import {blog, queue, stat, token, user, web} from './routes';
+import config from '../config';
+import log from '../log';
+import {User} from '../models';
+import {blog, queue, stat, token, user, web} from '../routes';
+import agenda from './agenda';
 
 const RedisStore = connectRedis(session);
-const statsd = path => {
-    return (req, res, next) => {
-        const method = req.method || 'unknown_method';
-        req.statsdKey = ['http', method.toLowerCase(), path].join('.');
-        next();
-    };
-};
 
 // Stops promises being silent
 loudRejection();
@@ -49,10 +42,9 @@ app.use(statusMonitor({
         });
     }
 }));
-app.use(expressStatsd());
 
 app.use(jwt({
-    secret: config.get('jwt.secret'),
+    secret: process.env.JWT_SECRET || config.get('jwt.secret'),
     audience: 'https://api.twistly.xyz',
     issuer: 'https://api.twistly.xyz',
     requestProperty: 'jwt',
@@ -95,9 +87,9 @@ app.use((err, req, res, next) => {
 app.use(methodOverride());
 app.use(session({
     store: new RedisStore({
-        url: config.get('redis.uri')
+        url: process.env.REDIS_URL || config.get('redis.uri')
     }),
-    secret: config.get('session.secret'),
+    secret: process.env.SESSION_SECRET || config.get('session.secret'),
     resave: true,
     saveUninitialized: true
 }));
@@ -109,16 +101,16 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/', statsd('index'), (req, res) => {
+app.get('/', (req, res) => {
     res.sendStatus(200);
 });
 
-app.use('/blog', statsd('blog'), blog);
-app.use('/queue', statsd('queue'), queue);
-app.use('/stat', statsd('stat'), stat);
-app.use('/token', statsd('token'), token);
-app.use('/user', statsd('user'), user);
-app.use('/', statsd('web'), web);
+app.use('/blog', blog);
+app.use('/queue', queue);
+app.use('/stat', stat);
+app.use('/token', token);
+app.use('/user', user);
+app.use('/', web);
 app.use('/healthcheck', (req, res) => {
     res.status(200).json({
         uptime: process.uptime()
@@ -127,7 +119,7 @@ app.use('/healthcheck', (req, res) => {
 
 app.use((err, req, res, next) => {
     if (err.code !== 'invalid_token') {
-        return next();
+        return next(err);
     }
 
     return next(new HTTPError.Unauthorized('Token expired.'));
@@ -140,7 +132,7 @@ app.use(errorHandler({
         }
     },
     // This hides 5XX errors in production to prevent info leaking
-    hideProdErrors: true
+    hideProdErrors: false
 }));
 
 app.use(notFoundHandler({
@@ -150,3 +142,7 @@ app.use(notFoundHandler({
 }));
 
 export default app;
+export {
+    app,
+    agenda
+};

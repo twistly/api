@@ -3,20 +3,27 @@ import Joi from 'joi';
 import HTTPError from 'http-errors';
 import dumbPasswords from 'dumb-passwords';
 import jwt from 'jsonwebtoken';
+import d from 'debug';
 import {isAuthenticated} from '../middleware';
 import {User} from '../models';
 import log from '../log';
 import config from '../config';
+import agenda from '../lib/agenda';
 
+const debug = d('twistly:routes:user');
 const router = new Router();
 
+debug('File loaded by Twistly.');
+
 router.get('/', isAuthenticated, async (req, res) => {
+    debug('GET /');
     res.send({
         user: req.user
     });
 });
 
 router.post('/', (req, res, next) => {
+    debug('POST /');
     Joi.validate({
         username: req.body.username,
         password: req.body.password,
@@ -27,14 +34,19 @@ router.post('/', (req, res, next) => {
         email: Joi.string().email().required()
     }, async (error, values) => {
         if (error) {
+            debug(error);
             return next(error);
         }
+
+        debug('No errors while validating %s', values);
         const {username, password, email} = values;
         if (dumbPasswords.check(password)) {
+            debug('Bad password');
             return next(new HTTPError.UnprocessableEntity(`Bad little human, use a better password.`));
         }
 
         if (password === username) {
+            debug('Username is password');
             return next(new HTTPError.UnprocessableEntity(`We don't allow usernames and passwords to be the same thing. That's not really a smart move.`));
         }
 
@@ -43,6 +55,8 @@ router.post('/', (req, res, next) => {
             password,
             email
         });
+
+        debug('Saving user');
         user.save(async error => {
             if (error) {
                 if (error.name === 'MongoError' && error.code === 11000) {
@@ -52,7 +66,7 @@ router.post('/', (req, res, next) => {
                 return next(new HTTPError.InternalServerError(`User could not be saved.`));
             }
 
-            const {username, roles} = await User.findOne({_id: user._id}).lean().exec();
+            const {_id, username, roles} = await User.findOne({_id: user._id}).lean().exec();
 
             jwt.sign({
                 username,
@@ -67,7 +81,10 @@ router.post('/', (req, res, next) => {
                 if (err) {
                     return next(err);
                 }
-                log.debug('Sending JWT.');
+
+                log.debug('Sending JWT to client and registration email to user.');
+
+                agenda.now('registration email', {userId: _id});
                 return res.status(201).send({
                     token
                 });

@@ -17,11 +17,11 @@ const config = new Configstore(name, {
         directory: './logs/error.log'
     },
     session: {
-        secret: process.env.SESSION_SECRET || crypto.randomBytes(64).toString('hex'),
-        uri: process.env.REDIS_URL || 'redis://127.0.0.1:8888'
+        secret: crypto.randomBytes(64).toString('hex'),
+        uri: 'redis://127.0.0.1:8888'
     },
     jwt: {
-        secret: process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex')
+        secret: crypto.randomBytes(64).toString('hex')
     },
     bcrypt: {
         rounds: 10
@@ -29,7 +29,7 @@ const config = new Configstore(name, {
     signups: {
         enabled: true
     },
-    url: process.env.BASE_URL || 'https://twistly.xyz',
+    url: 'https://twistly.xyz',
     tumblr: {
         token: process.env.TUMBLR_TOKEN || '',
         tokenSecret: process.env.TUMBLR_TOKEN_SECRET || ''

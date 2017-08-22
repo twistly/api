@@ -73,13 +73,13 @@ after@0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/after/-/after-0.8.2.tgz#fedb394f9f0e02aa9768e702bda23b505fae7e1f"
 
-agenda@^0.10.2:
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/agenda/-/agenda-0.10.2.tgz#64153164722ae277e48c06d42245d7fbac1f93f3"
+agenda@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/agenda/-/agenda-1.0.0.tgz#ba2cdc55e26c67d87f4eabbff8486198f94f97a1"
   dependencies:
     cron "~1.1.0"
     date.js "~0.3.1"
-    debug "^3.0.0"
+    debug "^2.6.8"
     human-interval "~0.1.3"
     moment-timezone "^0.5.0"
     mongodb "^2.2.10"
@@ -4029,6 +4029,10 @@ node-pre-gyp@^0.6.35, node-pre-gyp@^0.6.36:
 node-status-codes@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/node-status-codes/-/node-status-codes-1.0.0.tgz#5ae5541d024645d32a58fcddc9ceecea7ae3ac2f"
+
+nodemailer@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.0.1.tgz#b95864b07facee8287e8232effd6f1d56ec75ab2"
 
 nopt@^4.0.1:
   version "4.0.1"

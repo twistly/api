@@ -2,7 +2,6 @@
     "name": "twistly",
     "version": "1.0.0",
     "description": "Twistly api server.",
-    "private": true,
     "scripts": {
         "clean-dist": "rm -rf dist && mkdir dist",
         "build": "yarn run clean-dist && babel ./src -d ./dist -s -q",
@@ -12,13 +11,14 @@
         "start": "node ./dist/index.js"
     },
     "dependencies": {
-        "agenda": "^0.10.2",
+        "agenda": "1.0.0",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.17.2",
         "bunyan": "^1.8.12",
         "configstore": "^3.1.1",
         "connect-redis": "^3.3.0",
         "cors": "^2.8.4",
+        "debug": "^3.0.0",
         "dumb-passwords": "^0.2.1",
         "etcd3": "^0.2.4",
         "express": "^4.15.4",
@@ -36,6 +36,7 @@
         "meow": "^3.7.0",
         "method-override": "^2.3.9",
         "mongoose": "^4.11.6",
+        "nodemailer": "^4.0.1",
         "numeral": "^2.0.6",
         "passport": "^0.3.2",
         "passport-tumblr": "^0.1.2",
