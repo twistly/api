@@ -15,10 +15,13 @@ const email = nodemailer.createTransport({
 
 export default agenda => {
     agenda.define('registration email', async (job, done) => {
+        debug(`Trying to send registration email to ${job.attrs.data.userId}`);
         const user = await User.findOne({_id: job.attrs.data.userId}).lean().exec().catch(err => {
             debug(err);
             done(err);
         });
+
+        debug(`Using ${user.email} for ${user._id}'s registration email'`);
 
         email.verify(error => {
             if (error) {
