@@ -1,31 +1,38 @@
 import mongoose from 'mongoose';
+import d from 'debug';
 import {version} from '../package';
 import {app, agenda} from './lib';
 import config from './config';
 import log from './log';
 
-if (process.env.WORKER) {
-    agenda.start();
-} else {
-    const port = process.env.PORT || config.get('app.port');
-    const uri = process.env.MONGO_URL || config.get('database.url');
-
-    if (config.get('database.enabled')) {
-        mongoose.Promise = global.Promise;
-        mongoose.connect(uri, {
-            keepAlive: true,
-            reconnectTries: Number.MAX_VALUE,
-            useMongoClient: true
-        }).then(() => {
-            log.info(`Connected to ${uri}`);
-        }).catch(err => {
-            throw err;
-        });
+const debug = d('twistly:index');
+const port = process.env.PORT || config.get('app.port');
+const uri = process.env.MONGO_URL || config.get('database.url');
+const startServer = () => {
+    if (process.env.WORKER) {
+        agenda.start();
     } else {
-        log.info('Starting without database');
+        app.listen(port, () => {
+            log.info(`Twistly's API ${version} is running on port ${port}.`);
+        });
     }
+};
 
-    app.listen(port, () => {
-        log.info(`Twistly's API ${version} is running on port ${port}.`);
+if (config.get('database.enabled')) {
+    debug(`Trying to connect to ${uri}`);
+    mongoose.Promise = global.Promise;
+    mongoose.connect(uri, {
+        keepAlive: true,
+        reconnectTries: Number.MAX_VALUE,
+        useMongoClient: true
+    }).then(() => {
+        debug(`Connected to ${uri}`);
+        log.info('Mongoose connected.');
+        startServer();
+    }).catch(err => {
+        throw err;
     });
+} else {
+    log.info('Starting without database');
+    startServer();
 }

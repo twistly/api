@@ -3,6 +3,7 @@ import d from 'debug';
 import {User} from '../models';
 
 const debug = d('twistly:jobs:email');
+debug('loaded');
 const email = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: 587,
@@ -14,6 +15,7 @@ const email = nodemailer.createTransport({
 });
 
 export default agenda => {
+    debug('defining registration email');
     agenda.define('registration email', async (job, done) => {
         debug(`Trying to send registration email to ${job.attrs.data.userId}`);
         const user = await User.findOne({_id: job.attrs.data.userId}).lean().exec().catch(err => {
