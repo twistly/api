@@ -3,13 +3,22 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const Queue = new Schema({
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     blogs: [{
         type: Schema.Types.ObjectId,
         ref: 'Blog'
     }],
+    posts: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Post'
+    }],
+    enabled: Boolean,
     interval: Number,
-    startHour: Number,
-    endHour: Number
+    startTime: Number, // 0 is midnight that morning, 86400000 is midnight that night
+    endTime: Number    // This applies to both start and end times
 });
 
 export default mongoose.model('Queue', Queue);
