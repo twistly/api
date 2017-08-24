@@ -3,13 +3,9 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const Post = new Schema({
+    queueId: String,
     postId: String,
-    postOrder: Number,
-    reblogKey: String,
-    caption: {
-        type: String,
-        default: ''
-    }
+    reblogKey: String
 });
 
 export default mongoose.model('Post', Post);
