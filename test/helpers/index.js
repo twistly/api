@@ -9,8 +9,12 @@ const mongoServer = new MongodbMemoryServer();
 
 // Create connection to mongoose before all tests
 const before = async () => {
+    const uri = await mongoServer.getConnectionString();
+
     process.env.LOGGING_OFF = true;
-    await mongoose.connect(await mongoServer.getConnectionString(), {useMongoClient: true});
+    process.env.MONGO_URL = uri;
+
+    await mongoose.connect(uri, {useMongoClient: true});
 };
 
 // Create fixtures before each test
