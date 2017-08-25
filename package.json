@@ -8,6 +8,7 @@
         "test": "yarn run lint && yarn run ava",
         "lint": "xo",
         "ava": "nyc ava --verbose --fail-fast",
+        "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
         "start": "node ./dist/index.js"
     },
     "dependencies": {
