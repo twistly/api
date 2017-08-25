@@ -1,6 +1,6 @@
 import MongodbMemoryServer from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import app from '../../src/lib';
+import {app} from '../../src/lib';
 import {User} from '../../src/models';
 
 mongoose.Promise = Promise;
