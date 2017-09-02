@@ -114,6 +114,7 @@ export default agenda => {
                 try {
                     await Post.findOneAndRemove({_id: post._id}).lean().exec();
                     queue.posts = queue.posts.splice(queue.posts.findIndex(x => post._id === x._id), 1);
+                    queue.lastRun = new Date();
                     await queue.save();
                     debug('Finished processing queue [%s]', queue._id);
                 } catch (err) {

@@ -22,7 +22,8 @@ const Queue = new Schema({
     },
     interval: Number,
     startTime: Number, // 0 is midnight that morning, 86400000 is midnight that night
-    endTime: Number    // This applies to both start and end times
+    endTime: Number,    // This applies to both start and end times
+    lastRun: Date
 });
 
 export default mongoose.model('Queue', Queue);
