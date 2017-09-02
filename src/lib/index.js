@@ -64,7 +64,7 @@ app.use(jwt({
 passport.use(new TumblrStrategy({
     consumerKey: process.env.TUMBLR_CONSUMER_KEY,
     consumerSecret: process.env.TUMBLR_CONSUMER_SECRET
-}, async (token, secret, profile, done) => {
+}, (token, secret, profile, done) => {
     done(null, {}, {token, secret, profile});
 }));
 
