@@ -1,7 +1,6 @@
 import passport from 'passport';
 import HTTPError from 'http-errors';
 import {Router} from 'express';
-import {apiLogger as log} from '../log';
 import {Blog, User, TumblrAccount} from '../models';
 import {isAuthenticated, hasRole} from '../middleware';
 
@@ -64,14 +63,12 @@ router.get('/auth/tumblr/callback', isAuthenticated, passport.authenticate('tumb
     session: false
 }), async (req, res, next) => {
     const {token, secret, profile} = req.authInfo;
-    log.info(profile._json.response.user.blogs[0]);
 
     // We're replacing the token and secret on an exiting account.
     if (req.query._id) {
         // Find tumblr account which has the main blog.
-        const tumblrAccount = await TumblrAccount.findOne({
-            _id: req.query._id
-        }).exec().catch(next);
+        const tumblrAccount = await TumblrAccount.findOne({_id: req.query._id}).exec().catch(next);
+
         if (tumblrAccount) {
             tumblrAccount.token = token;
             tumblrAccount.secret = secret;

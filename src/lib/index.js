@@ -6,6 +6,7 @@ import session from 'express-session';
 import connectRedis from 'connect-redis';
 import HTTPError from 'http-errors';
 import jwt from 'express-jwt';
+import d from 'debug';
 import {errorHandler, notFoundHandler} from 'express-api-error-handler';
 import {Strategy as TumblrStrategy} from 'passport-tumblr';
 import statusMonitor from 'express-status-monitor';
@@ -16,6 +17,7 @@ import {User} from '../models';
 import {blog, queue, stat, token, user, web} from '../routes';
 import agenda from './agenda';
 
+const debug = d('lib:index');
 const RedisStore = connectRedis(session);
 
 // Stops promises being silent
@@ -118,11 +120,12 @@ app.use('/healthcheck', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-    if (err.code !== 'invalid_token') {
-        return next(err);
+    if (err.code === 'invalid_token') {
+        debug(err);
+        return next(new HTTPError.Unauthorized('Token expired.'));
     }
 
-    return next(new HTTPError.Unauthorized('Token expired.'));
+    return next(err);
 });
 
 app.use(errorHandler({

@@ -38,7 +38,7 @@ router.post('/', (req, res, next) => {
             return next(error);
         }
 
-        debug('No errors while validating %s', values);
+        debug('No errors while validating %O', values);
         const {username, password, email} = values;
         if (dumbPasswords.check(password)) {
             debug('Bad password');

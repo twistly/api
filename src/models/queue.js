@@ -15,7 +15,11 @@ const Queue = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Post'
     }],
-    enabled: Boolean,
+    name: String,
+    enabled: {
+        type: Boolean,
+        default: true
+    },
     interval: Number,
     startTime: Number, // 0 is midnight that morning, 86400000 is midnight that night
     endTime: Number    // This applies to both start and end times

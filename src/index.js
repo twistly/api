@@ -30,6 +30,7 @@ if (config.get('database.enabled')) {
         log.info('Mongoose connected.');
         startServer();
     }).catch(err => {
+        debug(`Couldn't connect to Mongodb. %O`, err);
         throw err;
     });
 } else {

@@ -24,6 +24,10 @@ export default agenda => {
             done(err);
         });
 
+        if (!user) {
+            return done(`No user found for ${job.attrs.data.userId}`);
+        }
+
         debug(`Using ${user.email} for ${user._id}'s registration email'`);
 
         email.verify(error => {

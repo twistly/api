@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
+import d from 'debug';
 import HTTPError from 'http-errors';
 import {Router} from 'express';
 import config from '../config';
-import {authenticationLogger as log} from '../log';
 import {User} from '../models';
 
+const debug = d('twistly:routes:token');
 const router = new Router();
 
 router.post('/', async (req, res, next) => {
@@ -20,7 +21,7 @@ router.post('/', async (req, res, next) => {
 
         await user.active();
 
-        log.debug('Trying to sign JWT.');
+        debug('Trying to sign JWT');
         jwt.sign({
             username: user.username,
             roles: user.roles,
@@ -28,13 +29,15 @@ router.post('/', async (req, res, next) => {
             iss: 'https://api.twistly.xyz',
             aud: 'https://api.twistly.xyz',
             maxAge: 3600
-        }, config.get('jwt.secret'), {
+        }, process.env.JWT_SECRET || config.get('jwt.secret'), {
             expiresIn: 3600
         }, (err, token) => {
             if (err) {
                 return next(err);
             }
-            log.debug('Sending JWT.');
+
+            debug('Sending JWT %O', token);
+
             return res.status(201).send({
                 token
             });

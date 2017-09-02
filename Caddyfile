@@ -1,0 +1,8 @@
+:5000 {
+    cors {
+        methods GET,POST,OPTIONS,PUT,DELETE,HEAD
+        allowed_headers Origin,Content-Type,Accept,Authorization
+        exposed_headers Origin,Content-Type,Accept,Authorization
+    }
+    proxy / localhost:3000
+}
